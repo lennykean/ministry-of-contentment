@@ -236,6 +236,13 @@ function memoTitle(text: string): string {
   return sentence.length > 60 ? `${sentence.slice(0, 59).trimEnd()}…` : sentence;
 }
 
+function noticeTitle(notice: NoticeRecord): string {
+  const location = ["facility", "instance", "district", "service", "press", "cohort"]
+    .find((key) => notice.localization[key] !== undefined);
+  const count = notice.candidateCount;
+  return `${count} candidate${count === 1 ? "" : "s"}${location ? ` · ${location}=${String(notice.localization[location])}` : ""}`;
+}
+
 function syncRankBenefits(index: CampaignIndex, state: GameState): void {
   const rank = index.ranks.get(state.rankId);
   if (!rank) return;
@@ -283,6 +290,16 @@ function chargeAction(index: CampaignIndex, state: GameState, action: ClockActio
   const cost = shift.actionCosts[action] ?? 0;
   if (state.clockUsed + cost > shift.actionBudget) throw new Error(`This action costs ${cost} clock units; only ${shift.actionBudget - state.clockUsed} remain`);
   state.clockUsed += cost;
+}
+
+function retireWatchRecord(state: GameState, watchId: string): void {
+  const watch = state.watches.find((item) => item.id === watchId);
+  if (!watch || watch.state !== "active") throw new Error(`Cannot retire missing or inactive watch ${watchId}`);
+  watch.state = "retired";
+  for (const notice of state.notices.filter((item) => item.watchId === watch.id && item.state === "open")) {
+    notice.state = "resolved";
+    notice.resolvedAt = notice.lastSeen;
+  }
 }
 
 function reportFacts(state: GameState, id: string, field: string): FactValue {
@@ -538,9 +555,7 @@ function applyEffect(index: CampaignIndex, state: GameState, effect: Effect, rea
     setRank(index, state, target.id);
   }
   else if (effect.type === "retire_watch") {
-    const watch = state.watches.find((item) => item.id === effect.watchId);
-    if (!watch || watch.state !== "active") throw new Error(`Cannot retire missing or inactive watch ${effect.watchId}`);
-    watch.state = "retired";
+    retireWatchRecord(state, effect.watchId);
   }
   else if (effect.type === "enter_ending") {
     if (state.endingId && state.endingId !== effect.endingId) throw new Error(`Conflicting ending ${effect.endingId}`);
@@ -925,6 +940,11 @@ export class GameEngine {
 
   currentShift() { return this.index.shifts.get(this.state.currentShiftId)!; }
 
+  shiftStartingStanding(): number {
+    const start = typeof this.state.shiftStart === "string" ? JSON.parse(this.state.shiftStart) as GameState : this.state.shiftStart;
+    return start?.standing ?? this.state.standing;
+  }
+
   conditionSatisfied(condition?: Condition): boolean { return evaluateCondition(this.index, this.state, condition); }
 
   appointmentPending(): boolean { return this.state.appointmentId === null; }
@@ -971,7 +991,8 @@ export class GameEngine {
 
   private pushMemo(text: string, from: string, source: { consequenceId?: string; endingId?: string }): void {
     this.state.memos.push({
-      id: `memo.${this.state.memos.length + 1}`, ...source, from, text,
+      id: `memo.${this.state.memos.length + 1}`, ...source, from,
+      text: text.startsWith(`${from}:`) ? text.slice(from.length + 1).trimStart() : text,
       campaignTime: this.currentShift().time, shiftNumber: this.state.shiftNumber, read: false,
     });
   }
@@ -1072,8 +1093,9 @@ export class GameEngine {
       title: item.kind === "case" ? this.index.cases.get(item.id)?.title ?? item.id : this.index.narrativeItems.get(item.id)?.title ?? item.id,
       done: item.kind === "case" ? this.state.completedCases.includes(item.id) : this.state.readNarrative.includes(item.id),
     }));
-    const notices = this.state.notices.filter((notice) => notice.state === "open").map((notice) => ({ kind: "notice" as const, id: notice.id, title: notice.summary, done: false }));
-    const errors = this.state.watchErrors.map((error) => ({ kind: "watch-error" as const, id: `${error.watchId}:${error.checkpointId}`, title: error.message, done: false }));
+    const notices = this.state.notices.filter((notice) => notice.state === "open").map((notice) => ({ kind: "notice" as const, id: notice.id, title: noticeTitle(notice), done: false }));
+    const activeWatchIds = new Set(this.state.watches.filter((watch) => watch.state === "active").map((watch) => watch.id));
+    const errors = this.state.watchErrors.filter((error) => activeWatchIds.has(error.watchId)).map((error) => ({ kind: "watch-error" as const, id: `${error.watchId}:${error.checkpointId}`, title: error.message, done: false }));
     const memos = this.state.memos.map((memo) => ({ kind: "memo" as const, id: memo.id, title: memoTitle(memo.text), done: memo.read }));
     return [...notices, ...errors, ...memos, ...result];
   }
@@ -1303,7 +1325,7 @@ export class GameEngine {
     const watch = next.watches.find((item) => item.id === watchId && item.state === "active");
     if (!watch) throw new Error("That standing query is not active");
     chargeAction(this.index, next, "retireWatch");
-    watch.state = "retired";
+    retireWatchRecord(next, watchId);
     this.state = next;
     this.touch();
   }
@@ -1327,19 +1349,27 @@ export class GameEngine {
     this.touch();
   }
 
-  canAdvance(): boolean {
+  shiftWorkComplete(): boolean {
     return this.inbox().filter((item) => item.kind !== "notice" && item.kind !== "watch-error" && item.kind !== "memo").every((item) => item.done);
   }
 
+  clockExpired(): boolean {
+    const remaining = this.clockRemaining();
+    return remaining !== undefined && remaining <= 0;
+  }
+
+  canAdvance(): boolean { return this.shiftWorkComplete() || this.clockExpired(); }
+
   advanceShift(): void {
     this.requireOpenConsole();
-    if (!this.canAdvance()) throw new Error("Complete the required case work and acknowledge official inbox items before ending the shift");
+    const workComplete = this.shiftWorkComplete();
+    if (!workComplete && !this.clockExpired()) throw new Error("Complete the required case work and acknowledge official inbox items before ending the shift");
     for (const checkpoint of this.currentShift().watchCheckpoints ?? []) this.evaluateCheckpoint(checkpoint);
     const branch = this.currentShift().next.find((next) => evaluateCondition(this.index, this.state, next.condition));
-    this.state.progress[`shift:${this.state.currentShiftId}`] = { ...this.state.progress[`shift:${this.state.currentShiftId}`], phase: "completed", outcome: "succeeded", completedAt: this.currentShift().time };
+    this.state.progress[`shift:${this.state.currentShiftId}`] = { ...this.state.progress[`shift:${this.state.currentShiftId}`], phase: "completed", outcome: workComplete ? "succeeded" : "failed", completedAt: this.currentShift().time };
     if (!branch) { this.runScheduled(this.state.shiftNumber + 1); this.resolveRanksAndEndings(); this.touch(); return; }
     this.state = applyEffects(this.index, this.state, branch.effects, `Shift closed: ${this.currentShift().title}`);
-    this.state.shiftNumber += 1;
+    this.state.shiftNumber = branch.shiftId === this.index.campaign.opening.shiftId ? 1 : this.state.shiftNumber + 1;
     this.enterShift(branch.shiftId, true);
     this.runScheduled();
     this.resolveRanksAndEndings();

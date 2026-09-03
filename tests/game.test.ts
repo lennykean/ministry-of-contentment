@@ -233,7 +233,7 @@ function memoCampaign(): any {
   campaign.consequences.push(
     {
       id: "consequence.named", condition: { op: "compare", left: { fact: "standing.value" }, relation: ">=", right: 0 },
-      explanation: "Oskar Vale asks about the northern district. He does not put it in writing.",
+      explanation: "Oskar Vale: I need the northern district figures kept exact.",
       effects: [{ type: "change", target: "standing.value", delta: 1 }],
     },
     {
@@ -442,6 +442,41 @@ describe("game engine", () => {
     expect(game.state.clockUsed).toBe(0);
     expect(game.state.reports).toHaveLength(0);
     expect(game.state.artifacts).toHaveLength(0);
+  });
+
+  it("allows an expired shift to close and records whether its required work was complete", () => {
+    const nextShift = (campaign: any) => {
+      campaign.shifts[0].next = [{ shiftId: "shift.two" }];
+      campaign.shifts.push({
+        ...structuredClone(campaign.shifts[0]), id: "shift.two", title: "Second Fixture Shift",
+        time: "2030-01-01T09:00:00Z", inbox: [], actionBudget: undefined, actionCosts: undefined, next: [],
+      });
+      return campaign;
+    };
+
+    const unfinishedIndex = loadCampaign(nextShift(clockCampaign()));
+    const unfinished = new GameEngine(unfinishedIndex, executeQuery, createGameState(unfinishedIndex, 81));
+    expect(unfinished.canAdvance()).toBe(false);
+    for (let run = 0; run < 8; run += 1) unfinished.runQuery("case.one", "promql", "fixture_signal", controls);
+    expect(unfinished.clockExpired()).toBe(true);
+    expect(unfinished.canAdvance()).toBe(true);
+    unfinished.advanceShift();
+    expect(unfinished.state.currentShiftId).toBe("shift.two");
+    expect(unfinished.state.progress["shift:shift.one"]?.outcome).toBe("failed");
+
+    const completeCampaign = nextShift(clockCampaign());
+    completeCampaign.shifts[0].actionBudget = 3;
+    const completeIndex = loadCampaign(completeCampaign);
+    const complete = new GameEngine(completeIndex, executeQuery, createGameState(completeIndex, 82));
+    fileFixtureReport(complete);
+    expect(complete.clockExpired()).toBe(true);
+    complete.advanceShift();
+    expect(complete.state.progress["shift:shift.one"]?.outcome).toBe("succeeded");
+
+    const unclockedIndex = loadCampaign(nextShift(structuredClone(fixture)));
+    const unclocked = new GameEngine(unclockedIndex, executeQuery, createGameState(unclockedIndex, 83));
+    expect(unclocked.clockExpired()).toBe(false);
+    expect(unclocked.canAdvance()).toBe(false);
   });
 
   it("preserves non-finite archived evidence when restarting a later shift", () => {
@@ -658,6 +693,37 @@ describe("game engine", () => {
     expect(game.state.watches.find((item) => item.id === watch.id)?.scores).toMatchObject({ coverage: 1, specificity: 1, localization: 1, timeliness: 1, checkpointSuccess: true });
   });
 
+  it("clears a retired watch's open notices from the in tray", () => {
+    const index = loadCampaign(watchCampaign());
+    const game = new GameEngine(index, executeQuery, createGameState(index, 11));
+    const artifactId = fileFixtureReport(game);
+    const watch = game.saveWatch("case.one", artifactId);
+    game.advanceShift();
+    expect(game.inbox()).toContainEqual(expect.objectContaining({ kind: "notice", title: expect.stringMatching(/^1 candidate/) }));
+
+    game.retireWatch(watch.id);
+
+    expect(game.state.notices[0]).toMatchObject({ state: "resolved", resolvedAt: game.state.notices[0]!.lastSeen });
+    expect(game.inbox().some((item) => item.kind === "notice")).toBe(false);
+  });
+
+  it("clears open notices when an effect retires a watch", () => {
+    const campaign = watchCampaign();
+    campaign.shifts[1].next[0].effects = [{ type: "retire_watch", watchId: "watch.1" }];
+    const index = loadCampaign(campaign);
+    const game = new GameEngine(index, executeQuery, createGameState(index, 12));
+    const artifactId = fileFixtureReport(game);
+    game.saveWatch("case.one", artifactId);
+    game.advanceShift();
+    expect(game.inbox().some((item) => item.kind === "notice")).toBe(true);
+
+    game.advanceShift();
+
+    expect(game.state.watches[0]?.state).toBe("retired");
+    expect(game.state.notices[0]).toMatchObject({ state: "resolved", resolvedAt: game.state.notices[0]!.lastSeen });
+    expect(game.inbox().some((item) => item.kind === "notice")).toBe(false);
+  });
+
   it("keeps a locked source out of direct, saved-watch probe, and checkpoint execution", () => {
     const campaign = watchCampaign();
     campaign.rightDeclarations.push({ id: "access.locked", kind: "access", name: "Locked fixture source", initial: false });
@@ -707,6 +773,8 @@ describe("game engine", () => {
     expect(game.state.notices[0]).toMatchObject({ state: "open", occurrenceCount: 1, candidateCount: 1, absentEvaluations: 0 });
     expect(game.state.watchErrors).toContainEqual({ watchId: watch.id, checkpointId: "checkpoint.expected-error", message: "The archive is briefly unavailable.", time: "2030-01-01T10:00:00Z" });
     expect(game.state.watches.find((item) => item.id === watch.id)?.scores).toMatchObject({ checkpointSuccess: true, coverage: 1 });
+    game.retireWatch(watch.id);
+    expect(game.inbox().some((item) => item.kind === "watch-error")).toBe(false);
   });
 
   it("binds a view to a result at print time and refuses views the result cannot take", () => {
@@ -765,6 +833,21 @@ describe("game engine", () => {
     expect(() => game.trashPrintout("case.one", artifact.id)).toThrow("not printed");
   });
 
+  it("retains the shift-opening Standing after reports change it and after reload", () => {
+    const campaign = structuredClone(fixture) as any;
+    campaign.cases[0].outcomes[0].effects = [{ type: "change", target: "standing.value", delta: -1 }];
+    const index = loadCampaign(campaign);
+    const game = new GameEngine(index, executeQuery, createGameState(index, 32));
+
+    expect(game.shiftStartingStanding()).toBe(0);
+    fileFixtureReport(game);
+    expect(game.state.standing).toBe(-1);
+    expect(game.shiftStartingStanding()).toBe(0);
+
+    const restored = new GameEngine(index, executeQuery, JSON.parse(game.serialize()));
+    expect(restored.shiftStartingStanding()).toBe(0);
+  });
+
   it("reads the printed view and its toggles as artifact facts", () => {
     const index = loadCampaign(fixture);
     const game = new GameEngine(index, executeQuery, createGameState(index, 33));
@@ -790,11 +873,11 @@ describe("game engine", () => {
 
     expect(game.state.standing).toBe(1);
     expect(game.state.memos).toEqual([
-      expect.objectContaining({ id: "memo.1", consequenceId: "consequence.named", from: "Oskar Vale", shiftNumber: 2, campaignTime: "2030-01-02T08:00:00Z", read: false }),
+      expect.objectContaining({ id: "memo.1", consequenceId: "consequence.named", from: "Oskar Vale", text: "I need the northern district figures kept exact.", shiftNumber: 2, campaignTime: "2030-01-02T08:00:00Z", read: false }),
       expect.objectContaining({ consequenceId: "consequence.anonymous", from: "The Ministry", read: false }),
     ]);
     expect(game.inbox().filter((item) => item.kind === "memo")).toEqual([
-      { kind: "memo", id: "memo.1", title: "Oskar Vale asks about the northern district.", done: false },
+      { kind: "memo", id: "memo.1", title: "I need the northern district figures kept exact.", done: false },
       { kind: "memo", id: "memo.2", title: "The northern district reassurance figures have been revised…", done: false },
     ]);
     expect(game.canAdvance()).toBe(true);

@@ -87,7 +87,7 @@ describe("campaign narrative integration", () => {
       .toBe("The ratio returns 100% from equal population operands; attendance rejection records provide no Party-member count.");
 
     const mixed = index.cases.get("case.100.dispatch-choice")!;
-    expect(mixed.question).toBe("What does prior-day collector queue report, and do mean Pin battery ratio and maximum dispatch duration describe the same fault?");
+    expect(mixed.question).toBe("Do prior-day collector queue, mean Pin battery ratio, and maximum dispatch duration share enough time, place, and identity to indicate one fault?");
     expect(mixed.hints[2]!.text).toContain("Query 1 reads the prior-day collector queue.");
     expect(mixed.hints[2]!.text).toContain("Query 2 measures the window mean of unwrapped Pin battery_ratio samples.");
     expect(mixed.hints[2]!.text).toContain("Query 3 measures maximum dispatch duration.");
@@ -432,6 +432,41 @@ describe("campaign narrative integration", () => {
     expect(index.cases.get("case.089.bad-duration")!.briefing).toContain("`hillside-retreat`");
     expect(index.cases.get("case.123.raw-record")!.briefing).toContain("share my member ID but not my Pin ID");
     expect(index.cases.get("case.132.allocation-result")!.briefing).toContain("above 1 is shortage");
+  });
+
+  it("keeps generated lessons grammatical and specific to their query skill", () => {
+    const mainCases = index.campaign.cases.filter((item) => /^case\.\d/.test(item.id));
+    const playerText = JSON.stringify(mainCases, (key, value) => key === "query" ? undefined : value);
+
+    expect(playerText).not.toContain("despite their different units");
+    expect(playerText).not.toContain("the returned North's");
+    expect(playerText).not.toContain("returned the active work order");
+    expect(playerText).not.toMatch(/\bthe the\b/i);
+    expect(playerText).not.toMatch(/\b([a-z]+)\s+\1\b/i);
+    for (const item of mainCases) {
+      for (const hypothesis of item.hypotheses) expect(hypothesis.summary, item.id).toMatch(/^[A-Z0-9`]/);
+      for (const conclusion of item.report.conclusions) expect(conclusion.text, item.id).toMatch(/^[A-Z0-9`]/);
+      expect(item.hypotheses[0]!.summary, item.id)
+        .not.toMatch(/^(Inspect|Read|Check|Compare|Filter|Start|Open|Run|Unwrap)\b/);
+    }
+    expect(mainCases.map((item) => item.question).join("\n"))
+      .not.toMatch(/^What do (?:North's )?service requests grouped result report,|^What do facility demand-to-capacity match report,|^What do active Pins window presence report,/m);
+
+    const turnstile = index.cases.get("case.033.turnstile-total")!;
+    expect(turnstile.technicalTruth.artifactRoles["evidence-01"]).toContain("active work order");
+    expect(turnstile.variants[0]!.workedEvidenceSet.artifacts[0]!.explanation).toMatch(/service request/i);
+    expect(turnstile.variants[0]!.workedEvidenceSet.artifacts[0]!.explanation).not.toMatch(/press page/i);
+    expect(turnstile.variants[1]!.workedEvidenceSet.artifacts[0]!.explanation).toMatch(/press page/i);
+    expect(turnstile.variants[1]!.workedEvidenceSet.artifacts[0]!.explanation).not.toMatch(/service request/i);
+
+    const bulletin = index.cases.get("case.036.bulletin-brief")!;
+    expect(bulletin.variants[0]!.workedEvidenceSet.artifacts[0]!.explanation).toMatch(/Pin gateway/i);
+    expect(bulletin.variants[0]!.workedEvidenceSet.artifacts[0]!.explanation).not.toMatch(/attendance/i);
+    expect(bulletin.variants[1]!.workedEvidenceSet.artifacts[0]!.explanation).toMatch(/attendance/i);
+
+    expect(index.cases.get("case.014.canteen-gateway")!.question).toBe("Which result type and value does each Canteen Gateway query return?");
+    expect(index.cases.get("case.049.market-records")!.question).not.toContain("Market Records records");
+    expect(index.cases.get("case.098.queue-percentile")!.question).not.toContain("Queue Percentile percentile");
   });
 
   it("keeps shift orders in directives instead of replacing case lessons", () => {

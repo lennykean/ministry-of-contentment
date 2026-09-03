@@ -8,7 +8,7 @@ import {
 import { clearPersistentState, loadPersistentState, storePersistentState } from "./persistence";
 import {
   authoredQueryForm, executionControls, formForExecutionMode, formatUtcDateTimeLocal, parseUtcDateTimeLocal,
-  type QueryFormState,
+  navigateQueryHistory, queryHistoryDirection, type QueryFormState, type QueryHistoryNavigation,
 } from "./query-controls";
 import type { CampaignCase, CampaignIndex, Language, Visualization } from "./types";
 import {
@@ -36,6 +36,7 @@ let pendingFocus: string | undefined;
 let shiftMarks = { artifacts: 0, hints: 0, memos: [] as string[] };
 
 const expressions = new Map<string, string>();
+const queryHistory = new Map<string, QueryHistoryNavigation>();
 const languages = new Map<string, Language>();
 const pinned = new Map<string, string[]>();
 const queryForms = new Map<string, QueryFormState>();
@@ -126,6 +127,10 @@ function defaultSelectedItem(): string {
 
 function caseFormKey(item: CampaignCase): string {
   return `${item.id}:${engine!.caseVariant(item.id).id}`;
+}
+
+function queryHistoryKey(item: CampaignCase): string {
+  return `${item.id}:${languages.get(item.id) ?? item.languages[0]!}`;
 }
 
 function caseControls(item: CampaignCase): QueryFormState {
@@ -435,6 +440,7 @@ function renderTray(): string {
   const nextHint = item ? item.hints.findIndex((_hint, position) => !engineRef.isHintRevealed(item.id, position)) : -1;
   const shift = engineRef.currentShift();
   const edition = engineRef.currentNewspaper();
+  const timedOut = engineRef.clockExpired() && !engineRef.shiftWorkComplete();
   return `<section class="tray" aria-label="In tray">
     <header class="tray-head"><h2 class="display">In tray</h2><p>${escapeHtml(shift.title)} · ${open} open</p></header>
     ${edition ? `<button type="button" class="newspaper-fold" data-action="open-newspaper"><span>${escapeHtml(index?.campaign.newspaper?.title ?? "The Contented Citizen")}</span><b>${escapeHtml(edition.headline)}</b><small>${engineRef.newspaperRead(edition.id) ? "Filed for reference" : "Morning edition · unread"}</small></button>` : ""}
@@ -457,7 +463,7 @@ function renderTray(): string {
         <button type="button" class="line-button" data-drawer="keys">Keys <kbd>?</kbd></button>
       </div>
       <button type="button" class="primary-button end-shift" data-action="end-shift" ${locked || !engineRef.canAdvance() ? "disabled" : ""}>
-        End shift<small>${locked ? "the console is closed" : engineRef.canAdvance() ? "the ledger is ready" : "finish the work orders first"}</small>
+        End shift<small>${locked ? "the console is closed" : timedOut ? "time expired · close with work incomplete" : engineRef.canAdvance() ? "the ledger is ready" : "finish the work orders first"}</small>
       </button>
     </div>
   </section>`;
@@ -496,15 +502,16 @@ function renderConsole(): string {
   const clearance = item.id.startsWith("case.clearance.");
   const ranges: [number, string][] = [[900, "15m"], [3600, "1h"], [7200, "2h"], [21600, "6h"], [86400, "24h"]];
   const switches: [keyof PrintOptions, string][] = [["showQuery", "Query"], ["showLabels", "Labels"], ["showRange", "Range"], ["zeroAxis", "Zero axis"]];
+  const ending = engineRef.state.endingId ? index!.endings.get(engineRef.state.endingId) : undefined;
   return `<section class="console-column">
     <div class="monitor ${locked ? "off" : ""}">
       <div class="console-screen" id="main" tabindex="-1">
         <div class="crt-head"><span>MINISTRY TELEMETRY CONSOLE 3.1</span><span>DESK 7</span></div><hr>
         ${locked ? `<p class="crt-line crt-dim">SESSION ENDED · ${escapeHtml(clockTime(engineRef.currentShift().time))}</p>
-          <p class="crt-line">PERSONNEL FILE SEVEN · LOGGED OUT</p>
-          <p class="crt-line">Access withdrawn by Well-being Assurance.</p>
+          <p class="crt-line">${escapeHtml(ending?.title ?? "PERSONNEL FILE SEVEN · LOGGED OUT")}</p>
+          <p class="crt-line">${escapeHtml(ending?.winning ? "Authority transferred. This desk now answers to you." : "Your final disposition is filed in the tray.")}</p>
           ${printed.length ? `<p class="crt-line">Printout${printed.length === 1 ? " #1 is" : `s #1 to #${printed.length} are`} retained in the archive.</p>` : ""}
-          <p class="crt-line crt-dim">Thank you for your service.</p>`
+          <p class="crt-line crt-dim">SESSION CLOSED</p>`
     : `${artifacts.map((artifact) => transcriptEntry(artifact, artifact.id === target?.id,
       artifact.print ? printed.indexOf(artifact) + 1 : undefined)).join("")}
         ${artifacts.length ? "" : `<p class="crt-line crt-dim">Write a query and run it. Results stay private until you print and pin them.</p>`}
@@ -572,9 +579,10 @@ function documentCard(): string {
   if (entry.kind === "notice") {
     const notice = engineRef.state.notices.find((candidate) => candidate.id === entry.id)!;
     return `<article class="note-card notice">
-      <header><span class="avatar mint">SQ</span><div><h2>${escapeHtml(notice.summary)}</h2><p>Standing-query notice · generation ${notice.generation}</p></div></header>
+      <header><span class="avatar mint">SQ</span><div><h2>${escapeHtml(entry.title)}</h2><p>Standing-query notice · generation ${notice.generation}</p></div></header>
       <div class="note-body">
         <dl class="fact-grid"><div><dt>First seen</dt><dd>${escapeHtml(clockTime(notice.firstSeen))} ${escapeHtml(calendarDate(notice.firstSeen))}</dd></div><div><dt>Last seen</dt><dd>${escapeHtml(clockTime(notice.lastSeen))} ${escapeHtml(calendarDate(notice.lastSeen))}</dd></div><div><dt>Occurrences</dt><dd>${notice.occurrenceCount}</dd></div><div><dt>Candidate records</dt><dd>${notice.candidateCount}</dd></div></dl>
+        <p><b>Matched result:</b> <code>${escapeHtml(notice.summary)}</code></p>
         <p><b>Surviving location and scope:</b> ${Object.entries(notice.localization).map(([key, value]) => `<span class="lab">${escapeHtml(key)}=${escapeHtml(value)}</span>`).join("") || "none"}</p>
         <p><b>Attributed events:</b> ${notice.eventIds.length ? notice.eventIds.map(escapeHtml).join(", ") : "none. This is a false-positive candidate."}</p>
       </div>
@@ -723,6 +731,7 @@ function renderFiledReport(item: CampaignCase, report: FiledReport): string {
   const conclusion = item.report.conclusions.find((choice) => choice.id === report.conclusionChoiceId)?.text;
   const decision = item.decisionChoices.find((choice) => choice.id === report.decisionChoiceId)?.text;
   const artifacts = report.artifactIds.map((id) => engineRef.state.artifacts.find((artifact) => artifact.id === id)).filter((value): value is SavedArtifact => Boolean(value));
+  const watchArtifacts = [...new Map(artifacts.map((artifact) => [JSON.stringify([artifact.language, artifact.expression, artifact.controls]), artifact])).values()];
   const hasWatch = engineRef.state.watches.some((watch) => watch.reportId === report.id);
   const standingChange = [...engineRef.state.standingHistory].reverse().find((change) => change.reason.startsWith(`${item.title}:`));
   const standingResult = standingChange
@@ -741,7 +750,7 @@ function renderFiledReport(item: CampaignCase, report: FiledReport): string {
     <p class="filed-evidence">${artifacts.length} printout${artifacts.length === 1 ? "" : "s"} filed · ${escapeHtml(report.visualization)} view · full record in Archive</p>
     ${item.watchScenarioId ? `<div class="watch-offer">
       <p><b>Make this query a standing query.</b> Its exact expression runs against future authored checkpoints.</p>
-      <fieldset><legend>Evidence to watch</legend><div class="watch-options">${artifacts.map((artifact, position) => `<label><input type="radio" name="watch-artifact" value="${escapeHtml(artifact.id)}" ${position === 0 ? "checked" : ""} ${hasWatch || engineRef.locked() ? "disabled" : ""}><code>${escapeHtml(artifact.expression)}</code></label>`).join("")}</div></fieldset>
+      <fieldset><legend>Evidence to watch</legend><div class="watch-options">${watchArtifacts.map((artifact, position) => `<label><input type="radio" name="watch-artifact" value="${escapeHtml(artifact.id)}" ${position === 0 ? "checked" : ""} ${hasWatch || engineRef.locked() ? "disabled" : ""}><code>${escapeHtml(artifact.expression)}</code></label>`).join("")}</div></fieldset>
       <button type="button" class="line-button" data-action="save-watch" ${hasWatch || engineRef.locked() ? "disabled" : ""}>${hasWatch ? "Standing query saved" : `Save standing query · ${price(engineRef.actionCost("saveWatch"))}`}</button>
     </div>` : ""}
   </article>`;
@@ -886,6 +895,7 @@ function startGame(useSave: boolean, appointmentId?: string, complaint = false):
   }
   queryForms.clear();
   expressions.clear();
+  queryHistory.clear();
   languages.clear();
   pinned.clear();
   printBars.clear();
@@ -1050,6 +1060,7 @@ app.addEventListener("click", async (event) => {
     guarded(() => {
       engine!.restartShift();
       expressions.clear();
+      queryHistory.clear();
       languages.clear();
       pinned.clear();
       queryForms.clear();
@@ -1077,6 +1088,7 @@ app.addEventListener("click", async (event) => {
       selectedArtifact = artifact.id;
       pendingReveal = artifact.id;
       expressions.set(item.id, "");
+      queryHistory.delete(queryHistoryKey(item));
       statusMessage = artifact.execution.ok
         ? "The query succeeded. Choose a view and print it to put it on paper."
         : `The query failed. ${artifact.execution.error.message}`;
@@ -1109,6 +1121,7 @@ app.addEventListener("click", async (event) => {
     guarded(() => {
       engine!.revealHint(item.id, position);
       if (hint.level !== "Worked" && hint.query) expressions.set(item.id, hint.query);
+      queryHistory.delete(queryHistoryKey(item));
       hiddenHintCase = "";
     }, `${supervisorName()} left a note beneath the work order.`);
     return;
@@ -1136,6 +1149,7 @@ app.addEventListener("click", async (event) => {
       const artifact = engine!.runQuery(item.id, worked.language, worked.query, executionControls(worked.language, worked.query, form), false, true, worked.role, worked.print);
       selectedArtifact = artifact.id;
       expressions.set(item.id, "");
+      queryHistory.delete(queryHistoryKey(item));
     }, `Marr's example query ran. Inspect the result and print it with the prepared settings before running the next Worked query.`);
     return;
   }
@@ -1203,7 +1217,7 @@ app.addEventListener("click", async (event) => {
     const reportIds = engineRef.state.reports.filter((report) => report.filedShiftId === closed.id).map((report) => report.id);
     const caseIds = new Set(engineRef.state.reports.filter((report) => reportIds.includes(report.id)).map((report) => report.caseId));
     const before = {
-      standing: engineRef.state.standing, rank: engineRef.state.rankId,
+      standing: engineRef.shiftStartingStanding(), rank: engineRef.state.rankId,
       notices: engineRef.state.notices.length, scored: engineRef.state.watches.filter((watch) => watch.scores).length,
       memos: engineRef.state.memos.map((memo) => memo.id), number: engineRef.state.shiftNumber,
       unused: clock ? clock.remaining * clock.minutesPerUnit : 0,
@@ -1254,7 +1268,10 @@ app.addEventListener("input", (event) => {
   const target = event.target as HTMLInputElement | HTMLTextAreaElement;
   if (target.id === "query-input") {
     const item = currentCase();
-    if (item) expressions.set(item.id, target.value);
+    if (item) {
+      expressions.set(item.id, target.value);
+      queryHistory.delete(queryHistoryKey(item));
+    }
     const code = document.querySelector<HTMLElement>("#syntax-code");
     if (code) code.innerHTML = highlightQuery(target.value);
     return;
@@ -1338,6 +1355,27 @@ function press(selector: string): void {
 document.addEventListener("keydown", (event) => {
   if (!engine) return;
   const active = document.activeElement;
+  if (active instanceof HTMLTextAreaElement && active.id === "query-input"
+    && (event.key === "ArrowUp" || event.key === "ArrowDown") && !event.shiftKey && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    const item = currentCase();
+    if (!item) return;
+    const language = languages.get(item.id) ?? item.languages[0]!;
+    const historyKey = queryHistoryKey(item);
+    const history = caseArtifacts(item.id).filter((artifact) => artifact.language === language).map((artifact) => artifact.expression);
+    const direction = queryHistoryDirection(active.value, active.selectionStart, active.selectionEnd, event.key, history.length);
+    if (!direction || (direction === "newer" && !queryHistory.has(historyKey))) return;
+    event.preventDefault();
+    const step = navigateQueryHistory(
+      history, active.value, queryHistory.get(historyKey), direction,
+    );
+    queryHistory.set(historyKey, step.navigation);
+    expressions.set(item.id, step.value);
+    active.value = step.value;
+    const code = document.querySelector<HTMLElement>("#syntax-code");
+    if (code) code.innerHTML = highlightQuery(step.value);
+    active.setSelectionRange(step.value.length, step.value.length);
+    return;
+  }
   if (event.key === "Enter" && (((active as HTMLElement | null)?.id === "query-input" && !event.shiftKey) || event.ctrlKey || event.metaKey)) { event.preventDefault(); press("[data-action=run-query]"); return; }
   if (event.key.toLowerCase() === "p" && (event.ctrlKey || event.metaKey)) { event.preventDefault(); press("[data-action=print-artifact]"); return; }
   if (event.altKey && /^[1-5]$/.test(event.key)) { event.preventDefault(); press(`[data-tray-index="${event.key}"]`); return; }

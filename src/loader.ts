@@ -431,7 +431,7 @@ export function loadCampaign(input: unknown): CampaignIndex {
       const authoredCases = shift.inbox.flatMap((ref) => ref.kind === "case" && !ref.condition ? [cases.get(ref.id)] : []).filter((item): item is CampaignCase => Boolean(item));
       const required = shift.caseSelectionMode === "fixed" ? authoredCases : authoredCases.filter((item) => item.mode !== "adaptive");
       const adaptive = shift.caseSelectionMode === "fixed" ? [] : authoredCases.filter((item) => item.mode === "adaptive");
-      const caseCost = (item: CampaignCase) => item.report.minArtifacts * shift.actionCosts!.validQuery + shift.actionCosts!.fileReport;
+      const caseCost = (item: CampaignCase) => item.report.minArtifacts * (shift.actionCosts!.validQuery + (shift.actionCosts!.printArtifact ?? 0)) + shift.actionCosts!.fileReport;
       const minimum = required.reduce((total, item) => total + caseCost(item), 0) + (adaptive.length ? Math.min(...adaptive.map(caseCost)) : 0);
       if (shift.actionBudget < minimum) problems.push(`shift "${shift.id}" actionBudget ${shift.actionBudget} cannot cover its minimum required case work (${minimum})`);
     }

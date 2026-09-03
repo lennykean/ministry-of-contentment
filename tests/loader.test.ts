@@ -38,9 +38,9 @@ describe("campaign loader", () => {
 
   it("rejects a shift clock that cannot cover required query and filing work", () => {
     const campaign = structuredClone(fixture) as any;
-    campaign.shifts[0].actionBudget = 2;
-    campaign.shifts[0].actionCosts = { validQuery: 1, fileReport: 2, saveWatch: 2, retireWatch: 1 };
-    expect(() => loadCampaign(campaign)).toThrow(/cannot cover its minimum required case work \(3\)/);
+    campaign.shifts[0].actionBudget = 3;
+    campaign.shifts[0].actionCosts = { validQuery: 1, printArtifact: 1, fileReport: 2, saveWatch: 2, retireWatch: 1 };
+    expect(() => loadCampaign(campaign)).toThrow(/cannot cover its minimum required case work \(4\)/);
   });
 
   it("rejects dangling declarative references", () => {

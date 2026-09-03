@@ -7,6 +7,36 @@ export interface QueryFormState {
   visualization: Visualization;
 }
 
+export interface QueryHistoryNavigation {
+  cursor: number;
+  draft: string;
+}
+
+export function queryHistoryDirection(
+  value: string,
+  selectionStart: number,
+  selectionEnd: number,
+  key: "ArrowUp" | "ArrowDown",
+  historyLength: number,
+): "older" | "newer" | undefined {
+  if (!historyLength || selectionStart !== selectionEnd) return undefined;
+  if (key === "ArrowUp" && !value.slice(0, selectionStart).includes("\n")) return "older";
+  if (key === "ArrowDown" && !value.slice(selectionEnd).includes("\n")) return "newer";
+  return undefined;
+}
+
+export function navigateQueryHistory(
+  history: string[],
+  current: string,
+  navigation: QueryHistoryNavigation | undefined,
+  direction: "older" | "newer",
+): { value: string; navigation: QueryHistoryNavigation } {
+  const end = history.length;
+  const draft = !navigation || navigation.cursor === end ? current : navigation.draft;
+  const cursor = Math.max(0, Math.min(end, (navigation?.cursor ?? end) + (direction === "older" ? -1 : 1)));
+  return { value: cursor === end ? draft : history[cursor]!, navigation: { cursor, draft } };
+}
+
 export function formatUtcDateTimeLocal(timestamp: number): string {
   return new Date(timestamp * 1000).toISOString().slice(0, 19);
 }

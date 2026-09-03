@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { authoredQueryForm, executionControls, formatUtcDateTimeLocal, formatUtcTimestamp, formForExecutionMode, parseUtcDateTimeLocal } from "../src/query-controls";
+import {
+  authoredQueryForm, executionControls, formatUtcDateTimeLocal, formatUtcTimestamp, formForExecutionMode,
+  navigateQueryHistory, parseUtcDateTimeLocal, queryHistoryDirection,
+} from "../src/query-controls";
 
 const opening = "2041-01-06T09:00:00Z";
 const originalTimezone = process.env.TZ;
@@ -75,5 +78,37 @@ describe("execution context shapes", () => {
     expect(executionControls("logql", '{service="gateway"} | json', { ...form, visualization: "graph" })).toEqual({
       timestamp: 10_000, start: 2800, end: 10_000, lookback: 7200, direction: "backward", limit: 100, visualization: "graph",
     });
+  });
+});
+
+describe("query history", () => {
+  it("leaves multiline cursor movement alone until the caret reaches an edge line", () => {
+    const query = "sum(\n  up\n)";
+    expect(queryHistoryDirection(query, 7, 7, "ArrowUp", 2)).toBeUndefined();
+    expect(queryHistoryDirection(query, 4, 4, "ArrowUp", 2)).toBe("older");
+    expect(queryHistoryDirection(query, 4, 4, "ArrowDown", 2)).toBeUndefined();
+    expect(queryHistoryDirection(query, query.length, query.length, "ArrowDown", 2)).toBe("newer");
+    expect(queryHistoryDirection(query, 0, 2, "ArrowUp", 2)).toBeUndefined();
+    expect(queryHistoryDirection(query, 0, 0, "ArrowUp", 0)).toBeUndefined();
+  });
+
+  it("walks backward, clamps, then restores the current draft", () => {
+    const history = ["up", "rate(requests_total[5m])"];
+    let step = navigateQueryHistory(history, "draft", undefined, "older");
+    expect(step.value).toBe("rate(requests_total[5m])");
+    step = navigateQueryHistory(history, step.value, step.navigation, "older");
+    expect(step.value).toBe("up");
+    step = navigateQueryHistory(history, step.value, step.navigation, "older");
+    expect(step.value).toBe("up");
+    step = navigateQueryHistory(history, step.value, step.navigation, "newer");
+    step = navigateQueryHistory(history, step.value, step.navigation, "newer");
+    expect(step.value).toBe("draft");
+    step = navigateQueryHistory(history, "edited draft", step.navigation, "older");
+    step = navigateQueryHistory(history, step.value, step.navigation, "newer");
+    expect(step.value).toBe("edited draft");
+  });
+
+  it("keeps an empty history on the current draft", () => {
+    expect(navigateQueryHistory([], "draft", undefined, "older").value).toBe("draft");
   });
 });

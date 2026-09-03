@@ -248,6 +248,7 @@ describe("canonical campaign progression", () => {
     const agent = new GameEngine(index, executeQuery, createGameState(index, 0));
     agent.acceptAppointment("appointment.ministry-agent");
     expect(agent.currentShift().id).toBe("shift.01.first-bell");
+    expect(agent.state.shiftNumber).toBe(1);
     expect(agent.currentShift().title).toBe("Elm Exchange Competence");
     expect(agent.state.mastery["promql.discovery.schema"]?.state).toBe("Unobserved");
     expect(agent.state.mastery["promql.selector.metric"]?.state).toBe("Unobserved");
@@ -285,6 +286,12 @@ describe("canonical campaign progression", () => {
     ]);
     trainee.advanceShift();
     expect(trainee.currentShift().id).toBe(agent.currentShift().id);
+    expect(trainee.state.shiftNumber).toBe(1);
+    expect(renderLedger({
+      shiftTitle: "Ministry Trainee Clearance", shiftNumber: 1, closedAt: "2041-01-05T08:00:00Z", reportIds: [],
+      standingBefore: 5, standingAfter: 5, rankBefore: trainee.state.rankId, rankAfter: trainee.state.rankId,
+      runs: 0, hintsCalled: 0, minutesUnused: 0, watchesScored: 0, noticesAdded: 0, memoIds: [], conceptIds: [],
+    }, trainee, index)).toContain("Begin Shift 01");
     expect(trainee.state.rankId).toBe("rank.reconciliation-trainee");
     expect(agent.state.mastery["promql.selector.metric"]?.credits).toEqual([]);
   });

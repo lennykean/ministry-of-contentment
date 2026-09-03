@@ -317,6 +317,7 @@ function archivedReport(engine: GameEngine, index: CampaignIndex, report: FiledR
 const keyRows: [string, string][] = [
   ["Enter", "Run the query in the console"],
   ["Shift + Enter", "Insert a line break in the query"],
+  ["↑ / ↓ in console", "Recall older or newer queries"],
   ["Ctrl + P", "Print the selected result"],
   ["1 to 4", "Choose the print view while the print bar has focus"],
   ["Alt + 1 to Alt + 5", "Open the first five items in the in tray"],
@@ -324,7 +325,7 @@ const keyRows: [string, string][] = [
   ["R", "Open the registry"],
   ["?", "Open this list"],
   ["Esc", "Close any drawer"],
-  ["Arrow keys", "Move within the in tray and within a group of choices"],
+  ["Arrow keys in tray", "Move within the in tray and within a group of choices"],
 ];
 
 function keysBody(): string {
@@ -380,7 +381,7 @@ export function renderLedger(ledger: ShiftLedger, engine: GameEngine, index: Cam
       </dl>
       ${memos.length ? `<div class="ledger-post"><div class="envelope" aria-hidden="true"><span>M</span></div><div><p class="kicker">Arriving tomorrow</p><p>${memos.map((memo) => escapeHtml(`${memo.from}: ${memo.text}`)).join("<br>")}</p></div></div>` : ""}
       <div class="ledger-stamp" aria-hidden="true"><span>SHIFT</span><span>CLOSED</span><small>DESK 7</small></div>
-      <button type="button" class="primary-button" data-action="dismiss-ledger" autofocus>${engine.locked() ? "Return to the desk" : `Begin Shift ${String(ledger.shiftNumber + 1).padStart(2, "0")}`}<small>${escapeHtml(engine.locked() ? "The console is closed" : `${nextShift.title} · ${calendarDate(nextShift.time)} · ${clockTime(nextShift.time)}`)}</small></button>
+      <button type="button" class="primary-button" data-action="dismiss-ledger" autofocus>${engine.locked() ? "Return to the desk" : `Begin Shift ${String(engine.state.shiftNumber).padStart(2, "0")}`}<small>${escapeHtml(engine.locked() ? "The console is closed" : `${nextShift.title} · ${calendarDate(nextShift.time)} · ${clockTime(nextShift.time)}`)}</small></button>
     </section>
   </dialog>`;
 }

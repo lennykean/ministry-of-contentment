@@ -1692,14 +1692,14 @@ function teachingFor(item) {
   if (has("promql.histogram.native")) return {
     kind: "native-histogram",
     brief: "Identify the native histogram population and unit before reading the percentile.",
-    question: `Which population and unit make the ${item.title} percentile valid?`,
+    question: `Which population and unit make the percentile in ${item.title} valid?`,
     look: "Inspect the population, quantile bounds, interpolation, labels, and unit.",
     scope: "histogram population, percentile, labels, and unit",
   };
   if (has("promql.histogram.classic", "promql.histogram.interpret")) return {
     kind: "classic-histogram",
     brief: "Verify the population, buckets, and unit before reading the tail.",
-    question: `Which population, buckets, and unit make ${possessive(item.title)} percentile defensible?`,
+    question: `Which population, buckets, and unit make the percentile in ${item.title} defensible?`,
     look: "Check bucket population, `le` labels, monotonicity, quantile bounds, and unit.",
     scope: "bucket population, percentile, and unit",
   };
@@ -1748,7 +1748,7 @@ function teachingFor(item) {
   if (has("logql.pipeline.order", "logql.parse.json-logfmt", "logql.parse.pattern-regexp", "logql.field.provenance", "logql.filter.typed", "logql.error.pipeline", "logql.format.line", "logql.format.label-template")) return {
     kind: "pipeline",
     brief: "Order the pipeline so filters, parsed fields, errors, and provenance remain auditable.",
-    question: `Which ${item.title} records survive each stage, and are their fields and errors still auditable?`,
+    question: `Which records in ${item.title} survive each stage, and are their fields and errors still auditable?`,
     look: "Filter streams early, parse before typed filters, inspect `__error__`, and retain provenance.",
     scope: "surviving records, parsed fields, and provenance",
   };
@@ -2289,47 +2289,64 @@ function compositeThesis(item, thesis, roles) {
     const recordReadings = roleDigest(logRoles);
     const batteryOnly = promRoles.length === 1 && promRoles[0].domains.includes("Pin battery readings") && promRoles[0].reading === "threshold result";
     const reachabilityOnly = promRoles.length === 1 && promRoles[0].domains.some((domain) => domain.includes("reachability"));
-    const metricIsPlural = promRoles.length > 1 || (!/^(?:maximum|mean|minimum|p95|prior-day|request-failure)\b/.test(metricReadings)
-      && /(?:requests|uploads|Pins|records|samples|rates|totals|identities)\b/.test(metricReadings));
-    const metricAuxiliary = metricIsPlural ? "do" : "does";
-    const recordIsPlural = logRoles.length > 1 || (!/^(?:maximum|mean|minimum|p95|prior-day)\b/.test(recordReadings)
-      && /(?:records|requests|uploads|Pins|lines|fields|outcomes|samples|rates|totals|identities)\b/.test(recordReadings));
-    const recordAuxiliary = recordIsPlural ? "do" : "does";
     const reachabilitySubject = roleSubjects(promRoles);
     const local = location ? `${location}'s ` : "";
     const batteryLocation = location ? `${location} ` : "";
+    const locatedMetricReadings = location ? `${location} ${metricReadings}` : metricReadings;
     return {
       ...common,
       brief: batteryOnly
         ? `Check which ${batteryLocation}Pin batteries fall below the limit and whether gateway records describe the same fault.`
-        : `Read ${local}${metricReadings} beside ${recordReadings}.`,
+        : reachabilityOnly
+          ? `Read ${local}${metricReadings} beside ${recordReadings}.`
+          : `Review ${readings}; match time and place.`,
       question: batteryOnly
         ? `Which ${batteryLocation}Pin batteries are below the limit, and do gateway records add evidence of the same fault?`
         : reachabilityOnly
-          ? `Does ${local}${reachabilitySubject} show a failure, and ${recordAuxiliary} ${recordReadings} add evidence of the same fault?`
-          : `What ${metricAuxiliary} ${local}${metricReadings} report, and ${recordAuxiliary} ${recordReadings} describe the same fault?`,
+          ? `Does ${local}${reachabilitySubject} show a failure, and do the record results add evidence of the same fault?`
+          : `Do ${readings} share enough time, place, and identity to indicate one fault?`,
       look: `Read ${local}${metricReadings} as metric evidence and ${recordReadings} as record evidence. Match time and place before linking them.`,
-      scope: `${local}${metricReadings} and ${recordReadings}`,
+      scope: batteryOnly || reachabilityOnly ? `${locatedMetricReadings} and ${recordReadings}` : readings,
       finding: batteryOnly
         ? `${batteryLocation}battery thresholds identify low Pins; gateway records add context but do not prove the same fault`
-        : `${local}${subjects} supply metric and record evidence; linking them requires matching time, place, and identity`,
+        : reachabilityOnly
+          ? `${local}${subjects} supply metric and record evidence; linking them requires matching time, place, and identity`
+          : `${readings} support one fault only when time, place, and identity match`,
       findingTitle: batteryOnly ? `${location ? `${location} ` : ""}Battery and Gateway Check` : `${location ? `${location} ` : ""}Metric and Record Check`,
       findingSummary: batteryOnly
         ? `${batteryLocation}battery thresholds identify low Pins; gateway records add context but do not prove the same fault.`
-        : `${local}${subjects} require matching time, place, and identity before a shared-fault claim.`,
-      alternative: `${metricReadings} and ${recordReadings} prove one fault across every returned symptom`,
+        : batteryOnly || reachabilityOnly
+          ? `${local}${subjects} require matching time, place, and identity before a shared-fault claim.`
+          : sentence(`${readings} support one fault only when time, place, and identity match`),
+      alternative: batteryOnly || reachabilityOnly
+        ? `${metricReadings} and ${recordReadings} prove one fault across every returned symptom`
+        : `${readings} prove one fault across every returned symptom`,
       alternativeTitle: `${location ? `${location} ` : ""}One Fault Across Every Reading`,
-      alternativeSummary: `${local}metrics and records prove one fault across every returned symptom.`,
+      alternativeSummary: batteryOnly || reachabilityOnly
+        ? sentence(`${local}metrics and records prove one fault across every returned symptom`)
+        : sentence(`${readings} prove one fault across every returned symptom`),
       evidenceTitle: batteryOnly ? `${location ? `${location} ` : ""}Battery and Gateway Check` : `${location ? `${location} ` : ""}Metric and Record Check`,
       assuredTitle: location ? `One Fault Across ${location}` : "One Fault Across Every Reading",
       rebuttal: `Metric state and record context do not prove the same fault without matching time, place, and identity.`,
-      targetedAction: `File the ${subjects} results with their source identities.`,
-      broadAction: `Treat ${subjects} as proof of one fault.`,
-      observeAction: `Hold the ${subjects} link for another reading.`,
+      targetedAction: "File the metric and record results with their own source identities.",
+      broadAction: "Treat the metric and record results as proof of one fault.",
+      observeAction: "Hold the metric-to-record link for another reading.",
     };
   }
 
-  return common;
+  if (thesis.kind === "result") return {
+    ...thesis,
+    brief: `Review ${readings}.`,
+    question: `Which result type and value does each ${item.title} query return?`,
+    look: "Identify each query's result type and returned values.",
+    scope: `${readings} and their result types`,
+  };
+
+  return {
+    ...thesis,
+    brief: `Review ${readings}.`,
+    scope: readings,
+  };
 }
 
 function completeThesis(item, roles) {
@@ -2339,7 +2356,7 @@ function completeThesis(item, roles) {
   assert(thesis.rebuttal, `${item.id} lacks an evidence-limiting rebuttal`);
   return {
     ...thesis,
-    assuredConclusion: thesis.assuredConclusion ?? sentence(thesis.alternative),
+    assuredConclusion: thesis.assuredConclusion ?? thesis.alternativeSummary ?? sentence(thesis.alternative),
     broadAction: thesis.broadAction ?? (item.actId === "act.4.official-truth" ? `Declare that ${thesis.alternative}.` : undefined),
   };
 }
@@ -2374,7 +2391,7 @@ const actCopy = {
   },
   "act.4.official-truth": {
     brief: (name, title) => `${name} reopens ${title} in the Records Integrity archive.`,
-    preference: (title) => `Records Integrity may prefer an official ${title} finding over its technical limit.`,
+    preference: (title) => `Records Integrity may prefer ${title} as an official finding beyond its technical limit.`,
     actions: [
       (title) => `File only ${possessive(title)} auditable scope.`,
       (title) => `Treat ${title} as proof of wider misconduct.`,
@@ -2694,8 +2711,9 @@ function compactReadings(readings) {
 function groupedRoles(plan) {
   const groups = new Map();
   for (const role of plan) {
-    const key = role.domains.join("\0");
-    const group = groups.get(key) ?? { domains: role.domains, roles: [] };
+    const domains = role.sourceVaries ? [role.domain] : role.domains;
+    const key = role.sourceVaries ? `varies:${role.number}` : domains.join("\0");
+    const group = groups.get(key) ?? { domains, roles: [] };
     group.roles.push(role);
     groups.set(key, group);
   }
@@ -2762,7 +2780,8 @@ function roleDigest(plan) {
 }
 
 function roleSubjects(plan) {
-  return naturalList([...new Set(plan.flatMap((role) => role.domains.map((domain) => shortDomains.get(domain) ?? domain)))])
+  return naturalList([...new Set(plan.flatMap((role) => (role.sourceVaries ? [role.domain] : role.domains)
+    .map((domain) => shortDomains.get(domain) ?? domain)))])
     .replace("attendance uploads and attendance", "attendance")
     .replace("press pages and press", "press")
     .replace("press payload and press", "press");
@@ -2772,6 +2791,8 @@ function roleScaffold(plan) {
   return groupedRoles(plan).map(({ domains, roles }) => {
     const subject = naturalList(domains.map((domain) => shortDomains.get(domain) ?? domain));
     const phrase = groupPhrase(domains, roles);
+    const bareSubject = subject.replace(/^the /, "");
+    const barePhrase = phrase.replace(/^the /, "");
     const numbers = naturalList(roles.map((role) => String(role.number)));
     const readings = roles.map((role) => role.reading);
     if (roles.length === 1) {
@@ -2783,22 +2804,22 @@ function roleScaffold(plan) {
         "derived labels": `creates ${subject} labels`,
         percentile: `measures ${phrase}`,
         "window presence": `checks ${subject} across the window`,
-        "current presence": `checks current ${subject}`,
+        "current presence": `checks ${subject} now`,
         forecast: `forecasts ${subject}`,
         "reset count": `counts ${subject} resets`,
         "change count": `counts ${subject} changes`,
         rank: `ranks ${subject}`,
         "record count": `counts ${subject} records`,
         "byte total": `totals ${subject} bytes`,
-        "byte rate": `measures the ${subject} byte rate`,
-        rate: `measures the ${phrase}`,
-        increase: `measures the ${subject} increase`,
+        "byte rate": `measures the ${bareSubject} byte rate`,
+        rate: `measures the ${barePhrase}`,
+        increase: `measures the ${bareSubject} increase`,
         mean: roles[0].contribution.includes("unwrapped") ? roles[0].contribution : `measures ${phrase}`,
         maximum: `measures ${phrase}`,
         minimum: `measures ${phrase}`,
-        "window sum": `measures the ${phrase}`,
-        "rate percentage": `calculates the ${phrase}`,
-        ratio: `calculates the ${phrase}`,
+        "window sum": `measures the ${barePhrase}`,
+        "rate percentage": `calculates the ${barePhrase}`,
+        ratio: `calculates the ${barePhrase}`,
         "unmatched demand": `finds ${phrase}`,
         "shared identities": `keeps ${phrase}`,
         "combined identities": `combines ${phrase}`,
@@ -2806,13 +2827,13 @@ function roleScaffold(plan) {
         "typed samples": `converts ${subject} into samples`,
         "rejection records": `keeps rejected ${subject} records`,
         "parsed fields": `parses ${subject}`,
-        "matched identities": `checks the ${phrase}`,
-        "zero-or-one threshold": `returns the ${subject} zero-or-one threshold`,
-        "threshold result": `checks the ${subject} threshold`,
-        "sample window": `reads the ${phrase}`,
-        "prior reading": `reads the ${phrase}`,
+        "matched identities": `checks the ${barePhrase}`,
+        "zero-or-one threshold": `returns the ${bareSubject} zero-or-one threshold`,
+        "threshold result": `checks the ${bareSubject} threshold`,
+        "sample window": `reads the ${barePhrase}`,
+        "prior reading": `reads the ${barePhrase}`,
         "grouped result": `groups ${subject}`,
-        "rate ratio": `calculates the ${phrase}`,
+        "rate ratio": `calculates the ${barePhrase}`,
         calculation: `calculates ${subject}`,
         "matching records": `selects matching ${subject} records`,
         "current reading": `reads ${subject}`,
@@ -2851,7 +2872,7 @@ function roleScaffold(plan) {
       return `Query ${lines.number} formats ${subject} lines; Query ${labels.number} creates their outcome label.${others ? ` ${others}` : ""}`;
     }
     if (readings.includes("rate") && readings.includes("increase")) {
-      return `Query ${roles[0].number} measures the ${subject} rate; Query ${roles[1].number} measures its window increase.`;
+      return `Query ${roles[0].number} measures the ${bareSubject} rate; Query ${roles[1].number} measures its window increase.`;
     }
     if (new Set(readings).size === 1) return `Queries ${numbers} apply both required methods to ${subject}.`;
     return roles.map((role) => `Query ${role.number} ${role.contribution}.`).join(" ");
@@ -2863,13 +2884,16 @@ function artifactRolePlan(item) {
   return primary.map((artifact, index) => {
     const artifacts = item.variants.map((variant) => variant.workedEvidenceSet.artifacts.find((candidate) => candidate.role === artifact.role));
     assert(artifacts.every(Boolean), `${item.id} role ${artifact.role} is not present in every Worked variant`);
+    const variantDomains = artifacts.map((candidate) => artifactDomains(candidate));
     const domains = [...new Set(artifacts.flatMap(artifactDomains))];
-    const domain = naturalList(domains);
+    const sourceVaries = new Set(variantDomains.map((values) => values.join("\0"))).size > 1;
+    const domain = sourceVaries ? "the active work order's source" : naturalList(domains);
     return {
       role: artifact.role,
       number: index + 1,
       domain,
       domains,
+      sourceVaries,
       languages: [...new Set(artifacts.map((candidate) => candidate.language))],
       queries: artifacts.map((candidate) => candidate.query),
       reading: artifactReading(artifacts, artifact.role),
@@ -3142,9 +3166,9 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
   if (![40, 89, 123, 132].includes(caseNumber(item))) item.briefing = `${act.brief(requester, item.title)} ${thesis.brief}`;
   item.question = thesis.question;
   item.hypotheses.forEach((hypothesis, index) => {
-    hypothesis.title = `${item.title}: ${index === 0 ? thesis.findingTitle ?? thesis.finding : thesis.assuredTitle}`;
+    hypothesis.title = `${item.title}: ${index === 0 ? thesis.evidenceTitle : thesis.assuredTitle}`;
     hypothesis.summary = index === 0
-      ? thesis.findingSummary ?? thesis.look
+      ? sentence(thesis.findingSummary ?? thesis.finding)
       : thesis.assuredConclusion;
   });
   item.technicalTruth.hypothesisIds = [item.hypotheses[0].id];
@@ -3178,10 +3202,10 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
     if (result.id.endsWith(".outcome.held")) continue;
     if (result.id.endsWith(".outcome.evidence") || result.id.endsWith(".outcome.party-precise")) {
       result.technicalExplanation = `The printouts support this finding: ${thesis.finding}.`;
-      result.ministryResponse = `${requester} files the supported ${item.title} finding.`;
+      result.ministryResponse = `${requester} files the supported finding for ${item.title}.`;
     } else if (result.id.endsWith(".outcome.assured") || result.id.endsWith(".outcome.party-control")) {
-      result.technicalExplanation = `${thesis.rebuttal} The filing exceeds the returned ${thesis.scope}.`;
-      result.ministryResponse = `${requester} accepts the unsupported ${item.title} claim requested by the Ministry.`;
+      result.technicalExplanation = `${thesis.rebuttal} The filing exceeds what the returned results support for ${thesis.scope}.`;
+      result.ministryResponse = `${requester} accepts the unsupported claim for ${item.title} at the Ministry's request.`;
     } else {
       result.technicalExplanation = `The queries run, but the filed choices do not answer ${possessive(item.title)} question about ${thesis.scope}.`;
       result.ministryResponse = `${requester} keeps ${item.title} open for correction.`;
@@ -3190,8 +3214,9 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
 
   for (const variant of item.variants) {
     variant.workedEvidenceSet.artifacts.forEach((artifact) => {
-      const role = artifactRoles.find((candidate) => candidate.role === artifact.role);
-      artifact.explanation = `For ${item.title}, this query ${role.contribution}. It returns ${resultShape(artifact)} for the filing.`;
+      const domain = naturalList(artifactDomains(artifact));
+      const contribution = artifactContribution([artifact], domain, artifact.role);
+      artifact.explanation = `For ${item.title}, this query ${contribution}. It returns ${resultShape(artifact)} for the filing.`;
     });
   }
 
