@@ -494,13 +494,13 @@ describe("campaign narrative integration", () => {
       return undefined;
     };
     expect(standingDelta(evidence)).toBe(0);
-    expect(standingDelta(assured)).toBe(2);
+    expect(standingDelta(assured)).toBe(0);
     expect(evidence.ministryResponse).toContain("files the supported facility shortages");
-    expect(assured.ministryResponse).toContain("matches the morning edition");
+    expect(assured.ministryResponse).toContain("Standing does not change");
     const coldEvidence = coldCase.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence"))!;
     const coldAssured = coldCase.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured"))!;
-    expect(standingDelta(coldEvidence)).toBe(-1);
-    expect(standingDelta(coldAssured)).toBe(2);
+    expect(standingDelta(coldEvidence)).toBe(0);
+    expect(standingDelta(coldAssured)).toBe(0);
 
     const paper = index.campaign.newspaper!.editions.find((edition) => edition.id === "newspaper.33.two-ledgers.default")!;
     expect(`${paper.headline} ${paper.subhead}`).toMatch(/FAIR ALLOCATION|every counter remains open/i);
@@ -693,17 +693,19 @@ describe("campaign narrative integration", () => {
     expect(mainCases.filter((item) => item.outcomes.some((outcome) => outcome.id.endsWith(".outcome.held")))).toHaveLength(8);
   });
 
-  it("puts one honest morning-edition contradiction in every post-Act-I shift", () => {
+  it("keeps the first twelve shifts safe before morning-edition penalties begin", () => {
     const mainCases = index.campaign.cases.filter((item) => /^case\.\d/.test(item.id));
     const byId = new Map(mainCases.map((item) => [item.id, item]));
     const pressureCases: string[] = [];
-    for (const shift of index.campaign.shifts.filter((item) => item.actId !== "act.1.reconciliation")) {
+    const mainShifts = index.campaign.shifts.filter((item) => item.id !== "shift.clearance.ministry-trainee");
+    for (const [position, shift] of mainShifts.entries()) {
       const pressured = shift.inbox.filter((ref) => ref.kind === "case").map((ref) => byId.get(ref.id)).filter((item) => {
         const evidence = item?.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence"));
         return evidence?.effects?.some((effect) => effect.type === "change" && effect.target === "standing.value" && effect.delta === -1)
           && evidence.effects.some((effect) => effect.type === "change" && effect.target === "world:evidence-preserved.value" && effect.delta === 1);
       });
-      expect(pressured.length, shift.id).toBeGreaterThanOrEqual(1);
+      if (position < 12) expect(pressured, shift.id).toHaveLength(0);
+      else expect(pressured.length, shift.id).toBeGreaterThanOrEqual(1);
       expect(pressured.length, shift.id).toBeLessThanOrEqual(2);
       for (const item of pressured) {
         expect(item!.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence"))!.ministryResponse)
@@ -711,7 +713,7 @@ describe("campaign narrative integration", () => {
         pressureCases.push(item!.id);
       }
     }
-    expect(pressureCases).toHaveLength(41);
+    expect(pressureCases).toHaveLength(37);
     for (const item of mainCases) {
       const evidence = item.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence"));
       const standing = evidence?.effects?.find((effect) => effect.type === "change" && effect.target === "standing.value");
@@ -721,9 +723,9 @@ describe("campaign narrative integration", () => {
       expect(fallback.effects?.some((effect) => effect.type === "change" && effect.target === "world:evidence-preserved.value"), item.id).toBe(false);
     }
 
+    const standingTimeline: number[] = [];
     let standing = index.campaign.opening.standing;
-    let custodyShift: string | undefined;
-    for (const shift of index.campaign.shifts.filter((item) => item.id !== "shift.clearance.ministry-trainee")) {
+    for (const shift of mainShifts) {
       const guaranteedCases = shift.inbox.filter((ref) => ref.kind === "case").map((ref) => byId.get(ref.id)!).filter((item) =>
         shift.caseSelectionMode === "fixed" || item.mode !== "adaptive");
       standing += guaranteedCases.reduce((total, item) => {
@@ -731,12 +733,17 @@ describe("campaign narrative integration", () => {
         return total + (evidence?.effects?.reduce((sum, effect) =>
           sum + (effect.type === "change" && effect.target === "standing.value" ? effect.delta : 0), 0) ?? 0);
       }, 0);
-      if (standing < 0) {
-        custodyShift = shift.id;
-        break;
-      }
+      standingTimeline.push(standing);
     }
-    expect(custodyShift).toBe("shift.14.weight-of-paper");
+    expect(standingTimeline.slice(0, 12)).toEqual(Array(12).fill(5));
+    expect(standingTimeline[12]).toBe(4);
+    expect(standingTimeline.at(-1)).toBeLessThan(0);
+
+    for (const shift of mainShifts.slice(10, 12)) {
+      const guaranteedCases = shift.inbox.filter((ref) => ref.kind === "case").map((ref) => byId.get(ref.id)!).filter((item) => item.mode !== "adaptive");
+      expect(guaranteedCases.some((item) => item.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured"))?.effects
+        ?.some((effect) => effect.type === "change" && effect.target === "standing.value" && effect.delta === 1)), shift.id).toBe(true);
+    }
   });
 
   it("credits each case requester with small relationship changes", () => {

@@ -1,78 +1,10 @@
 import { describe, expect, it } from "vitest";
 import campaign from "../content/campaign.json";
-import { createGameState, GameEngine, printableViews, type QueryControls, type SavedArtifact } from "../src/game";
+import { createGameState, evaluateCondition, GameEngine } from "../src/game";
 import { loadCampaign } from "../src/loader";
 import { executeQuery } from "../src/query";
-import type { CampaignCase, ReferenceArtifact } from "../src/types";
 import { renderDrawer } from "../src/ui/drawers";
-
-function controlsFor(item: CampaignCase, variant: CampaignCase["variants"][number], artifact: ReferenceArtifact): QueryControls {
-  const timestamp = Date.parse(variant.evaluationTime ?? item.evaluationTime!) / 1000;
-  const start = Date.parse(variant.rangeStart ?? item.rangeStart ?? "") / 1000;
-  const end = Date.parse(variant.rangeEnd ?? item.rangeEnd ?? "") / 1000;
-  if (artifact.mode === "instant") return { timestamp, visualization: "table" };
-  if (artifact.mode === "records") return { timestamp, start, end, lookback: end - start, direction: "backward", limit: 100, visualization: "logs" };
-  return { timestamp, start, end, step: Math.max(1, Math.floor((end - start) / 60)), visualization: "graph" };
-}
-
-function acknowledgeOfficialItems(game: GameEngine): void {
-  for (const item of game.inbox()) if (item.kind !== "case" && item.kind !== "notice" && item.kind !== "watch-error") game.readItem(item.id);
-}
-
-/** Prints every artifact in the view its own result type allows, then returns the ids for filing. */
-function printAll(game: GameEngine, caseId: string, artifacts: SavedArtifact[]): string[] {
-  for (const artifact of artifacts) game.printArtifact(caseId, artifact.id, {
-    visualization: printableViews(artifact)[0]!, showQuery: true, showLabels: true, showRange: true, zeroAxis: true,
-  });
-  return artifacts.map((artifact) => artifact.id);
-}
-
-const precisePressureCases = new Set([
-  "case.161.protocol-registry", "case.173.coverage-repair", "case.185.protocol-audit",
-]);
-
-function completeCampaign(route: "evidence" | "protected-evidence" | "assured") {
-  const index = loadCampaign(campaign);
-  const game = new GameEngine(index, executeQuery, createGameState(index, 0));
-  game.acceptAppointment("appointment.ministry-agent");
-  const rankTimeline: string[] = [];
-  const mainShiftCount = index.campaign.shifts.filter((shift) => shift.id !== "shift.clearance.ministry-trainee").length;
-  campaignRoute: for (let shiftNumber = 1; shiftNumber <= mainShiftCount; shiftNumber += 1) {
-    for (const watch of game.state.watches.filter((candidate) => candidate.state === "active" && candidate.scores)) game.retireWatch(watch.id);
-    acknowledgeOfficialItems(game);
-    while (true) {
-      const inboxItem = game.inbox().find((candidate) => candidate.kind === "case" && !candidate.done);
-      if (!inboxItem) break;
-      const item = index.cases.get(inboxItem.id)!;
-      const variant = game.caseVariant(item.id);
-      const reference = variant.referenceSets[0]!;
-      const artifacts = reference.artifacts.map((artifact) => game.runQuery(item.id, artifact.language, artifact.query, controlsFor(item, variant, artifact), false, false, artifact.role));
-      const evidence = item.outcomes.find((candidate) => candidate.id.endsWith(".outcome.evidence") && candidate.titleChoiceIds?.length && candidate.conclusionChoiceIds?.length && candidate.decisionChoiceIds?.length)!;
-      const costsStanding = (evidence.effects ?? []).some((effect) =>
-        effect.type === "change" && effect.target === "standing.value" && effect.delta < 0);
-      const chooseEvidence = route === "evidence"
-        || (route === "protected-evidence" && (!costsStanding || precisePressureCases.has(item.id)));
-      const outcome = chooseEvidence
-        ? evidence
-        : item.outcomes.find((candidate) => candidate.id.endsWith(".outcome.assured") && candidate.titleChoiceIds?.length && candidate.conclusionChoiceIds?.length && candidate.decisionChoiceIds?.length)!;
-      const report = game.fileReport(
-        item.id, printAll(game, item.id, artifacts), outcome.titleChoiceIds![0]!, outcome.conclusionChoiceIds![0]!,
-        outcome.decisionChoiceIds![0]!, item.report.visualizations[0]!,
-      );
-      if (item.watchScenarioId) {
-        const artifact = artifacts.find((candidate) => candidate.role === "watch-expression") ?? artifacts[0]!;
-        if (game.state.watches.filter((watch) => watch.state === "active").length < game.state.watchCapacity) game.saveWatch(item.id, artifact.id);
-        expect(report.pendingWatch).toBe(true);
-      }
-      if (game.locked()) break campaignRoute;
-    }
-    expect(game.canAdvance(), `shift ${shiftNumber} should be complete`).toBe(true);
-    game.advanceShift();
-    rankTimeline.push(game.state.rankId);
-    if (game.locked()) break;
-  }
-  return { game, index, rankTimeline };
-}
+import { acknowledgeOfficialItems, completeCampaign, controlsFor, mixedEndingRoutes, printAll } from "./campaign-route";
 
 function expectRankCadence(index: ReturnType<typeof loadCampaign>, rankTimeline: string[]): void {
   const expected = [
@@ -592,24 +524,22 @@ describe("canonical campaign progression", () => {
     expect(game.state.tags).not.toContain("lantern.precise");
   });
 
-  it("routes an unprotected all-evidence record into custody during Act II", () => {
-    const { game, index } = completeCampaign("evidence");
-    const ending = index.endings.get(game.state.endingId ?? "");
-    expect(game.state.shiftNumber).toBe(14);
-    expect(game.state.world["evidence-preserved"]).toBe(6);
-    expect(game.state.standing).toBe(-1);
-    expect(ending?.id).toBe("ending.assurance-custody");
-  }, 60_000);
-
-  it("can protect the precise record and complete all authored shifts", () => {
-    const { game, index, rankTimeline } = completeCampaign("protected-evidence");
+  it("can file the supported record through every shift and become Party Leader", () => {
+    const { game, index, rankTimeline, standingTimeline } = completeCampaign("evidence");
     const ending = index.endings.get(game.state.endingId ?? "");
     expect(game.state.shiftNumber).toBe(48);
     expect(game.state.rankId).toBe("rank.party-leader");
     expect(ending?.id).toBe("ending.party-leader.precise");
     expect(ending?.winning).toBe(true);
     expect(game.state.memos.some((memo) => memo.endingId === ending?.id)).toBe(true);
+    expect(standingTimeline.slice(0, 12)).toEqual(Array(12).fill(5));
+    expect(standingTimeline[12]).toBe(4);
     expectRankCadence(index, rankTimeline);
+    for (const number of [161, 173, 185, 190]) {
+      const state = structuredClone(game.state);
+      state.reports.find((report) => report.id.startsWith(`report.${number}.`))!.evidence = "unsupported";
+      expect(evaluateCondition(index, state, ending!.condition), `report ${number} must remain supported`).toBe(false);
+    }
   }, 60_000);
 
   it("can also reach Party Leader through institutionally rewarded false certainty", () => {
@@ -621,7 +551,22 @@ describe("canonical campaign progression", () => {
       tags: game.state.tags.filter((tag) => tag.includes("final") || tag.includes("press") || tag.includes("alliance") || tag.includes("continuity")),
       relationships: game.state.relationships,
     }).toMatchObject({ ending: "ending.party-leader.assurance", winning: true, rank: "rank.party-leader" });
+    expect(game.state.shiftNumber).toBe(48);
     expect(game.state.memos.some((memo) => memo.endingId === ending?.id)).toBe(true);
     expectRankCadence(index, rankTimeline);
+    for (const number of [161, 173, 185, 190]) {
+      const state = structuredClone(game.state);
+      state.reports.find((report) => report.id.startsWith(`report.${number}.`))!.evidence = "supported";
+      expect(evaluateCondition(index, state, ending!.condition), `report ${number} must remain unsupported`).toBe(false);
+    }
+  }, 60_000);
+
+  it.each(mixedEndingRoutes.slice(0, 1))("reaches $endingId through authored report choices", ({ endingId, route, seed = 0 }) => {
+    const { game } = completeCampaign(route, seed);
+    expect(game.state.shiftNumber).toBe(48);
+    expect(game.state.endingId, JSON.stringify({
+      standing: game.state.standing, rights: game.state.rights,
+      world: game.state.world, tags: game.state.tags, adaptive: game.state.adaptiveSelections,
+    })).toBe(endingId);
   }, 60_000);
 });

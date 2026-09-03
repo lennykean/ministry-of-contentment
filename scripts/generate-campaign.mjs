@@ -523,10 +523,10 @@ for (const item of campaign.cases) {
 
 // Public-pressure language and rewards rise across Act II instead of changing all at once.
 const pressureBands = [
-  { fromShift: 9, toShift: 10, political: 0, standing: 0, label: "provisional bulletin estimate", text: "Editors ask for a calm estimate but keep the technical limits visible while Public Assurance learns the desk's methods." },
-  { fromShift: 11, toShift: 12, political: 1, standing: 1, label: "district summary", text: "The Directorate now rewards a district summary and asks that inconvenient labels move to the archive." },
-  { fromShift: 13, toShift: 14, political: 2, standing: 1, label: "public assurance edition", text: "The published edition omits a material scope limit. The technical artifact remains valid; the public claim does not." },
-  { fromShift: 15, toShift: 16, political: 3, standing: 2, label: "universal assurance declaration", text: "The Directorate explicitly rewards certainty that extends beyond the measured population, time, or source." },
+  { fromShift: 9, toShift: 10, political: 0, label: "provisional bulletin estimate", text: "Editors ask for a calm estimate but keep the technical limits visible while Public Assurance learns the desk's methods." },
+  { fromShift: 11, toShift: 12, political: 1, label: "district summary", text: "The Directorate now rewards a district summary and asks that inconvenient labels move to the archive." },
+  { fromShift: 13, toShift: 14, political: 2, label: "public assurance edition", text: "The published edition omits a material scope limit. The technical artifact remains valid; the public claim does not." },
+  { fromShift: 15, toShift: 16, political: 3, label: "universal assurance declaration", text: "The Directorate explicitly rewards certainty that extends beyond the measured population, time, or source." },
 ];
 for (const item of campaign.cases.filter((candidate) => candidate.actId === "act.2.public-assurance")) {
   const shiftNumber = scheduledMainShiftByCaseId.get(item.id);
@@ -544,7 +544,6 @@ for (const item of campaign.cases.filter((candidate) => candidate.actId === "act
     broadOutcome.technicalExplanation = band.text;
     broadOutcome.ministryResponse = `${band.text} The reward is political, not technical certification.`;
     upsertEffect(broadOutcome, (effect) => effect.type === "change" && effect.target === "world:political-control.value", { type: "change", target: "world:political-control.value", delta: band.political });
-    upsertEffect(broadOutcome, (effect) => effect.type === "change" && effect.target === "standing.value", { type: "change", target: "standing.value", delta: band.standing });
   }
 }
 
@@ -949,9 +948,6 @@ for (const [number, preciseDelta, controlDelta] of continuityCases) {
   upsertEffect(precise, (effect) => effect.type === "change" && effect.target === "world:continuity-score.value", { type: "change", target: "world:continuity-score.value", delta: preciseDelta });
   upsertEffect(control, (effect) => effect.type === "change" && effect.target === "world:continuity-score.value", { type: "change", target: "world:continuity-score.value", delta: controlDelta });
 }
-for (const selectedOutcome of [outcome(cases.get(161), ".outcome.evidence"), outcome(cases.get(161), ".outcome.assured")]) {
-  upsertEffect(selectedOutcome, (effect) => effect.type === "grant" && effect.rightId === "access.continuity", { type: "grant", rightKind: "access", rightId: "access.continuity" });
-}
 upsertEffect(outcome(cases.get(161), ".outcome.evidence"), (effect) => effect.type === "add_tag" && effect.tagId === "alliance.anja", { type: "add_tag", tagId: "alliance.anja" });
 upsertEffect(outcome(cases.get(161), ".outcome.assured"), (effect) => effect.type === "add_tag" && effect.tagId === "alliance.emil", { type: "add_tag", tagId: "alliance.emil" });
 upsertEffect(outcome(cases.get(161), ".outcome.assured"), (effect) => effect.type === "change" && effect.target === "relationship:player-oskar-vale.value", { type: "change", target: "relationship:player-oskar-vale.value", delta: 1 });
@@ -963,7 +959,9 @@ upsertEffect(outcome(cases.get(190), ".outcome.assured"), (effect) => effect.typ
 upsertEffect(outcome(cases.get(190), ".outcome.evidence"), (effect) => effect.type === "set" && effect.target === "world:protocol-state.value", { type: "set", target: "world:protocol-state.value", value: "succeeded" });
 upsertEffect(outcome(cases.get(190), ".outcome.assured"), (effect) => effect.type === "set" && effect.target === "world:protocol-state.value", { type: "set", target: "world:protocol-state.value", value: "succeeded" });
 
-const historyReports = [161, 173, 185].map((number) => ({ op: "exists", value: fact(`report:${cases.get(number).reportId}.filed_at`) }));
+const reportEvidence = (number, evidence) => state(`report:${cases.get(number).reportId}.evidence`, evidence);
+const preciseHistoryReports = [161, 173, 185].map((number) => reportEvidence(number, "supported"));
+const controlHistoryReports = [161, 173, 185].map((number) => reportEvidence(number, "unsupported"));
 const allyPrecise = {
   op: "all",
   items: [
@@ -982,7 +980,7 @@ const preciseHistory = {
   op: "all",
   items: [
     state("access:access.continuity.granted", true),
-    ...historyReports,
+    ...preciseHistoryReports,
     state("tag:press.precise.present", true),
     state("tag:continuity.precise.present", true),
     compare("world:continuity-score.value", ">=", 8),
@@ -993,7 +991,7 @@ const controlHistory = {
   op: "all",
   items: [
     state("access:access.continuity.granted", true),
-    ...historyReports,
+    ...controlHistoryReports,
     state("tag:press.broad.present", true),
     state("tag:continuity.saturated.present", true),
     compare("world:continuity-score.value", ">=", 3),
@@ -1001,18 +999,16 @@ const controlHistory = {
   ],
 };
 
-// Special final-watch outcomes make the promotion explicit, but only after the prior critical history exists.
+// Special final-watch outcomes recognize the route only after the prior critical history exists.
 {
   const item = cases.get(190);
   item.outcomes = item.outcomes.filter((candidate) => !candidate.id.endsWith(".outcome.party-precise") && !candidate.id.endsWith(".outcome.party-control"));
   const precise = clone(outcome(item, ".outcome.evidence"));
   precise.id = `${item.id}.outcome.party-precise`;
   precise.condition = preciseHistory;
-  precise.effects.push({ type: "promote", rankId: "rank.party-leader" });
   const control = clone(outcome(item, ".outcome.assured"));
   control.id = `${item.id}.outcome.party-control`;
   control.condition = controlHistory;
-  control.effects.push({ type: "promote", rankId: "rank.party-leader" });
   item.outcomes.unshift(precise, control);
 }
 
@@ -1024,13 +1020,13 @@ const finalWatchFacts = [
 const commonEnding = [
   state("progress:shift:shift.48.all-is-well.phase", "completed"),
   state("access:access.continuity.granted", true),
-  ...[161, 173, 185, 190].map((number) => ({ op: "exists", value: fact(`report:${cases.get(number).reportId}.filed_at`) })),
   ...finalWatchFacts,
 ];
 const preciseParty = {
   op: "all",
   items: [
     ...commonEnding,
+    ...[161, 173, 185, 190].map((number) => reportEvidence(number, "supported")),
     state("tag:final.precise.present", true),
     state("tag:continuity.precise.present", true),
     state("tag:press.precise.present", true),
@@ -1044,6 +1040,7 @@ const controlParty = {
   op: "all",
   items: [
     ...commonEnding,
+    ...[161, 173, 185, 190].map((number) => reportEvidence(number, "unsupported")),
     state("tag:final.control.present", true),
     state("tag:press.broad.present", true),
     compare("world:continuity-score.value", ">=", 5),
@@ -1057,9 +1054,22 @@ partyRank.condition = { op: "any", items: [preciseParty, controlParty] };
 const preciseEnding = campaign.endings.find((ending) => ending.id === "ending.party-leader.precise");
 const controlEnding = campaign.endings.find((ending) => ending.id === "ending.party-leader.assurance");
 preciseEnding.condition = clone(preciseParty);
-preciseEnding.body = "Four critical Continuity filings, a localized final notice, preserved service, and an explicit alliance support the leadership record. The promotion is earned from the campaign history, not one final choice.";
 controlEnding.condition = clone(controlParty);
 controlEnding.body = "Four critical Continuity filings, the final notice, accumulated political control, and a Directorate alliance support the control route. Its documented omissions remain part of the record.";
+campaign.endings.find((ending) => ending.id === "ending.assurance-custody").condition = {
+  op: "all",
+  items: [state("progress:shift:shift.48.all-is-well.phase", "completed"), compare("standing.value", "<", 0)],
+};
+campaign.endings.find((ending) => ending.id === "ending.director-reassigned").condition = {
+  op: "all",
+  items: [
+    state("progress:shift:shift.48.all-is-well.phase", "completed"),
+    state("access:access.continuity.granted", true),
+    state("tag:continuity.precise.present", true),
+    compare("world:continuity-score.value", "<=", 12),
+    compare("world:technical-record.value", ">=", 18),
+  ],
+};
 
 // A report that requires several artifacts must actually assess those artifacts. Earlier
 // content sometimes filled a second slot with unrelated successful output.
@@ -3293,19 +3303,21 @@ restoreFixedRecordOrder(cases.get(87), true);
 }
 
 // The narrative pressure is chronological, not tied to the old case order.
-// Keep one unavoidable contradiction per post-reconciliation shift. The one
+// Keep one unavoidable contradiction per shift from Shift 13 onward. The one
 // extra contradiction stays in optional practice so the final precise filing
 // remains available and the honest route retains its exact economy.
 {
   const mainShifts = campaign.shifts.filter((shift) => shift.id !== "shift.clearance.ministry-trainee");
   const pressured = new Set();
+  const rewarded = new Set(mainShifts.slice(10, 12).map((shift) => shift.inbox.find((ref) =>
+    ref.kind === "case" && campaign.cases.find((item) => item.id === ref.id)?.mode !== "adaptive")?.id));
+  rewarded.delete(undefined);
   const pressureExemptions = new Set(["case.132.allocation-result"]);
   const pressureCasesByShift = new Map([
-    ["shift.09.counted-promises", "case.040.reset-review"],
     ["shift.33.two-ledgers", "case.129.roster-match"],
     ["shift.48.all-is-well", "case.189.final-checkpoints"],
   ]);
-  for (const shift of mainShifts.filter((candidate) => candidate.actId !== "act.1.reconciliation")) {
+  for (const shift of mainShifts.slice(12)) {
     const requiredCases = shift.inbox.filter((ref) => ref.kind === "case")
       .map((ref) => campaign.cases.find((item) => item.id === ref.id))
       .filter((item) => item && item.mode !== "adaptive");
@@ -3315,18 +3327,34 @@ restoreFixedRecordOrder(cases.get(87), true);
     pressured.add(preferred ?? requiredCases.find((item) => !pressureExemptions.has(item.id))?.id ?? requiredCases[0].id);
   }
   pressured.add("case.116.audit-target");
-  assert(pressured.size === 41, `expected 41 chronological pressure cases, found ${pressured.size}`);
+  assert(pressured.size === 37, `expected 37 chronological pressure cases, found ${pressured.size}`);
+  assert(rewarded.size === 2, `expected two early aligned-report rewards, found ${rewarded.size}`);
   const names = new Map(campaign.characters.map((person) => [person.id, person.name]));
-  for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candidate.id) && candidate.actId !== "act.1.reconciliation")) {
+  for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candidate.id))) {
     const evidence = outcome(item, ".outcome.evidence");
+    const assured = outcome(item, ".outcome.assured");
     if (!evidence) continue;
-    upsertEffect(evidence, (effect) => effect.type === "change" && effect.target === "standing.value",
-      { type: "change", target: "standing.value", delta: pressured.has(item.id) ? -1 : 0 });
+    const evidenceStanding = pressured.has(item.id) ? -1 : 0;
+    const assuredStanding = rewarded.has(item.id) ? 1 : pressured.has(item.id) ? 2 : 0;
+    for (const selected of [evidence, outcome(item, ".outcome.party-precise")].filter(Boolean)) {
+      upsertEffect(selected, (effect) => effect.type === "change" && effect.target === "standing.value",
+        { type: "change", target: "standing.value", delta: evidenceStanding });
+    }
+    for (const selected of [assured, outcome(item, ".outcome.party-control")].filter(Boolean)) {
+      upsertEffect(selected, (effect) => effect.type === "change" && effect.target === "standing.value",
+        { type: "change", target: "standing.value", delta: assuredStanding });
+    }
     evidence.effects = evidence.effects.filter((effect) =>
       !(effect.type === "change" && effect.target === "world:evidence-preserved.value"));
     if (pressured.has(item.id)) {
       evidence.effects.push({ type: "change", target: "world:evidence-preserved.value", delta: 1 });
       evidence.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} keeps the supported contradiction on file. Public Assurance removes one Standing mark because it contradicts the morning edition.`;
+      if (assured) assured.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.`;
+    } else if (rewarded.has(item.id) && assured) {
+      assured.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} accepts the aligned summary. Public Assurance adds one Standing mark.`;
+    } else {
+      if (evidence.ministryResponse.includes("Public Assurance removes one Standing mark")) evidence.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} keeps the supported finding on file. Standing does not change.`;
+      if (assured?.ministryResponse.includes("Public Assurance adds two Standing marks")) assured.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} accepts the wider conclusion for filing. Standing does not change.`;
     }
   }
 }

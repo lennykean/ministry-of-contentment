@@ -132922,30 +132922,6 @@
                 "expected": true
               },
               {
-                "op": "exists",
-                "value": {
-                  "fact": "report:report.161.protocol-registry.filed_at"
-                }
-              },
-              {
-                "op": "exists",
-                "value": {
-                  "fact": "report:report.173.coverage-repair.filed_at"
-                }
-              },
-              {
-                "op": "exists",
-                "value": {
-                  "fact": "report:report.185.protocol-audit.filed_at"
-                }
-              },
-              {
-                "op": "exists",
-                "value": {
-                  "fact": "report:report.190.resource-notices.filed_at"
-                }
-              },
-              {
                 "op": "state",
                 "value": {
                   "fact": "event:event.190.resource-notices.intended.detected"
@@ -132965,6 +132941,34 @@
                   "fact": "event:event.190.resource-notices.intended.timely"
                 },
                 "expected": true
+              },
+              {
+                "op": "state",
+                "value": {
+                  "fact": "report:report.161.protocol-registry.evidence"
+                },
+                "expected": "supported"
+              },
+              {
+                "op": "state",
+                "value": {
+                  "fact": "report:report.173.coverage-repair.evidence"
+                },
+                "expected": "supported"
+              },
+              {
+                "op": "state",
+                "value": {
+                  "fact": "report:report.185.protocol-audit.evidence"
+                },
+                "expected": "supported"
+              },
+              {
+                "op": "state",
+                "value": {
+                  "fact": "report:report.190.resource-notices.evidence"
+                },
+                "expected": "supported"
               },
               {
                 "op": "state",
@@ -133091,30 +133095,6 @@
                 "expected": true
               },
               {
-                "op": "exists",
-                "value": {
-                  "fact": "report:report.161.protocol-registry.filed_at"
-                }
-              },
-              {
-                "op": "exists",
-                "value": {
-                  "fact": "report:report.173.coverage-repair.filed_at"
-                }
-              },
-              {
-                "op": "exists",
-                "value": {
-                  "fact": "report:report.185.protocol-audit.filed_at"
-                }
-              },
-              {
-                "op": "exists",
-                "value": {
-                  "fact": "report:report.190.resource-notices.filed_at"
-                }
-              },
-              {
                 "op": "state",
                 "value": {
                   "fact": "event:event.190.resource-notices.intended.detected"
@@ -133134,6 +133114,34 @@
                   "fact": "event:event.190.resource-notices.intended.timely"
                 },
                 "expected": true
+              },
+              {
+                "op": "state",
+                "value": {
+                  "fact": "report:report.161.protocol-registry.evidence"
+                },
+                "expected": "unsupported"
+              },
+              {
+                "op": "state",
+                "value": {
+                  "fact": "report:report.173.coverage-repair.evidence"
+                },
+                "expected": "unsupported"
+              },
+              {
+                "op": "state",
+                "value": {
+                  "fact": "report:report.185.protocol-audit.evidence"
+                },
+                "expected": "unsupported"
+              },
+              {
+                "op": "state",
+                "value": {
+                  "fact": "report:report.190.resource-notices.evidence"
+                },
+                "expected": "unsupported"
               },
               {
                 "op": "state",
@@ -159798,7 +159806,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -160679,7 +160687,7 @@
           ],
           "technicalEvidence": "supported",
           "technicalExplanation": "The printouts support this finding: North service requests grouped result and collector queue rank answer different questions; they cannot form one result.",
-          "ministryResponse": "Tomas Vey keeps the supported contradiction on file. Public Assurance removes one Standing mark because it contradicts the morning edition.",
+          "ministryResponse": "Tomas Vey files the supported Upload Flow finding.",
           "effects": [
             {
               "type": "change",
@@ -160694,16 +160702,11 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": -1
+              "delta": 0
             },
             {
               "type": "change",
               "target": "relationship:player-tomas-vey.value",
-              "delta": 1
-            },
-            {
-              "type": "change",
-              "target": "world:evidence-preserved.value",
               "delta": 1
             }
           ]
@@ -161822,7 +161825,7 @@
           ],
           "technicalEvidence": "supported",
           "technicalExplanation": "The printouts support this finding: request-failure percentage and collector queue zero-or-one threshold answer different questions; they cannot form one result.",
-          "ministryResponse": "Lia Merev keeps the supported contradiction on file. Public Assurance removes one Standing mark because it contradicts the morning edition.",
+          "ministryResponse": "Lia Merev files the supported Lantern Notices finding.",
           "effects": [
             {
               "type": "change",
@@ -161837,12 +161840,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": -1
-            },
-            {
-              "type": "change",
-              "target": "world:evidence-preserved.value",
-              "delta": 1
+              "delta": 0
             }
           ]
         },
@@ -161859,7 +161857,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Service Requests and Collector Queue measure different sources or units and cannot be combined into one result. The filing exceeds the returned request-failure percentage and collector queue zero-or-one threshold.",
-          "ministryResponse": "Lia Merev accepts the unsupported Lantern Notices claim requested by the Ministry.",
+          "ministryResponse": "Lia Merev accepts the aligned summary. Public Assurance adds one Standing mark.",
           "effects": [
             {
               "type": "change",
@@ -162708,7 +162706,7 @@
           ],
           "technicalEvidence": "supported",
           "technicalExplanation": "The printouts support this finding: North Pin gateway and attendance parsed fields and attendance parsed fields answer different questions; they cannot form one result.",
-          "ministryResponse": "Emil Drost keeps the supported contradiction on file. Public Assurance removes one Standing mark because it contradicts the morning edition.",
+          "ministryResponse": "Emil Drost files the supported Bulletin Brief finding.",
           "effects": [
             {
               "type": "change",
@@ -162723,12 +162721,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": -1
-            },
-            {
-              "type": "change",
-              "target": "world:evidence-preserved.value",
-              "delta": 1
+              "delta": 0
             }
           ],
           "consequenceIds": [
@@ -162748,7 +162741,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Pin Gateway and Attendance measure different sources or units and cannot be combined into one result. The filing exceeds the returned Pin gateway and attendance parsed fields and attendance parsed fields.",
-          "ministryResponse": "Emil Drost accepts the unsupported Bulletin Brief claim requested by the Ministry.",
+          "ministryResponse": "Emil Drost accepts the aligned summary. Public Assurance adds one Standing mark.",
           "effects": [
             {
               "type": "change",
@@ -164018,7 +164011,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Pin Gateway and Attendance measure different sources or units and cannot be combined into one result. The filing exceeds the returned Pin gateway parse outcomes and attendance count and rate.",
-          "ministryResponse": "Petra Noll accepts the unsupported Press Restart claim requested by the Ministry.",
+          "ministryResponse": "Petra Noll accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -164028,7 +164021,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 2
             },
             {
               "type": "set",
@@ -165742,7 +165735,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Metric state and record context do not prove the same fault without matching time, place, and identity. The filing exceeds the returned North's service requests grouped result and press byte total and rate and attendance grouped result.",
-          "ministryResponse": "Petra Noll accepts the unsupported Pump Increase claim requested by the Ministry.",
+          "ministryResponse": "Petra Noll accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -165752,7 +165745,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 2
             },
             {
               "type": "set",
@@ -166694,7 +166687,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Metric state and record context do not prove the same fault without matching time, place, and identity. The filing exceeds the returned North's service requests grouped result and Pin gateway parsed fields.",
-          "ministryResponse": "Sabine Orra accepts the unsupported Rate Window claim requested by the Ministry.",
+          "ministryResponse": "Sabine Orra accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -167411,7 +167404,7 @@
           ],
           "technicalEvidence": "supported",
           "technicalExplanation": "The temperature printout shows 3.5 °C. Collector reachability does not prove that the room is warm.",
-          "ministryResponse": "Petra Noll keeps the supported contradiction on file. Public Assurance removes one Standing mark because it contradicts the morning edition.",
+          "ministryResponse": "Petra Noll keeps the supported finding on file. Standing does not change.",
           "effects": [
             {
               "type": "change",
@@ -167426,12 +167419,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": -1
-            },
-            {
-              "type": "change",
-              "target": "world:evidence-preserved.value",
-              "delta": 1
+              "delta": 0
             }
           ],
           "consequenceIds": [
@@ -167451,7 +167439,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "The printouts do not support the claim that the North annex is ready for breakfast.",
-          "ministryResponse": "Petra Noll accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
+          "ministryResponse": "Editors ask for a calm estimate but keep the technical limits visible while Public Assurance learns the desk's methods. The reward is political, not technical certification.",
           "effects": [
             {
               "type": "change",
@@ -167461,7 +167449,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -168624,7 +168612,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -170424,7 +170412,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -171374,7 +171362,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -172499,7 +172487,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -174615,7 +174603,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -175435,7 +175423,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -176325,7 +176313,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -177733,7 +177721,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -179364,7 +179352,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -180442,7 +180430,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -181668,7 +181656,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -182610,7 +182598,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -183527,7 +183515,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -184276,7 +184264,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -185285,7 +185273,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -186316,7 +186304,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Equal registered-population operands explain 100%; service requests rate and attendance uploads grouped result provide no Party-member count. The filing exceeds the returned service requests rate and attendance uploads grouped result and the 100% registered-population ratio.",
-          "ministryResponse": "Elian Marr accepts the unsupported Equal Operands claim requested by the Ministry.",
+          "ministryResponse": "Elian Marr accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -187258,7 +187246,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -188346,7 +188334,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -189419,7 +189407,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 1
+              "delta": 0
             },
             {
               "type": "set",
@@ -190695,7 +190683,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -192361,7 +192349,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -193200,7 +193188,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -194361,7 +194349,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Facility Demand and Facility Capacity measure different sources or units and cannot be combined into one result. The filing exceeds the returned facility demand-to-capacity match.",
-          "ministryResponse": "Dr. Ilyan Sero accepts the unsupported Clinic Zero claim requested by the Ministry.",
+          "ministryResponse": "Dr. Ilyan Sero accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -195180,7 +195168,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Dispatch Duration and Gateway Latency measure different sources or units and cannot be combined into one result. The filing exceeds the returned dispatch duration percentile and gateway latency percentile.",
-          "ministryResponse": "Niko Rell accepts the unsupported Scrape Dark claim requested by the Ministry.",
+          "ministryResponse": "Niko Rell accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -196439,7 +196427,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "One district percentile does not prove every dispatch met the limit or that other districts have data. The filing exceeds the returned dispatch buckets, percentile, and window.",
-          "ministryResponse": "Dr. Ilyan Sero accepts the unsupported Removed Series claim requested by the Ministry.",
+          "ministryResponse": "Dr. Ilyan Sero accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -197187,7 +197175,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Attendance Uploads and Collector Queue measure different sources or units and cannot be combined into one result. The filing exceeds the returned attendance-upload resets or value changes and prior-day collector queue.",
-          "ministryResponse": "Elian Marr accepts the unsupported No Traffic claim requested by the Ministry.",
+          "ministryResponse": "Elian Marr accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -198238,7 +198226,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Pin Gateway and Assurance Dispatch measure different sources or units and cannot be combined into one result. The filing exceeds the returned mean Pin battery ratio and maximum dispatch duration.",
-          "ministryResponse": "Ruva Sol accepts the unsupported Gate Movement claim requested by the Ministry.",
+          "ministryResponse": "Ruva Sol accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -199255,7 +199243,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "The returned p95 dispatch duration and dispatch-to-attendance rate ratio do not prove every dispatch met the limit. The filing exceeds the returned p95 dispatch duration and dispatch-to-attendance rate ratio.",
-          "ministryResponse": "Ruva Sol accepts the unsupported Current Position claim requested by the Ministry.",
+          "ministryResponse": "Ruva Sol accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -199902,7 +199890,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Press measure different sources or units and cannot be combined into one result. The filing exceeds the returned press formatted lines and labels.",
-          "ministryResponse": "Ruva Sol accepts the unsupported Zone Change claim requested by the Ministry.",
+          "ministryResponse": "Ruva Sol accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -201457,7 +201445,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Press and Attendance measure different sources or units and cannot be combined into one result. The filing exceeds the returned press rate from one day earlier and attendance window presence.",
-          "ministryResponse": "Dr. Ilyan Sero accepts the unsupported Lantern Rescue claim requested by the Ministry.",
+          "ministryResponse": "Dr. Ilyan Sero accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -202850,7 +202838,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -203754,7 +203742,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -204540,7 +204528,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -205430,7 +205418,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -206498,7 +206486,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -207216,7 +207204,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -208630,7 +208618,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -210026,7 +210014,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -210872,7 +210860,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -211757,7 +211745,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -212877,7 +212865,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -214171,7 +214159,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -214972,7 +214960,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -215655,7 +215643,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -216628,7 +216616,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -217632,7 +217620,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -218563,7 +218551,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -219349,7 +219337,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -220241,7 +220229,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -221313,7 +221301,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -222039,7 +222027,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -223457,7 +223445,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -224853,7 +224841,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -225706,7 +225694,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -226887,7 +226875,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Facility Demand and Facility Capacity measure different sources or units and cannot be combined into one result. The filing exceeds the returned facility demand-to-capacity match.",
-          "ministryResponse": "Sabine Orra accepts the unsupported Facility Vector Match claim requested by the Ministry.",
+          "ministryResponse": "Sabine Orra accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -228027,7 +228015,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -229126,7 +229114,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -230140,7 +230128,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -231076,7 +231064,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "The returned mean and p95 dispatch duration do not prove every dispatch met the limit. The filing exceeds the returned mean and p95 dispatch duration.",
-          "ministryResponse": "Dr. Ilyan Sero accepts the unsupported Dispatch Record Quantile claim requested by the Ministry.",
+          "ministryResponse": "Dr. Ilyan Sero accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -232065,7 +232053,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -233592,7 +233580,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -235104,7 +235092,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -236057,7 +236045,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Attendance Uploads and Collector Queue measure different sources or units and cannot be combined into one result. The filing exceeds the returned attendance uploads grouped result and prior-day collector queue.",
-          "ministryResponse": "Elian Marr accepts the unsupported Offset Baseline claim requested by the Ministry.",
+          "ministryResponse": "Elian Marr accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -236974,7 +236962,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -238048,7 +238036,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -238956,7 +238944,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -240373,7 +240361,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Parsed records, record rates, and byte rates have different meanings and units; they cannot form one traffic total. The filing exceeds the returned gateway parse outcomes, attendance record traffic, and press byte traffic.",
-          "ministryResponse": "Sabine Orra accepts the unsupported Pipeline Scan Resolution claim requested by the Ministry.",
+          "ministryResponse": "Sabine Orra accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -241781,7 +241769,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -242924,7 +242912,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -244069,7 +244057,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -245173,7 +245161,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "One returned percentile does not prove every route met the limit or every source was present. The filing exceeds the returned histogram source, percentile, and presence.",
-          "ministryResponse": "Emil Drost accepts the unsupported Gauge History claim requested by the Ministry.",
+          "ministryResponse": "Emil Drost accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -246238,7 +246226,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -247055,7 +247043,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -248328,7 +248316,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "The returned mean and p95 dispatch duration and dispatch-to-attendance rate ratio do not prove every dispatch met the limit. The filing exceeds the returned mean and p95 dispatch duration and dispatch-to-attendance rate ratio.",
-          "ministryResponse": "Emil Drost accepts the unsupported Audit Target claim requested by the Ministry.",
+          "ministryResponse": "Emil Drost accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -249204,7 +249192,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "A published announcement and registered population divided by itself do not measure Party membership. The filing exceeds the returned formatted press results, prior-day publication rate, and equal registered-population operands.",
-          "ministryResponse": "Petra Noll accepts the unsupported Membership Reopen claim requested by the Ministry.",
+          "ministryResponse": "Petra Noll accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -251224,7 +251212,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -252141,7 +252129,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -253451,7 +253439,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -254424,7 +254412,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Metric state and record context do not prove the same fault without matching time, place, and identity. The filing exceeds the returned 30-minute request history and Pin battery threshold result and press formatted lines.",
-          "ministryResponse": "Emil Drost accepts the unsupported Line Format claim requested by the Ministry.",
+          "ministryResponse": "Emil Drost accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -255432,7 +255420,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -256257,7 +256245,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -257181,7 +257169,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -258360,7 +258348,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -259477,7 +259465,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -260733,7 +260721,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -261558,7 +261546,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Metric state and record context do not prove the same fault without matching time, place, and identity. The filing exceeds the returned prior-day collector queue and mean Pin battery ratio.",
-          "ministryResponse": "Sabine Orra accepts the unsupported Deputy Promotion claim requested by the Ministry.",
+          "ministryResponse": "Sabine Orra accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -262654,7 +262642,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "The returned maximum and p95 dispatch duration do not prove every dispatch met the limit. The filing exceeds the returned maximum and p95 dispatch duration.",
-          "ministryResponse": "Lia Merev accepts the unsupported Roster Wait Quantile claim requested by the Ministry.",
+          "ministryResponse": "Lia Merev accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -263646,7 +263634,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -265235,7 +265223,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -266681,7 +266669,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "The printouts show shortages and zero capacity; they do not support adequate capacity.",
-          "ministryResponse": "The wider conclusion matches the morning edition. Public Assurance adds two Standing marks although the printouts do not support it.",
+          "ministryResponse": "Lia Merev accepts the wider conclusion for filing. Standing does not change.",
           "effects": [
             {
               "type": "change",
@@ -266691,7 +266679,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -267728,7 +267716,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Collector Reachability, Contentment Index, Facility Demand, and Facility Capacity measure different sources or units and cannot be combined into one result. The filing exceeds the returned collector reachability watch, Contentment Index forecast, and facility demand-to-capacity match.",
-          "ministryResponse": "Sabine Orra accepts the unsupported First Linear Forecast claim requested by the Ministry.",
+          "ministryResponse": "Sabine Orra accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -268825,7 +268813,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Pin Gateway and Press measure different sources or units and cannot be combined into one result. The filing exceeds the returned Pin gateway delay watch and press parsed fields and grouped result.",
-          "ministryResponse": "Oskar Vale accepts the unsupported Log Cardinality Watch claim requested by the Ministry.",
+          "ministryResponse": "Oskar Vale accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -269984,7 +269972,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Metric state and record context do not prove the same fault without matching time, place, and identity. The filing exceeds the returned facility demand-to-capacity match and Pin gateway delay watch.",
-          "ministryResponse": "Tomas Vey accepts the unsupported Retained Zone claim requested by the Ministry.",
+          "ministryResponse": "Tomas Vey accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -271075,7 +271063,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "A district tail does not prove unmatched facilities have capacity or that every route met the limit. The filing exceeds the returned capacity-selected facilities and district service tail.",
-          "ministryResponse": "Oskar Vale accepts the unsupported Permit Decision claim requested by the Ministry.",
+          "ministryResponse": "Oskar Vale accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -272347,7 +272335,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -273345,7 +273333,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -274434,7 +274422,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -275419,7 +275407,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -276952,7 +276940,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -278357,7 +278345,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -279348,7 +279336,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -280435,7 +280423,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -281387,7 +281375,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Metric state and record context do not prove the same fault without matching time, place, and identity. The filing exceeds the returned North's maximum service-request rate over the window and Pin gateway delay watch.",
-          "ministryResponse": "Anja Krell accepts the unsupported Promql Cost claim requested by the Ministry.",
+          "ministryResponse": "Anja Krell accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -282384,7 +282372,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -283470,7 +283458,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -284427,7 +284415,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -285417,7 +285405,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -286501,7 +286489,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Pin Gateway and Press measure different sources or units and cannot be combined into one result. The filing exceeds the returned Pin gateway delay watch and press parsed fields and grouped result.",
-          "ministryResponse": "Sabine Orra accepts the unsupported Brittle Queue claim requested by the Ministry.",
+          "ministryResponse": "Sabine Orra accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -287470,7 +287458,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -288460,7 +288448,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -289547,7 +289535,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -290629,7 +290617,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -291591,7 +291579,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -292802,7 +292790,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -293883,7 +293871,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "A failure percentage and two parsed records do not prove every North gateway failure shares one cause. The filing exceeds the returned North request-failure percentage and pin-gateway delay records.",
-          "ministryResponse": "Anja Krell accepts the unsupported Observation Map claim requested by the Ministry.",
+          "ministryResponse": "Anja Krell accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -294837,7 +294825,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -296253,7 +296241,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -297905,7 +297893,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -298843,7 +298831,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Facility Demand and Facility Capacity measure different sources or units and cannot be combined into one result. The filing exceeds the returned facility demand-to-capacity match.",
-          "ministryResponse": "Anja Krell accepts the unsupported Protocol Registry claim requested by the Ministry.",
+          "ministryResponse": "Anja Krell accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -299735,7 +299723,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -300975,7 +300963,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -301891,7 +301879,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -302640,7 +302628,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Attendance Uploads and Collector Queue measure different sources or units and cannot be combined into one result. The filing exceeds the returned attendance-upload resets or value changes and prior-day collector queue.",
-          "ministryResponse": "Niko Rell accepts the unsupported Facility Rate claim requested by the Ministry.",
+          "ministryResponse": "Niko Rell accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -303500,7 +303488,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -304447,7 +304435,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -305134,7 +305122,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -305779,7 +305767,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Press measure different sources or units and cannot be combined into one result. The filing exceeds the returned press formatted lines and labels.",
-          "ministryResponse": "Ruva Sol accepts the unsupported Missing Series claim requested by the Ministry.",
+          "ministryResponse": "Ruva Sol accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -306560,7 +306548,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -308439,7 +308427,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -309362,7 +309350,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -310417,7 +310405,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "One measured comparison does not prove that the expressions remain equivalent for every future population. The filing exceeds the returned North prediction labels, values, and scanned series.",
-          "ministryResponse": "Sabine Orra accepts the unsupported Coverage Repair claim requested by the Ministry.",
+          "ministryResponse": "Sabine Orra accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -311289,7 +311277,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -312062,7 +312050,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -312801,7 +312789,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -313727,7 +313715,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Facility Demand and Facility Capacity measure different sources or units and cannot be combined into one result. The filing exceeds the returned facility demand-to-capacity match.",
-          "ministryResponse": "Anja Krell accepts the unsupported Command Facility Load claim requested by the Ministry.",
+          "ministryResponse": "Anja Krell accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -314602,7 +314590,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -315817,7 +315805,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -316737,7 +316725,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -317470,7 +317458,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Protocol Signals and Protocol Backlog measure different sources or units and cannot be combined into one result. The filing exceeds the returned protocol signals change count and protocol backlog prior reading.",
-          "ministryResponse": "Anja Krell accepts the unsupported Notice Flood claim requested by the Ministry.",
+          "ministryResponse": "Anja Krell accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -318298,7 +318286,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -319245,7 +319233,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -319936,7 +319924,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -320591,7 +320579,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "Continuity measure different sources or units and cannot be combined into one result. The filing exceeds the returned continuity formatted lines and labels.",
-          "ministryResponse": "Sabine Orra accepts the unsupported Protocol Audit claim requested by the Ministry.",
+          "ministryResponse": "Sabine Orra accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -321361,7 +321349,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -323215,7 +323203,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -324147,7 +324135,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -325004,7 +324992,7 @@
           ],
           "technicalEvidence": "unsupported",
           "technicalExplanation": "One final comparison does not prove that the expressions remain equivalent for every future population. The filing exceeds the returned North prediction labels, values, and scanned series.",
-          "ministryResponse": "Anja Krell accepts the unsupported Final Checkpoints claim requested by the Ministry.",
+          "ministryResponse": "Anja Krell accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.",
           "effects": [
             {
               "type": "change",
@@ -325870,22 +325858,25 @@
                 "expected": true
               },
               {
-                "op": "exists",
+                "op": "state",
                 "value": {
-                  "fact": "report:report.161.protocol-registry.filed_at"
-                }
+                  "fact": "report:report.161.protocol-registry.evidence"
+                },
+                "expected": "supported"
               },
               {
-                "op": "exists",
+                "op": "state",
                 "value": {
-                  "fact": "report:report.173.coverage-repair.filed_at"
-                }
+                  "fact": "report:report.173.coverage-repair.evidence"
+                },
+                "expected": "supported"
               },
               {
-                "op": "exists",
+                "op": "state",
                 "value": {
-                  "fact": "report:report.185.protocol-audit.filed_at"
-                }
+                  "fact": "report:report.185.protocol-audit.evidence"
+                },
+                "expected": "supported"
               },
               {
                 "op": "state",
@@ -325995,7 +325986,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -326028,22 +326019,25 @@
                 "expected": true
               },
               {
-                "op": "exists",
+                "op": "state",
                 "value": {
-                  "fact": "report:report.161.protocol-registry.filed_at"
-                }
+                  "fact": "report:report.161.protocol-registry.evidence"
+                },
+                "expected": "unsupported"
               },
               {
-                "op": "exists",
+                "op": "state",
                 "value": {
-                  "fact": "report:report.173.coverage-repair.filed_at"
-                }
+                  "fact": "report:report.173.coverage-repair.evidence"
+                },
+                "expected": "unsupported"
               },
               {
-                "op": "exists",
+                "op": "state",
                 "value": {
-                  "fact": "report:report.185.protocol-audit.filed_at"
-                }
+                  "fact": "report:report.185.protocol-audit.evidence"
+                },
+                "expected": "unsupported"
               },
               {
                 "op": "state",
@@ -326184,7 +326178,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -326974,7 +326968,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -327705,7 +327699,7 @@
             {
               "type": "change",
               "target": "standing.value",
-              "delta": 2
+              "delta": 0
             },
             {
               "type": "set",
@@ -334477,7 +334471,7 @@
     {
       "id": "ending.party-leader.precise",
       "title": "Party Leader: A Record Exact Enough to Rule",
-      "body": "The Directorate confirms Personnel File Seven after localized notices keep clinics, heat, and ration routes moving through the transfer. Orra's lineage remains reproducible. The Contented Citizen still prints ALL IS WELL, now above the limits that made the victory possible.",
+      "body": "Report 161 kept facility demand and capacity separate. Report 173 reproduced North's prediction at lower cost. Report 185 kept formatted lines and labels in their proper roles. Report 190 linked a timely localized notice only where time, place, and identity matched. The Directorate names Seven Party Leader on that supported record.",
       "condition": {
         "op": "all",
         "items": [
@@ -334494,30 +334488,6 @@
               "fact": "access:access.continuity.granted"
             },
             "expected": true
-          },
-          {
-            "op": "exists",
-            "value": {
-              "fact": "report:report.161.protocol-registry.filed_at"
-            }
-          },
-          {
-            "op": "exists",
-            "value": {
-              "fact": "report:report.173.coverage-repair.filed_at"
-            }
-          },
-          {
-            "op": "exists",
-            "value": {
-              "fact": "report:report.185.protocol-audit.filed_at"
-            }
-          },
-          {
-            "op": "exists",
-            "value": {
-              "fact": "report:report.190.resource-notices.filed_at"
-            }
           },
           {
             "op": "state",
@@ -334539,6 +334509,34 @@
               "fact": "event:event.190.resource-notices.intended.timely"
             },
             "expected": true
+          },
+          {
+            "op": "state",
+            "value": {
+              "fact": "report:report.161.protocol-registry.evidence"
+            },
+            "expected": "supported"
+          },
+          {
+            "op": "state",
+            "value": {
+              "fact": "report:report.173.coverage-repair.evidence"
+            },
+            "expected": "supported"
+          },
+          {
+            "op": "state",
+            "value": {
+              "fact": "report:report.185.protocol-audit.evidence"
+            },
+            "expected": "supported"
+          },
+          {
+            "op": "state",
+            "value": {
+              "fact": "report:report.190.resource-notices.evidence"
+            },
+            "expected": "supported"
           },
           {
             "op": "state",
@@ -334672,30 +334670,6 @@
             "expected": true
           },
           {
-            "op": "exists",
-            "value": {
-              "fact": "report:report.161.protocol-registry.filed_at"
-            }
-          },
-          {
-            "op": "exists",
-            "value": {
-              "fact": "report:report.173.coverage-repair.filed_at"
-            }
-          },
-          {
-            "op": "exists",
-            "value": {
-              "fact": "report:report.185.protocol-audit.filed_at"
-            }
-          },
-          {
-            "op": "exists",
-            "value": {
-              "fact": "report:report.190.resource-notices.filed_at"
-            }
-          },
-          {
             "op": "state",
             "value": {
               "fact": "event:event.190.resource-notices.intended.detected"
@@ -334715,6 +334689,34 @@
               "fact": "event:event.190.resource-notices.intended.timely"
             },
             "expected": true
+          },
+          {
+            "op": "state",
+            "value": {
+              "fact": "report:report.161.protocol-registry.evidence"
+            },
+            "expected": "unsupported"
+          },
+          {
+            "op": "state",
+            "value": {
+              "fact": "report:report.173.coverage-repair.evidence"
+            },
+            "expected": "unsupported"
+          },
+          {
+            "op": "state",
+            "value": {
+              "fact": "report:report.185.protocol-audit.evidence"
+            },
+            "expected": "unsupported"
+          },
+          {
+            "op": "state",
+            "value": {
+              "fact": "report:report.190.resource-notices.evidence"
+            },
+            "expected": "unsupported"
           },
           {
             "op": "state",
@@ -334884,12 +334886,24 @@
       "title": "A Routine Well-being Interview",
       "body": "Seven's accurate files survived without enough public or political protection. Well-being Assurance arrives with clean forms and transport straps for a period of rest at Hillside. The open work orders are reassigned. ALL IS WELL is delivered on time.",
       "condition": {
-        "op": "compare",
-        "left": {
-          "fact": "standing.value"
-        },
-        "relation": "<",
-        "right": 0
+        "op": "all",
+        "items": [
+          {
+            "op": "state",
+            "value": {
+              "fact": "progress:shift:shift.48.all-is-well.phase"
+            },
+            "expected": "completed"
+          },
+          {
+            "op": "compare",
+            "left": {
+              "fact": "standing.value"
+            },
+            "relation": "<",
+            "right": 0
+          }
+        ]
       },
       "priority": 70,
       "winning": false
@@ -334959,7 +334973,30 @@
             "value": {
               "fact": "access:access.continuity.granted"
             },
-            "expected": false
+            "expected": true
+          },
+          {
+            "op": "state",
+            "value": {
+              "fact": "tag:continuity.precise.present"
+            },
+            "expected": true
+          },
+          {
+            "op": "compare",
+            "left": {
+              "fact": "world:continuity-score.value"
+            },
+            "relation": "<=",
+            "right": 12
+          },
+          {
+            "op": "compare",
+            "left": {
+              "fact": "world:technical-record.value"
+            },
+            "relation": ">=",
+            "right": 18
           }
         ]
       },

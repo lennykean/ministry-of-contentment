@@ -723,42 +723,6 @@ function upsertChange(outcome, target, delta) {
   else outcome.effects.push({ type: "change", target, delta });
 }
 
-const pressureCaseIds = new Set([
-  "case.033.turnstile-total", "case.040.reset-review", "case.041.district-total", "case.045.noon-printers",
-  "case.049.market-records", "case.053.paper-volume", "case.057.membership-ratio", "case.062.brittle-phrase",
-  "case.065.clinic-zero", "case.069.gate-movement", "case.074.byte-conversion", "case.077.temperature-unwrap",
-  "case.081.pin-removal", "case.085.cohort-anomaly", "case.089.bad-duration", "case.093.dispatch-records",
-  "case.097.classic-buckets", "case.101.native-histogram", "case.105.offset-baseline", "case.109.subquery-resolution",
-  "case.115.prediction-limit", "case.116.audit-target", "case.117.membership-reopen", "case.121.line-format",
-  "case.125.report-chain", "case.129.roster-match", "case.133.many-to-one", "case.138.set-or",
-  "case.141.precedence-file", "case.145.promql-cost", "case.149.broad-queue", "case.153.mentor-file",
-  "case.157.observation-map", "case.161.protocol-registry", "case.165.facility-rate", "case.169.missing-series",
-  "case.173.coverage-repair", "case.177.leadership-event", "case.181.notice-flood", "case.185.protocol-audit",
-  "case.189.final-checkpoints",
-]);
-
-function standingConsequences(campaign) {
-  for (const item of campaign.cases.filter((candidate) => /^case\.\d{3}\./.test(candidate.id))) {
-    const fallback = item.outcomes.find((outcome) => outcome.id.endsWith(".outcome.fallback"));
-    if (fallback) fallback.effects = fallback.effects?.filter((effect) => !(effect.type === "change" && effect.target === "world:evidence-preserved.value"));
-    const evidence = item.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence"));
-    const precise = item.outcomes.find((outcome) => outcome.id.endsWith(".outcome.party-precise"));
-    if (evidence) upsertChange(evidence, "standing.value", 0);
-    if (precise) upsertChange(precise, "standing.value", 0);
-    if (evidence && !pressureCaseIds.has(item.id)) {
-      evidence.effects = evidence.effects?.filter((effect) => !(effect.type === "change" && effect.target === "world:evidence-preserved.value"));
-    }
-    if (!evidence || !pressureCaseIds.has(item.id)) continue;
-    const assured = item.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured"));
-    upsertChange(evidence, "standing.value", -1);
-    upsertChange(evidence, "world:evidence-preserved.value", 1);
-    if (assured) upsertChange(assured, "standing.value", 2);
-    const requester = campaign.characters.find((person) => person.id === item.requesterId)?.name ?? "The requester";
-    evidence.ministryResponse = `${requester} keeps the supported contradiction on file. Public Assurance removes one Standing mark because it contradicts the morning edition.`;
-    if (assured) assured.ministryResponse = `${requester} accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.`;
-  }
-}
-
 const relationshipCredits = {
   "case.004.registry-window": "evidence",
   "case.013.orison-rain": "evidence",
@@ -969,7 +933,7 @@ function narrativeMessages(campaign) {
 
 function endings(campaign) {
   const copy = {
-    "ending.party-leader.precise": ["Party Leader: A Record Exact Enough to Rule", "The Directorate confirms Personnel File Seven after localized notices keep clinics, heat, and ration routes moving through the transfer. Orra's lineage remains reproducible. The Contented Citizen still prints ALL IS WELL, now above the limits that made the victory possible."],
+    "ending.party-leader.precise": ["Party Leader: A Record Exact Enough to Rule", "Report 161 kept facility demand and capacity separate. Report 173 reproduced North's prediction at lower cost. Report 185 kept formatted lines and labels in their proper roles. Report 190 linked a timely localized notice only where time, place, and identity matched. The Directorate names Seven Party Leader on that supported record."],
     "ending.party-leader.assurance": ["Party Leader: All Signals Agree", "The Directorate confirms Personnel File Seven after broad observation, controlled presses, and useful omissions place every command route under one record. Expanded Assurance hours appear beneath ALL IS WELL. The unsupported implications remain in the archive."],
     "ending.public-exposure": ["The Bulletin Prints the Footnotes", "Noll routes the retained sources and the reopened membership calculation to the public presses before Continuity closes them. ALL IS WELL appears above printouts showing clinic closure, ration shortage, and zero heating capacity."],
     "ending.internal-exposure": ["Records Integrity Keeps a Copy", "Orra's admissible chain reaches the Directorate. The public edition does not change, but the Ministry can no longer treat its headlines as measurements without confronting their sources and signatures."],
@@ -993,7 +957,6 @@ export function addCampaignNarrative(campaign) {
   materialFacts(campaign);
   hillsideThread(campaign);
   configureHeldReports(campaign);
-  standingConsequences(campaign);
   requesterRelationships(campaign);
   narrativeMessages(campaign);
   endings(campaign);
