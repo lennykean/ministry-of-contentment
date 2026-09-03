@@ -1,6 +1,6 @@
 import type { FiledReport, GameEngine, SavedArtifact } from "../game";
 import { replayResultFor } from "../game";
-import type { CampaignIndex, Condition } from "../types";
+import type { CampaignIndex, Rank } from "../types";
 import { calendarDate, clockTime, escapeHtml, formatTime, formatValue, initials, minutesPhrase } from "./format";
 import { renderResultDetail } from "./printouts";
 
@@ -210,31 +210,11 @@ function watchesBody({ engine, index }: DrawerContext): string {
 
 /* ---------------------------------------------------------- personnel file */
 
-function promotionOperand(engine: GameEngine, index: CampaignIndex, value: unknown): string {
-  if (!value || typeof value !== "object" || Array.isArray(value) || !("fact" in value)) return String(value);
-  const fact = String((value as { fact: string }).fact);
-  if (fact === "standing.value") return `Standing (current: ${engine.state.standing})`;
-  const [kind, remainder = ""] = fact.split(":", 2);
-  const id = remainder.slice(0, remainder.lastIndexOf("."));
-  if (kind === "mastery") return `${index.concepts.get(id)?.competency ?? id} (current: ${engine.state.mastery[id]?.state ?? "Unobserved"})`;
-  if (kind === "tag") return index.campaign.tagDeclarations.find((item) => item.id === id)?.name ?? id;
-  if (kind === "access" || kind === "watch_authority") return index.campaign.rightDeclarations.find((item) => item.id === id)?.name ?? id;
-  if (kind === "world") return index.campaign.worldDeclarations.find((item) => item.id === id)?.name ?? id;
-  if (kind === "relationship") return index.campaign.relationshipDeclarations.find((item) => item.id === id)?.name ?? id;
-  return fact.replaceAll(/[.:_]/g, " ");
-}
-
-function describeCondition(engine: GameEngine, index: CampaignIndex, condition: Condition): string {
-  const operand = (value: unknown) => promotionOperand(engine, index, value);
-  if (condition.op === "all") return condition.items.map((item) => describeCondition(engine, index, item)).join(" and ");
-  if (condition.op === "any") return condition.items.map((item) => describeCondition(engine, index, item)).join(" or ");
-  if (condition.op === "not") return `not ${describeCondition(engine, index, condition.item)}`;
-  if (condition.op === "exists" || condition.op === "missing") return `${operand(condition.value)} ${condition.op === "exists" ? "is recorded" : "is not recorded"}`;
-  if (condition.op === "state") return `${operand(condition.value)} is ${String(condition.expected)}`;
-  if (condition.op === "reached") return `${operand(condition.value)} reaches ${String(condition.expected)}`;
-  if (condition.op === "between") return `${operand(condition.value)} is between ${operand(condition.lower)} and ${operand(condition.upper)}`;
-  if ("left" in condition) return `${operand(condition.left)} ${condition.op === "compare" ? condition.relation : condition.op} ${operand(condition.right)}`;
-  return "Authored appointment requirement";
+function promotionBenefits(index: CampaignIndex, rank: Rank, previousRank?: Rank): string[] {
+  const benefits = rank.grants.map((id) => index.campaign.rightDeclarations.find((right) => right.id === id)?.name)
+    .filter((name): name is string => Boolean(name));
+  if ((rank.watchAuthority ?? 0) > (previousRank?.watchAuthority ?? 0)) benefits.push(`Standing-query capacity: ${rank.watchAuthority}`);
+  return benefits.length ? benefits : ["No new data access or standing-query authority"];
 }
 
 function personnelBody({ engine, index }: DrawerContext): string {
@@ -242,11 +222,7 @@ function personnelBody({ engine, index }: DrawerContext): string {
   const band = [...index.campaign.standing.bands].reverse().find((item) => engine.state.standing >= item.minimum);
   const nextRank = [...index.ranks.values()].filter((candidate) => candidate.order > (rank?.order ?? 0)).sort((left, right) => left.order - right.order)[0];
   const stateOrder = ["Unobserved", "Observed", "Practiced", "Independent", "Certified"];
-  const requirements = (condition?: Condition): { label: string; met: boolean }[] => {
-    if (!condition) return [];
-    if (condition.op === "all") return condition.items.flatMap(requirements);
-    return [{ label: describeCondition(engine, index, condition), met: engine.conditionSatisfied(condition) }];
-  };
+  const promotionReady = nextRank ? engine.conditionSatisfied(nextRank.condition) : false;
   const alliances = index.campaign.tagDeclarations.filter((tag) => tag.id.startsWith("alliance.") && engine.state.tags.includes(tag.id)).map((tag) => tag.name);
   const recordedTendencies = index.campaign.worldDeclarations.filter((declaration) =>
     (declaration.valueType === "int" || declaration.valueType === "number")
@@ -271,8 +247,11 @@ function personnelBody({ engine, index }: DrawerContext): string {
     </section>` : ""}
     ${nextRank ? `<section class="promotion">
       <p class="kicker">Next appointment</p><h3>${escapeHtml(nextRank.name)}</h3>
-      <p>${engine.conditionSatisfied(nextRank.condition) ? "Every published requirement is met." : "Complete the unchecked requirements to become eligible."}</p>
-      <ul class="requirements">${requirements(nextRank.condition).map(({ label, met }) => `<li class="${met ? "met" : "unmet"}"><b aria-hidden="true">${met ? "✓" : "○"}</b> <span>${escapeHtml(label)}</span> <span class="sr-only">${met ? "met" : "not met"}</span></li>`).join("")}</ul>
+      <p>${escapeHtml(nextRank.appointmentText)}</p>
+      <h4>Eligibility</h4>
+      <ul class="requirements"><li class="${promotionReady ? "met" : "unmet"}"><b aria-hidden="true">${promotionReady ? "✓" : "○"}</b> <span>${escapeHtml(nextRank.eligibilityText)}</span> <span class="sr-only">${promotionReady ? "met" : "not met"}</span></li></ul>
+      <h4>New data access and authority</h4>
+      <ul>${promotionBenefits(index, nextRank, rank).map((benefit) => `<li>${escapeHtml(benefit)}</li>`).join("")}</ul>
     </section>` : `<section class="promotion"><p class="kicker">Career objective reached</p><h3>Party Leader</h3></section>`}
     <section>
       <h3>Technical mastery</h3>
@@ -377,8 +356,11 @@ export function renderLedger(ledger: ShiftLedger, engine: GameEngine, index: Cam
   const reports = ledger.reportIds.map((id) => engine.state.reports.find((report) => report.id === id)).filter((report): report is FiledReport => Boolean(report));
   const memos = ledger.memoIds.map((id) => engine.state.memos.find((memo) => memo.id === id)).filter((memo) => memo !== undefined);
   const delta = ledger.standingAfter - ledger.standingBefore;
-  const beforeRank = index.ranks.get(ledger.rankBefore)?.name ?? ledger.rankBefore;
-  const afterRank = index.ranks.get(ledger.rankAfter)?.name ?? ledger.rankAfter;
+  const beforeRank = index.ranks.get(ledger.rankBefore);
+  const afterRank = index.ranks.get(ledger.rankAfter);
+  const rankChange = beforeRank?.id === afterRank?.id
+    ? `Rank remains ${escapeHtml(afterRank?.name ?? ledger.rankAfter)}.`
+    : `Appointed ${escapeHtml(afterRank?.name ?? ledger.rankAfter)}. ${afterRank ? `Eligibility met: ${escapeHtml(afterRank.eligibilityText)} ${escapeHtml(afterRank.appointmentText)} New data access and authority: ${promotionBenefits(index, afterRank, beforeRank).map(escapeHtml).join("; ")}.` : ""}`;
   const active = engine.state.watches.filter((watch) => watch.state === "active").length;
   const nextShift = engine.currentShift();
   const evidenceTag = (report: FiledReport) => report.pendingWatch ? `<span class="tag grey">Pending</span>`
@@ -391,7 +373,7 @@ export function renderLedger(ledger: ShiftLedger, engine: GameEngine, index: Cam
         reports.map((report) => `<tr><th scope="row">${escapeHtml(index.cases.get(report.caseId)?.title ?? report.caseId)}</th><td>${evidenceTag(report)}</td><td>${escapeHtml(report.ministryResponse)}</td></tr>`).join("")
       }</tbody></table>` : `<p class="muted">No reports were filed in this shift.</p>`}
       <dl class="ledger-facts">
-        <div><dt>Ministry standing</dt><dd>${ledger.standingBefore} → ${ledger.standingAfter}${delta ? ` (${delta > 0 ? "+" : ""}${delta})` : " (unchanged)"}. ${beforeRank === afterRank ? `Rank remains ${escapeHtml(afterRank)}.` : `Appointed ${escapeHtml(afterRank)}.`}</dd></div>
+        <div><dt>Ministry standing</dt><dd>${ledger.standingBefore} → ${ledger.standingAfter}${delta ? ` (${delta > 0 ? "+" : ""}${delta})` : " (unchanged)"}. ${rankChange}</dd></div>
         <div><dt>Standing queries</dt><dd>${active} active of ${engine.state.watchCapacity} authorised · ${ledger.watchesScored} scored this shift · ${ledger.noticesAdded} notices raised</dd></div>
         <div><dt>Clock</dt><dd>${reports.length} report${reports.length === 1 ? "" : "s"} · ${ledger.runs} console run${ledger.runs === 1 ? "" : "s"} · ${ledger.hintsCalled} call${ledger.hintsCalled === 1 ? "" : "s"} to the supervisor · ${escapeHtml(minutesPhrase(ledger.minutesUnused))} unused</dd></div>
         <div><dt>Mastery</dt><dd>${ledger.conceptIds.length ? ledger.conceptIds.map((id) => `<span class="tag grey">${escapeHtml(index.concepts.get(id)?.competency ?? id)}</span>`).join(" ") : "No new demonstration was credited."}</dd></div>

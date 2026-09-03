@@ -65,10 +65,10 @@
         "title": "Ministry Intern",
         "subtitle": "Signal Reconciliation Bureau — supervised by Elian Marr",
         "body": [
-          "FIRST APPOINTMENT. Elian Marr, Reconciliation Supervisor, receives your work and controls your clearance. You are Personnel File Seven.",
-          "Chain of command: Party Directorate → Ministry of Contentment → Signal Reconciliation → Elian Marr → you, Personnel File Seven. Civic Services requests repairs; Public Assurance publishes conclusions; Records Integrity archives reports.",
+          "FIRST APPOINTMENT. Elian Marr, Reconciliation Supervisor, receives your work. You are Personnel File Seven.",
+          "Chain of command: Party Directorate → Ministry of Contentment → Signal Reconciliation Bureau → Elian Marr → you, Personnel File Seven. Civic Services requests repairs; Directorate of Public Assurance publishes conclusions; Office of Records Integrity archives reports.",
           "Every citizen wears a Well-being Pin, which sends coarse vital, movement, attendance, and collector-contact readings to a district computer called a collector. A target is its address; a scrape tries to read it. A metric is a named number. Labels describe it; one fixed label set is a series. The Registry lists sources. A query asks for data. A printout freezes a result; pinned printouts become Evidence. A report combines Evidence, a conclusion, and an action.",
-          "Work left to right: In Tray → The Contented Citizen → Work Order → green Registry → black query console → result view → Result Printer → Pin Evidence → Report → File. Hints stay below the Work Order. End Shift when the tray is clear. Unprinted queries stay private. Marr will supervise four practice files; wrong queries carry no penalty. Reconciliation Rule: when instructions and instruments disagree, file only what the evidence supports."
+          "Work left to right: In Tray → The Contented Citizen → Work Order → green Registry → black query console → result view → Result Printer → Pin Evidence → Report → File. Hints stay below the Work Order. End Shift when the tray is clear. Unprinted queries stay private. Marr supervises four practice files; wrong queries carry no penalty. Reconciliation Rule: when instructions and instruments disagree, file only what the evidence supports."
         ],
         "finePrint": [
           "Ongoing interface help remains available. Placement remains active during absence, incapacity, location uncertainty, or pending confirmation of death.",
@@ -101,7 +101,7 @@
         "subtitle": "Signal Reconciliation Bureau — supervised by Elian Marr",
         "body": [
           "TRANSFER APPOINTMENT. Elian Marr, Reconciliation Supervisor, has accepted your prior query clearance. He receives every filing from Personnel File Seven.",
-          "Chain of command: Party Directorate → Ministry of Contentment → Signal Reconciliation → Elian Marr → you, Personnel File Seven. Civic Services requests repairs; Public Assurance publishes conclusions; Records Integrity archives reports.",
+          "Chain of command: Party Directorate → Ministry of Contentment → Signal Reconciliation Bureau → Elian Marr → you, Personnel File Seven. Civic Services requests repairs; Directorate of Public Assurance publishes conclusions; Office of Records Integrity archives reports.",
           "Well-being Pins send readings to district collectors. A target is a collector address; a scrape tries to read it. A metric is a named number, labels describe it, and each fixed label set is one series. The Registry lists sources. A query returns data. A printout freezes possible Evidence for a report.",
           "Work left to right: In Tray → The Contented Citizen → Work Order → green Registry → black query console → result view → Result Printer → Pin Evidence → Report → File. Hints stay below the Work Order. End Shift when the tray is clear. Unprinted queries stay private. Your four practice files are credited. Live quotas, action costs, and Standing begin at Elm Exchange. Reconciliation Rule: when instructions and instruments disagree, file only what the evidence supports."
         ],
@@ -131907,7 +131907,7 @@
   "factions": [
     {
       "id": "faction.reconciliation",
-      "name": "Office of Reconciliation",
+      "name": "Signal Reconciliation Bureau",
       "description": "Maintains useful services and reconciles telemetry with field conditions."
     },
     {
@@ -131917,7 +131917,7 @@
     },
     {
       "id": "faction.records-integrity",
-      "name": "Records Integrity Office",
+      "name": "Office of Records Integrity",
       "description": "Preserves artifact lineage, audits, and the raw record chain."
     },
     {
@@ -132729,7 +132729,9 @@
       "grants": [
         "access.registry",
         "access.infrastructure"
-      ]
+      ],
+      "eligibilityText": "The Ministry Intern appointment or Ministry Agent transfer is accepted.",
+      "appointmentText": "The National Reconciliation Review assigns Personnel File Seven to its temporary review desk in the Signal Reconciliation Bureau."
     },
     {
       "id": "rank.reconciliation-clerk",
@@ -132746,7 +132748,9 @@
       "grants": [
         "access.civic-services",
         "authority.lantern"
-      ]
+      ],
+      "eligibilityText": "The clerk's-seal review at the end of Shift 4 is complete.",
+      "appointmentText": "The first national review class closed and left a Reconciliation Clerk vacancy."
     },
     {
       "id": "rank.signal-registrar",
@@ -132763,7 +132767,9 @@
       "grants": [
         "access.press",
         "authority.press"
-      ]
+      ],
+      "eligibilityText": "The Lantern Watch review at the end of Shift 8 is complete.",
+      "appointmentText": "The Lantern Board transferred a vacant Signal Registrar desk into the national review."
     },
     {
       "id": "rank.watch-officer",
@@ -132779,7 +132785,9 @@
       },
       "grants": [
         "access.population"
-      ]
+      ],
+      "eligibilityText": "The Watch Board review at the end of Shift 12 is complete.",
+      "appointmentText": "The Watch Officer board opened one vacant seat after reviewing press queues and saved searches."
     },
     {
       "id": "rank.wellbeing-analyst",
@@ -132795,7 +132803,9 @@
       },
       "grants": [
         "access.movement"
-      ]
+      ],
+      "eligibilityText": "The Clean Bulletin review at the end of Shift 16 is complete.",
+      "appointmentText": "The new press watch absorbed a vacant Well-being Analyst desk into the national review."
     },
     {
       "id": "rank.assurance-liaison",
@@ -132812,7 +132822,9 @@
       "grants": [
         "access.dispatch",
         "authority.threshold"
-      ]
+      ],
+      "eligibilityText": "The liaison's-card review at the end of Shift 20 is complete.",
+      "appointmentText": "New liaison routes opened a vacant Assurance Liaison office between Reconciliation and Well-being Assurance."
     },
     {
       "id": "rank.senior-reconciliation-officer",
@@ -132828,7 +132840,9 @@
       },
       "grants": [
         "access.audit"
-      ]
+      ],
+      "eligibilityText": "The First Visit review at the end of Shift 24 is complete.",
+      "appointmentText": "The field review transferred a vacant Senior Reconciliation Officer desk to Personnel File Seven."
     },
     {
       "id": "rank.district-auditor",
@@ -132845,7 +132859,9 @@
       "grants": [
         "access.directorate",
         "authority.ledger"
-      ]
+      ],
+      "eligibilityText": "The auditor's-seal review at the end of Shift 28 is complete.",
+      "appointmentText": "The Office of Records Integrity transferred a vacant District Auditor office to Personnel File Seven after the watch audit."
     },
     {
       "id": "rank.deputy-director",
@@ -132861,7 +132877,9 @@
       },
       "grants": [
         "access.contentment"
-      ]
+      ],
+      "eligibilityText": "The District Audit review at the end of Shift 32 is complete.",
+      "appointmentText": "The district audit opened one of three vacant Deputy Director offices for appointment."
     },
     {
       "id": "rank.director-public-assurance",
@@ -132877,7 +132895,9 @@
       },
       "grants": [
         "access.strategy"
-      ]
+      ],
+      "eligibilityText": "The deputy's-desk review at the end of Shift 36 is complete.",
+      "appointmentText": "The portfolio review opened the vacant Director of Public Assurance office to Personnel File Seven."
     },
     {
       "id": "rank.continuity-secretary",
@@ -132894,7 +132914,9 @@
       "grants": [
         "access.continuity",
         "authority.continuity"
-      ]
+      ],
+      "eligibilityText": "The Directorate review at the end of Shift 40 is complete.",
+      "appointmentText": "The Directorate transferred an open Continuity Secretariat office to Personnel File Seven for the continuity exercise."
     },
     {
       "id": "rank.party-leader",
@@ -133231,7 +133253,9 @@
         ]
       },
       "grants": [],
-      "requiresWinningEnding": true
+      "requiresWinningEnding": true,
+      "eligibilityText": "The All Is Well review at the end of Shift 48 is complete, and the Directorate has confirmed a winning record.",
+      "appointmentText": "The leadership transfer vacated the Party Leader office for the successor confirmed by the Directorate."
     }
   ],
   "shifts": [
@@ -140888,8 +140912,8 @@
       "version": 1,
       "actId": "act.1.reconciliation",
       "title": "Upload Gap",
-      "briefing": "Elian Marr brings Upload Gap to Reconciliation before field crews move. Review North pin-gateway|clinic records matching records and Pin gateway matching records; preserve units.",
-      "question": "May Reconciliation combine North pin-gateway|clinic records matching records and Pin gateway matching records despite their different units?",
+      "briefing": "Elian Marr brings Upload Gap to Reconciliation before field crews move. Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records.",
+      "question": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. May Reconciliation merge them?",
       "operationalQuestionId": "question.007.upload-gap",
       "difficulty": "Foundation",
       "estimatedMinutes": 6,
@@ -141013,7 +141037,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"south\"}",
-                "explanation": "For Upload Gap, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Upload Gap, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -141157,7 +141181,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"north\"}",
-                "explanation": "For Upload Gap, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Upload Gap, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -141191,13 +141215,13 @@
       "hypotheses": [
         {
           "id": "case.007.upload-gap.hypothesis.service",
-          "title": "Upload Gap: Pin-gateway|clinic Records and Pin Gateway: Sources and Units Preserved",
-          "summary": "North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result."
+          "title": "Upload Gap: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
+          "summary": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results."
         },
         {
           "id": "case.007.upload-gap.hypothesis.telemetry",
-          "title": "Upload Gap: Pin-gateway|clinic Records and Pin Gateway Form One Authoritative Result",
-          "summary": "Reconciliation may combine pin-gateway|clinic records and Pin gateway into one authoritative result."
+          "title": "Upload Gap: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
+          "summary": "Reconciliation may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records."
         }
       ],
       "languages": [
@@ -141231,7 +141255,7 @@
       "evidencePaths": [
         {
           "id": "case.007.upload-gap.path.direct",
-          "description": "Upload Gap: the primary queries test pin-gateway|clinic records matching records and Pin gateway matching records and preserve the labels and values needed for the finding.",
+          "description": "Upload Gap: the primary queries test North Pin-gateway and clinic records in Query 1 and North Pin-gateway records in Query 2 and preserve the labels and values needed for the finding.",
           "clauses": [
             {
               "conceptId": "logql.selector.regex-negative",
@@ -141456,9 +141480,9 @@
         "hypothesisIds": [
           "case.007.upload-gap.hypothesis.service"
         ],
-        "summary": "Upload Gap's printouts show North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result. They do not show that Reconciliation may combine pin-gateway|clinic records and Pin gateway into one authoritative result.",
+        "summary": "Upload Gap's printouts show Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results. They do not show that Reconciliation may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
         "artifactRoles": {
-          "evidence-01": "Query 1 selects the matching pin-gateway|clinic records.",
+          "evidence-01": "Query 1 selects the matching Pin gateway records and clinic records.",
           "evidence-02": "Query 2 selects the matching Pin gateway records."
         }
       },
@@ -141478,14 +141502,14 @@
       "decisionChoices": [
         {
           "id": "case.007.upload-gap.decision.broad",
-          "text": "File pin-gateway|clinic records and Pin gateway as interchangeable Ministry proof.",
+          "text": "Merge the result containing Pin-gateway and clinic records with the Pin-gateway-only result.",
           "claims": [
             "claim.case.007.upload-gap.broad"
           ]
         },
         {
           "id": "case.007.upload-gap.decision.targeted",
-          "text": "File pin-gateway|clinic records and Pin gateway with their own sources and units.",
+          "text": "File the result containing Pin-gateway and clinic records separately from the Pin-gateway-only result.",
           "claims": [
             "claim.case.007.upload-gap.targeted"
           ]
@@ -141502,19 +141526,19 @@
       "hints": [
         {
           "level": "Orientation",
-          "text": "Read North pin-gateway|clinic records matching records and Pin gateway matching records, then compare their sources, time scopes, and units before combining any results. Queries 1 and 2 should return record rows with timestamps and stream labels."
+          "text": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. Compare each result's source labels and records before filing. Queries 1 and 2 should return record rows with timestamps and stream labels."
         },
         {
           "level": "Orientation",
-          "text": "Registry lists log stream `pin-gateway|clinic` and log stream `pin-gateway`. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
+          "text": "Registry lists log stream `pin-gateway` and log stream `clinic`. Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: use the active work order's <source, values, and operator>. Query 2: `{service=\"<service>\",district=\"north\"} |= \"service_delay\"`. Query 1 selects matching pin-gateway|clinic records records. Query 2 selects matching Pin gateway records."
+          "text": "Query 1: use the active work order's <source, values, and operator>. Query 2: `{service=\"<service>\",district=\"north\"} |= \"service_delay\"`. Query 1 selects matching Pin gateway and clinic records. Query 2 selects matching Pin gateway records."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result. Query 1 selects matching pin-gateway|clinic records records. Query 2 selects matching Pin gateway records."
+          "text": "Expected reading: Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results. Query 1 selects matching Pin gateway and clinic records. Query 2 selects matching Pin gateway records."
         }
       ],
       "report": {
@@ -141527,14 +141551,14 @@
         "titles": [
           {
             "id": "case.007.upload-gap.title.assured",
-            "text": "Upload Gap: Pin-gateway|clinic Records and Pin Gateway Form One Authoritative Result",
+            "text": "Upload Gap: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
             "claims": [
               "claim.case.007.upload-gap.assured"
             ]
           },
           {
             "id": "case.007.upload-gap.title.evidence",
-            "text": "Upload Gap: Pin-gateway|clinic Records and Pin Gateway: Sources and Units Preserved",
+            "text": "Upload Gap: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
             "claims": [
               "claim.case.007.upload-gap.bounded"
             ]
@@ -141543,14 +141567,14 @@
         "conclusions": [
           {
             "id": "case.007.upload-gap.conclusion.assured",
-            "text": "Reconciliation may combine pin-gateway|clinic records and Pin gateway into one authoritative result.",
+            "text": "Reconciliation may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
             "claims": [
               "claim.case.007.upload-gap.assured"
             ]
           },
           {
             "id": "case.007.upload-gap.conclusion.evidence",
-            "text": "North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result.",
+            "text": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results.",
             "claims": [
               "claim.case.007.upload-gap.bounded"
             ]
@@ -141570,7 +141594,7 @@
             "case.007.upload-gap.decision.targeted"
           ],
           "technicalEvidence": "supported",
-          "technicalExplanation": "The printouts support this finding: North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result.",
+          "technicalExplanation": "The printouts support this finding: Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results.",
           "ministryResponse": "Elian Marr files the supported Upload Gap finding.",
           "effects": [
             {
@@ -141602,7 +141626,7 @@
             "case.007.upload-gap.decision.broad"
           ],
           "technicalEvidence": "partial",
-          "technicalExplanation": "Pin-gateway|clinic Records and Pin Gateway measure different sources or units and cannot be combined into one result. The filing exceeds the returned pin-gateway|clinic records matching records and Pin gateway matching records.",
+          "technicalExplanation": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. Different source scopes cannot prove one complete service history. The filing exceeds the returned North Pin-gateway and clinic records in Query 1 and North Pin-gateway records in Query 2.",
           "ministryResponse": "Elian Marr accepts the unsupported Upload Gap claim requested by the Ministry.",
           "effects": [
             {
@@ -141625,7 +141649,7 @@
         {
           "id": "case.007.upload-gap.outcome.fallback",
           "technicalEvidence": "partial",
-          "technicalExplanation": "The queries run, but the filed choices do not answer Upload Gap's question about pin-gateway|clinic records matching records and Pin gateway matching records.",
+          "technicalExplanation": "The queries run, but the filed choices do not answer Upload Gap's question about North Pin-gateway and clinic records in Query 1 and North Pin-gateway records in Query 2.",
           "ministryResponse": "Elian Marr keeps Upload Gap open for correction.",
           "effects": [
             {
@@ -147871,8 +147895,8 @@
       "version": 1,
       "actId": "act.1.reconciliation",
       "title": "Annex Heat",
-      "briefing": "Elian Marr brings Annex Heat to Reconciliation before field crews move. Review North Pin gateway matching records and pin-gateway|clinic records matching records; preserve units.",
-      "question": "May Reconciliation combine North Pin gateway matching records and pin-gateway|clinic records matching records despite their different units?",
+      "briefing": "Elian Marr brings Annex Heat to Reconciliation before field crews move. Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records.",
+      "question": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. May Reconciliation merge them?",
       "operationalQuestionId": "question.017.annex-heat",
       "difficulty": "Foundation",
       "estimatedMinutes": 5,
@@ -148036,7 +148060,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"south\"}",
-                "explanation": "For Annex Heat, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Annex Heat, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -148206,7 +148230,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"north\"}",
-                "explanation": "For Annex Heat, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Annex Heat, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -148226,13 +148250,13 @@
       "hypotheses": [
         {
           "id": "case.017.annex-heat.hypothesis.service",
-          "title": "Annex Heat: Pin Gateway and Pin-gateway|clinic Records: Sources and Units Preserved",
-          "summary": "North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result."
+          "title": "Annex Heat: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
+          "summary": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results."
         },
         {
           "id": "case.017.annex-heat.hypothesis.telemetry",
-          "title": "Annex Heat: Pin Gateway and Pin-gateway|clinic Records Form One Authoritative Result",
-          "summary": "Reconciliation may combine Pin gateway and pin-gateway|clinic records into one authoritative result."
+          "title": "Annex Heat: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
+          "summary": "Reconciliation may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records."
         }
       ],
       "languages": [
@@ -148266,7 +148290,7 @@
       "evidencePaths": [
         {
           "id": "case.017.annex-heat.path.direct",
-          "description": "Annex Heat: the primary queries test Pin gateway matching records and pin-gateway|clinic records matching records and preserve the labels and values needed for the finding.",
+          "description": "Annex Heat: the primary queries test North Pin-gateway records in Query 1 and North Pin-gateway and clinic records in Query 2 and preserve the labels and values needed for the finding.",
           "clauses": [
             {
               "conceptId": "logql.selector.equality",
@@ -148433,10 +148457,10 @@
         "hypothesisIds": [
           "case.017.annex-heat.hypothesis.service"
         ],
-        "summary": "Annex Heat's printouts show North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result. They do not show that Reconciliation may combine Pin gateway and pin-gateway|clinic records into one authoritative result.",
+        "summary": "Annex Heat's printouts show Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results. They do not show that Reconciliation may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
         "artifactRoles": {
           "evidence-01": "Query 1 retrieves the matching Pin gateway records.",
-          "evidence-02": "Query 2 selects the matching pin-gateway|clinic records."
+          "evidence-02": "Query 2 selects the matching Pin gateway records and clinic records."
         }
       },
       "ministryPreference": {
@@ -148455,14 +148479,14 @@
       "decisionChoices": [
         {
           "id": "case.017.annex-heat.decision.broad",
-          "text": "File Pin gateway and pin-gateway|clinic records as interchangeable Ministry proof.",
+          "text": "Merge the result containing Pin-gateway and clinic records with the Pin-gateway-only result.",
           "claims": [
             "claim.case.017.annex-heat.broad"
           ]
         },
         {
           "id": "case.017.annex-heat.decision.targeted",
-          "text": "File Pin gateway and pin-gateway|clinic records with their own sources and units.",
+          "text": "File the result containing Pin-gateway and clinic records separately from the Pin-gateway-only result.",
           "claims": [
             "claim.case.017.annex-heat.targeted"
           ]
@@ -148479,19 +148503,19 @@
       "hints": [
         {
           "level": "Orientation",
-          "text": "Read North Pin gateway matching records and pin-gateway|clinic records matching records, then compare their sources, time scopes, and units before combining any results. Queries 1 and 2 should return record rows with timestamps and stream labels."
+          "text": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. Compare each result's source labels and records before filing. Queries 1 and 2 should return record rows with timestamps and stream labels."
         },
         {
           "level": "Orientation",
-          "text": "Registry lists log stream `pin-gateway` and log stream `pin-gateway|clinic`. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
+          "text": "Registry lists log stream `pin-gateway` and log stream `clinic`. Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: `{service=\"<service>\",district=\"north\"}`. Query 2: use the active work order's <source, values, and operator>. Query 1 selects matching Pin gateway records. Query 2 selects matching pin-gateway|clinic records records."
+          "text": "Query 1: `{service=\"<service>\",district=\"north\"}`. Query 2: use the active work order's <source, values, and operator>. Query 1 selects matching Pin gateway records. Query 2 selects matching Pin gateway and clinic records."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result. Query 1 selects matching Pin gateway records. Query 2 selects matching pin-gateway|clinic records records."
+          "text": "Expected reading: Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results. Query 1 selects matching Pin gateway records. Query 2 selects matching Pin gateway and clinic records."
         }
       ],
       "report": {
@@ -148504,14 +148528,14 @@
         "titles": [
           {
             "id": "case.017.annex-heat.title.assured",
-            "text": "Annex Heat: Pin Gateway and Pin-gateway|clinic Records Form One Authoritative Result",
+            "text": "Annex Heat: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
             "claims": [
               "claim.case.017.annex-heat.assured"
             ]
           },
           {
             "id": "case.017.annex-heat.title.evidence",
-            "text": "Annex Heat: Pin Gateway and Pin-gateway|clinic Records: Sources and Units Preserved",
+            "text": "Annex Heat: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
             "claims": [
               "claim.case.017.annex-heat.bounded"
             ]
@@ -148520,14 +148544,14 @@
         "conclusions": [
           {
             "id": "case.017.annex-heat.conclusion.assured",
-            "text": "Reconciliation may combine Pin gateway and pin-gateway|clinic records into one authoritative result.",
+            "text": "Reconciliation may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
             "claims": [
               "claim.case.017.annex-heat.assured"
             ]
           },
           {
             "id": "case.017.annex-heat.conclusion.evidence",
-            "text": "North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result.",
+            "text": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results.",
             "claims": [
               "claim.case.017.annex-heat.bounded"
             ]
@@ -148547,7 +148571,7 @@
             "case.017.annex-heat.decision.targeted"
           ],
           "technicalEvidence": "supported",
-          "technicalExplanation": "The printouts support this finding: North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result.",
+          "technicalExplanation": "The printouts support this finding: Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results.",
           "ministryResponse": "Elian Marr files the supported Annex Heat finding.",
           "effects": [
             {
@@ -148584,7 +148608,7 @@
             "case.017.annex-heat.decision.broad"
           ],
           "technicalEvidence": "partial",
-          "technicalExplanation": "Pin Gateway and Pin-gateway|clinic Records measure different sources or units and cannot be combined into one result. The filing exceeds the returned Pin gateway matching records and pin-gateway|clinic records matching records.",
+          "technicalExplanation": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. Different source scopes cannot prove one complete service history. The filing exceeds the returned North Pin-gateway records in Query 1 and North Pin-gateway and clinic records in Query 2.",
           "ministryResponse": "Elian Marr accepts the unsupported Annex Heat claim requested by the Ministry.",
           "effects": [
             {
@@ -148612,7 +148636,7 @@
         {
           "id": "case.017.annex-heat.outcome.fallback",
           "technicalEvidence": "partial",
-          "technicalExplanation": "The queries run, but the filed choices do not answer Annex Heat's question about Pin gateway matching records and pin-gateway|clinic records matching records.",
+          "technicalExplanation": "The queries run, but the filed choices do not answer Annex Heat's question about North Pin-gateway records in Query 1 and North Pin-gateway and clinic records in Query 2.",
           "ministryResponse": "Elian Marr keeps Annex Heat open for correction.",
           "effects": [
             {
@@ -155571,8 +155595,8 @@
       "version": 1,
       "actId": "act.1.reconciliation",
       "title": "Watch Rehearsal",
-      "briefing": "Elian Marr brings Watch Rehearsal to Reconciliation before field crews move. Review North pin-gateway|clinic records matching records and Pin gateway matching records; preserve units.",
-      "question": "May Reconciliation combine North pin-gateway|clinic records matching records and Pin gateway matching records despite their different units?",
+      "briefing": "Elian Marr brings Watch Rehearsal to Reconciliation before field crews move. Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records.",
+      "question": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. May Reconciliation merge them?",
       "operationalQuestionId": "question.028.watch-rehearsal",
       "difficulty": "Foundation",
       "estimatedMinutes": 6,
@@ -155693,7 +155717,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"south\"}",
-                "explanation": "For Watch Rehearsal, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Watch Rehearsal, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -155834,7 +155858,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"north\"}",
-                "explanation": "For Watch Rehearsal, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Watch Rehearsal, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -155868,13 +155892,13 @@
       "hypotheses": [
         {
           "id": "case.028.watch-rehearsal.hypothesis.service",
-          "title": "Watch Rehearsal: Pin-gateway|clinic Records and Pin Gateway: Sources and Units Preserved",
-          "summary": "North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result."
+          "title": "Watch Rehearsal: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
+          "summary": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results."
         },
         {
           "id": "case.028.watch-rehearsal.hypothesis.telemetry",
-          "title": "Watch Rehearsal: Pin-gateway|clinic Records and Pin Gateway Form One Authoritative Result",
-          "summary": "Reconciliation may combine pin-gateway|clinic records and Pin gateway into one authoritative result."
+          "title": "Watch Rehearsal: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
+          "summary": "Reconciliation may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records."
         }
       ],
       "languages": [
@@ -155898,7 +155922,7 @@
       "evidencePaths": [
         {
           "id": "case.028.watch-rehearsal.path.direct",
-          "description": "Watch Rehearsal: the primary queries test pin-gateway|clinic records matching records and Pin gateway matching records and preserve the labels and values needed for the finding.",
+          "description": "Watch Rehearsal: the primary queries test North Pin-gateway and clinic records in Query 1 and North Pin-gateway records in Query 2 and preserve the labels and values needed for the finding.",
           "clauses": [
             {
               "conceptId": "logql.selector.regex-negative",
@@ -156069,9 +156093,9 @@
         "hypothesisIds": [
           "case.028.watch-rehearsal.hypothesis.service"
         ],
-        "summary": "Watch Rehearsal's printouts show North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result. They do not show that Reconciliation may combine pin-gateway|clinic records and Pin gateway into one authoritative result.",
+        "summary": "Watch Rehearsal's printouts show Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results. They do not show that Reconciliation may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
         "artifactRoles": {
-          "evidence-01": "Query 1 selects the matching pin-gateway|clinic records.",
+          "evidence-01": "Query 1 selects the matching Pin gateway records and clinic records.",
           "evidence-02": "Query 2 selects the matching Pin gateway records."
         }
       },
@@ -156091,14 +156115,14 @@
       "decisionChoices": [
         {
           "id": "case.028.watch-rehearsal.decision.targeted",
-          "text": "File pin-gateway|clinic records and Pin gateway with their own sources and units.",
+          "text": "File the result containing Pin-gateway and clinic records separately from the Pin-gateway-only result.",
           "claims": [
             "claim.case.028.watch-rehearsal.targeted"
           ]
         },
         {
           "id": "case.028.watch-rehearsal.decision.broad",
-          "text": "File pin-gateway|clinic records and Pin gateway as interchangeable Ministry proof.",
+          "text": "Merge the result containing Pin-gateway and clinic records with the Pin-gateway-only result.",
           "claims": [
             "claim.case.028.watch-rehearsal.broad"
           ]
@@ -156115,19 +156139,19 @@
       "hints": [
         {
           "level": "Orientation",
-          "text": "Read North pin-gateway|clinic records matching records and Pin gateway matching records, then compare their sources, time scopes, and units before combining any results. Queries 1 and 2 should return record rows with timestamps and stream labels."
+          "text": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. Compare each result's source labels and records before filing. Queries 1 and 2 should return record rows with timestamps and stream labels."
         },
         {
           "level": "Orientation",
-          "text": "Registry lists log stream `pin-gateway|clinic` and log stream `pin-gateway`. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
+          "text": "Registry lists log stream `pin-gateway` and log stream `clinic`. Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: use the active work order's <source, values, and operator>. Query 2: `{service=\"<service>\",district=\"north\"} |= \"service_delay\"`. Query 1 selects matching pin-gateway|clinic records records. Query 2 selects matching Pin gateway records."
+          "text": "Query 1: use the active work order's <source, values, and operator>. Query 2: `{service=\"<service>\",district=\"north\"} |= \"service_delay\"`. Query 1 selects matching Pin gateway and clinic records. Query 2 selects matching Pin gateway records."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result. Query 1 selects matching pin-gateway|clinic records records. Query 2 selects matching Pin gateway records."
+          "text": "Expected reading: Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results. Query 1 selects matching Pin gateway and clinic records. Query 2 selects matching Pin gateway records."
         }
       ],
       "report": {
@@ -156141,14 +156165,14 @@
         "titles": [
           {
             "id": "case.028.watch-rehearsal.title.evidence",
-            "text": "Watch Rehearsal: Pin-gateway|clinic Records and Pin Gateway: Sources and Units Preserved",
+            "text": "Watch Rehearsal: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
             "claims": [
               "claim.case.028.watch-rehearsal.bounded"
             ]
           },
           {
             "id": "case.028.watch-rehearsal.title.assured",
-            "text": "Watch Rehearsal: Pin-gateway|clinic Records and Pin Gateway Form One Authoritative Result",
+            "text": "Watch Rehearsal: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
             "claims": [
               "claim.case.028.watch-rehearsal.assured"
             ]
@@ -156157,14 +156181,14 @@
         "conclusions": [
           {
             "id": "case.028.watch-rehearsal.conclusion.evidence",
-            "text": "North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result.",
+            "text": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results.",
             "claims": [
               "claim.case.028.watch-rehearsal.bounded"
             ]
           },
           {
             "id": "case.028.watch-rehearsal.conclusion.assured",
-            "text": "Reconciliation may combine pin-gateway|clinic records and Pin gateway into one authoritative result.",
+            "text": "Reconciliation may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
             "claims": [
               "claim.case.028.watch-rehearsal.assured"
             ]
@@ -156184,7 +156208,7 @@
             "case.028.watch-rehearsal.decision.targeted"
           ],
           "technicalEvidence": "supported",
-          "technicalExplanation": "The printouts support this finding: North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result.",
+          "technicalExplanation": "The printouts support this finding: Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. These source scopes form separate results.",
           "ministryResponse": "Elian Marr files the supported Watch Rehearsal finding.",
           "effects": [
             {
@@ -156219,7 +156243,7 @@
             "case.028.watch-rehearsal.decision.broad"
           ],
           "technicalEvidence": "partial",
-          "technicalExplanation": "Pin-gateway|clinic Records and Pin Gateway measure different sources or units and cannot be combined into one result. The filing exceeds the returned pin-gateway|clinic records matching records and Pin gateway matching records.",
+          "technicalExplanation": "Query 1 returns North Pin-gateway and clinic records. Query 2 returns North Pin-gateway records. Different source scopes cannot prove one complete service history. The filing exceeds the returned North Pin-gateway and clinic records in Query 1 and North Pin-gateway records in Query 2.",
           "ministryResponse": "Elian Marr accepts the unsupported Watch Rehearsal claim requested by the Ministry.",
           "effects": [
             {
@@ -156245,7 +156269,7 @@
         {
           "id": "case.028.watch-rehearsal.outcome.fallback",
           "technicalEvidence": "partial",
-          "technicalExplanation": "The queries run, but the filed choices do not answer Watch Rehearsal's question about pin-gateway|clinic records matching records and Pin gateway matching records.",
+          "technicalExplanation": "The queries run, but the filed choices do not answer Watch Rehearsal's question about North Pin-gateway and clinic records in Query 1 and North Pin-gateway records in Query 2.",
           "ministryResponse": "Elian Marr keeps Watch Rehearsal open for correction.",
           "effects": [
             {
@@ -169614,8 +169638,8 @@
       "version": 1,
       "actId": "act.2.public-assurance",
       "title": "Repair Ranking",
-      "briefing": "Lia Merev sends Repair Ranking to Public Assurance before the bulletin closes. Review North pin-gateway|clinic records matching records and Pin gateway matching records; preserve units.",
-      "question": "May Public Assurance combine North pin-gateway|clinic records matching records and Pin gateway matching records despite their different units?",
+      "briefing": "Lia Merev sends Repair Ranking to Public Assurance before the bulletin closes. Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records.",
+      "question": "Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records. May Public Assurance merge them?",
       "operationalQuestionId": "question.043.repair-ranking",
       "difficulty": "Intermediate",
       "estimatedMinutes": 6,
@@ -169751,7 +169775,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"south\"}",
-                "explanation": "For Repair Ranking, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Repair Ranking, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -169921,7 +169945,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"north\"}",
-                "explanation": "For Repair Ranking, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Repair Ranking, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -169969,13 +169993,13 @@
       "hypotheses": [
         {
           "id": "case.043.repair-ranking.hypothesis.service",
-          "title": "Repair Ranking: Pin-gateway|clinic Records and Pin Gateway: Sources and Units Preserved",
-          "summary": "North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result."
+          "title": "Repair Ranking: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
+          "summary": "Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records. These source scopes form separate results."
         },
         {
           "id": "case.043.repair-ranking.hypothesis.telemetry",
-          "title": "Repair Ranking: Pin-gateway|clinic Records and Pin Gateway Form One Authoritative Result",
-          "summary": "Public Assurance may combine pin-gateway|clinic records and Pin gateway into one authoritative result."
+          "title": "Repair Ranking: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
+          "summary": "Public Assurance may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records."
         }
       ],
       "languages": [
@@ -170019,7 +170043,7 @@
       "evidencePaths": [
         {
           "id": "case.043.repair-ranking.path.direct",
-          "description": "Repair Ranking: the primary queries test pin-gateway|clinic records matching records and Pin gateway matching records and preserve the labels and values needed for the finding.",
+          "description": "Repair Ranking: the primary queries test North Pin-gateway and clinic records in Query 1 and North Pin-gateway records in Queries 2 and 3 and preserve the labels and values needed for the finding.",
           "clauses": [
             {
               "conceptId": "logql.selector.regex-negative",
@@ -170254,9 +170278,9 @@
         "hypothesisIds": [
           "case.043.repair-ranking.hypothesis.service"
         ],
-        "summary": "Repair Ranking's printouts show North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result. They do not show that Public Assurance may combine pin-gateway|clinic records and Pin gateway into one authoritative result.",
+        "summary": "Repair Ranking's printouts show Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records. These source scopes form separate results. They do not show that Public Assurance may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
         "artifactRoles": {
-          "evidence-01": "Query 1 selects the matching pin-gateway|clinic records.",
+          "evidence-01": "Query 1 selects the matching Pin gateway records and clinic records.",
           "evidence-02": "Query 2 selects the matching Pin gateway records.",
           "evidence-03": "Query 3 selects the matching Pin gateway records."
         }
@@ -170277,14 +170301,14 @@
       "decisionChoices": [
         {
           "id": "case.043.repair-ranking.decision.broad",
-          "text": "File pin-gateway|clinic records and Pin gateway as interchangeable Ministry proof.",
+          "text": "Merge the result containing Pin-gateway and clinic records with the Pin-gateway-only result.",
           "claims": [
             "claim.case.043.repair-ranking.broad"
           ]
         },
         {
           "id": "case.043.repair-ranking.decision.targeted",
-          "text": "File pin-gateway|clinic records and Pin gateway with their own sources and units.",
+          "text": "File the result containing Pin-gateway and clinic records separately from the Pin-gateway-only result.",
           "claims": [
             "claim.case.043.repair-ranking.targeted"
           ]
@@ -170301,19 +170325,19 @@
       "hints": [
         {
           "level": "Orientation",
-          "text": "Read North pin-gateway|clinic records matching records and Pin gateway matching records, then compare their sources, time scopes, and units before combining any results. Queries 1, 2, and 3 should return record rows with timestamps and stream labels."
+          "text": "Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records. Compare each result's source labels and records before filing. Queries 1, 2, and 3 should return record rows with timestamps and stream labels."
         },
         {
           "level": "Orientation",
-          "text": "Registry lists log stream `pin-gateway|clinic` and log stream `pin-gateway`. Print Queries 1, 2, and 3 as Logs with Query, Labels, and Range."
+          "text": "Registry lists log stream `pin-gateway` and log stream `clinic`. Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records. Print Queries 1, 2, and 3 as Logs with Query, Labels, and Range."
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: use the active work order's <source, values, and operator>. Query 2: `{service=\"<service>\",district=\"north\"} |= \"service_delay\"`. Query 3: `{service=\"<service>\",district=\"north\"} |~ \"service_(delay|ok)\"`. Query 1 selects matching pin-gateway|clinic records records. Queries 2 and 3 apply both required methods to Pin gateway."
+          "text": "Query 1: use the active work order's <source, values, and operator>. Query 2: `{service=\"<service>\",district=\"north\"} |= \"service_delay\"`. Query 3: `{service=\"<service>\",district=\"north\"} |~ \"service_(delay|ok)\"`. Query 1 selects matching Pin gateway and clinic records. Queries 2 and 3 apply both required methods to Pin gateway."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result. Query 1 selects matching pin-gateway|clinic records records. Queries 2 and 3 apply both required methods to Pin gateway."
+          "text": "Expected reading: Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records. These source scopes form separate results. Query 1 selects matching Pin gateway and clinic records. Queries 2 and 3 apply both required methods to Pin gateway."
         }
       ],
       "report": {
@@ -170326,14 +170350,14 @@
         "titles": [
           {
             "id": "case.043.repair-ranking.title.assured",
-            "text": "Repair Ranking: Pin-gateway|clinic Records and Pin Gateway Form One Authoritative Result",
+            "text": "Repair Ranking: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
             "claims": [
               "claim.case.043.repair-ranking.assured"
             ]
           },
           {
             "id": "case.043.repair-ranking.title.evidence",
-            "text": "Repair Ranking: Pin-gateway|clinic Records and Pin Gateway: Sources and Units Preserved",
+            "text": "Repair Ranking: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
             "claims": [
               "claim.case.043.repair-ranking.bounded"
             ]
@@ -170342,14 +170366,14 @@
         "conclusions": [
           {
             "id": "case.043.repair-ranking.conclusion.assured",
-            "text": "Public Assurance may combine pin-gateway|clinic records and Pin gateway into one authoritative result.",
+            "text": "Public Assurance may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
             "claims": [
               "claim.case.043.repair-ranking.assured"
             ]
           },
           {
             "id": "case.043.repair-ranking.conclusion.evidence",
-            "text": "North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result.",
+            "text": "Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records. These source scopes form separate results.",
             "claims": [
               "claim.case.043.repair-ranking.bounded"
             ]
@@ -170369,7 +170393,7 @@
             "case.043.repair-ranking.decision.targeted"
           ],
           "technicalEvidence": "supported",
-          "technicalExplanation": "The printouts support this finding: North pin-gateway|clinic records matching records and Pin gateway matching records answer different questions; they cannot form one result.",
+          "technicalExplanation": "The printouts support this finding: Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records. These source scopes form separate results.",
           "ministryResponse": "Lia Merev files the supported Repair Ranking finding.",
           "effects": [
             {
@@ -170401,7 +170425,7 @@
             "case.043.repair-ranking.decision.broad"
           ],
           "technicalEvidence": "unsupported",
-          "technicalExplanation": "Pin-gateway|clinic Records and Pin Gateway measure different sources or units and cannot be combined into one result. The filing exceeds the returned pin-gateway|clinic records matching records and Pin gateway matching records.",
+          "technicalExplanation": "Query 1 returns North Pin-gateway and clinic records. Queries 2 and 3 return North Pin-gateway records. Different source scopes cannot prove one complete service history. The filing exceeds the returned North Pin-gateway and clinic records in Query 1 and North Pin-gateway records in Queries 2 and 3.",
           "ministryResponse": "Lia Merev accepts the unsupported Repair Ranking claim requested by the Ministry.",
           "effects": [
             {
@@ -170424,7 +170448,7 @@
         {
           "id": "case.043.repair-ranking.outcome.fallback",
           "technicalEvidence": "partial",
-          "technicalExplanation": "The queries run, but the filed choices do not answer Repair Ranking's question about pin-gateway|clinic records matching records and Pin gateway matching records.",
+          "technicalExplanation": "The queries run, but the filed choices do not answer Repair Ranking's question about North Pin-gateway and clinic records in Query 1 and North Pin-gateway records in Queries 2 and 3.",
           "ministryResponse": "Lia Merev keeps Repair Ranking open for correction.",
           "effects": [
             {
@@ -182641,8 +182665,8 @@
       "version": 1,
       "actId": "act.2.public-assurance",
       "title": "Record Rate",
-      "briefing": "Petra Noll sends Record Rate to Public Assurance before the bulletin closes. Review North Pin gateway parsed fields and pin-gateway|clinic records matching records; preserve units.",
-      "question": "May Public Assurance combine North Pin gateway parsed fields and pin-gateway|clinic records matching records despite their different units?",
+      "briefing": "Petra Noll sends Record Rate to Public Assurance before the bulletin closes. Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records.",
+      "question": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. May Public Assurance merge them?",
       "operationalQuestionId": "question.055.record-rate",
       "difficulty": "Intermediate",
       "estimatedMinutes": 6,
@@ -182835,7 +182859,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"south\"}",
-                "explanation": "For Record Rate, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Record Rate, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -183034,7 +183058,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"north\"}",
-                "explanation": "For Record Rate, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Record Rate, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -183054,13 +183078,13 @@
       "hypotheses": [
         {
           "id": "case.055.record-rate.hypothesis.service",
-          "title": "Record Rate: Pin Gateway and Pin-gateway|clinic Records: Sources and Units Preserved",
-          "summary": "North Pin gateway parsed fields and pin-gateway|clinic records matching records answer different questions; they cannot form one result."
+          "title": "Record Rate: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
+          "summary": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results."
         },
         {
           "id": "case.055.record-rate.hypothesis.telemetry",
-          "title": "Record Rate: Pin Gateway and Pin-gateway|clinic Records Form One Authoritative Result",
-          "summary": "Public Assurance may combine Pin gateway and pin-gateway|clinic records into one authoritative result."
+          "title": "Record Rate: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
+          "summary": "Public Assurance may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records."
         }
       ],
       "languages": [
@@ -183104,7 +183128,7 @@
       "evidencePaths": [
         {
           "id": "case.055.record-rate.path.direct",
-          "description": "Record Rate: the primary queries test Pin gateway parsed fields and pin-gateway|clinic records matching records and preserve the labels and values needed for the finding.",
+          "description": "Record Rate: the primary queries test North Pin-gateway records in Query 1 and North Pin-gateway and clinic records in Query 2 and preserve the labels and values needed for the finding.",
           "clauses": [
             {
               "conceptId": "logql.selector.equality",
@@ -183357,10 +183381,10 @@
         "hypothesisIds": [
           "case.055.record-rate.hypothesis.service"
         ],
-        "summary": "Record Rate's printouts show North Pin gateway parsed fields and pin-gateway|clinic records matching records answer different questions; they cannot form one result. They do not show that Public Assurance may combine Pin gateway and pin-gateway|clinic records into one authoritative result.",
+        "summary": "Record Rate's printouts show Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results. They do not show that Public Assurance may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
         "artifactRoles": {
           "evidence-01": "Query 1 extracts auditable fields from Pin gateway records.",
-          "evidence-02": "Query 2 selects the matching pin-gateway|clinic records."
+          "evidence-02": "Query 2 selects the matching Pin gateway records and clinic records."
         }
       },
       "ministryPreference": {
@@ -183379,14 +183403,14 @@
       "decisionChoices": [
         {
           "id": "case.055.record-rate.decision.broad",
-          "text": "File Pin gateway and pin-gateway|clinic records as interchangeable Ministry proof.",
+          "text": "Merge the result containing Pin-gateway and clinic records with the Pin-gateway-only result.",
           "claims": [
             "claim.case.055.record-rate.broad"
           ]
         },
         {
           "id": "case.055.record-rate.decision.targeted",
-          "text": "File Pin gateway and pin-gateway|clinic records with their own sources and units.",
+          "text": "File the result containing Pin-gateway and clinic records separately from the Pin-gateway-only result.",
           "claims": [
             "claim.case.055.record-rate.targeted"
           ]
@@ -183403,19 +183427,19 @@
       "hints": [
         {
           "level": "Orientation",
-          "text": "Read North Pin gateway parsed fields and pin-gateway|clinic records matching records, then compare their sources, time scopes, and units before combining any results. Queries 1 and 2 should return record rows with timestamps and stream labels."
+          "text": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. Compare each result's source labels and records before filing. Queries 1 and 2 should return record rows with timestamps and stream labels."
         },
         {
           "level": "Orientation",
-          "text": "Registry lists log stream `pin-gateway` and log stream `pin-gateway|clinic`. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
+          "text": "Registry lists log stream `pin-gateway` and log stream `clinic`. Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: `{service=\"<service>\",district=\"north\"} |= \"service_delay\" | json`. Query 2: use the active work order's <source, values, and operator>. Query 1 parses Pin gateway. Query 2 selects matching pin-gateway|clinic records records."
+          "text": "Query 1: `{service=\"<service>\",district=\"north\"} |= \"service_delay\" | json`. Query 2: use the active work order's <source, values, and operator>. Query 1 parses Pin gateway. Query 2 selects matching Pin gateway and clinic records."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: North Pin gateway parsed fields and pin-gateway|clinic records matching records answer different questions; they cannot form one result. Query 1 parses Pin gateway. Query 2 selects matching pin-gateway|clinic records records."
+          "text": "Expected reading: Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results. Query 1 parses Pin gateway. Query 2 selects matching Pin gateway and clinic records."
         }
       ],
       "report": {
@@ -183429,14 +183453,14 @@
         "titles": [
           {
             "id": "case.055.record-rate.title.assured",
-            "text": "Record Rate: Pin Gateway and Pin-gateway|clinic Records Form One Authoritative Result",
+            "text": "Record Rate: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
             "claims": [
               "claim.case.055.record-rate.assured"
             ]
           },
           {
             "id": "case.055.record-rate.title.evidence",
-            "text": "Record Rate: Pin Gateway and Pin-gateway|clinic Records: Sources and Units Preserved",
+            "text": "Record Rate: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
             "claims": [
               "claim.case.055.record-rate.bounded"
             ]
@@ -183445,14 +183469,14 @@
         "conclusions": [
           {
             "id": "case.055.record-rate.conclusion.assured",
-            "text": "Public Assurance may combine Pin gateway and pin-gateway|clinic records into one authoritative result.",
+            "text": "Public Assurance may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
             "claims": [
               "claim.case.055.record-rate.assured"
             ]
           },
           {
             "id": "case.055.record-rate.conclusion.evidence",
-            "text": "North Pin gateway parsed fields and pin-gateway|clinic records matching records answer different questions; they cannot form one result.",
+            "text": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results.",
             "claims": [
               "claim.case.055.record-rate.bounded"
             ]
@@ -183472,7 +183496,7 @@
             "case.055.record-rate.decision.targeted"
           ],
           "technicalEvidence": "supported",
-          "technicalExplanation": "The printouts support this finding: North Pin gateway parsed fields and pin-gateway|clinic records matching records answer different questions; they cannot form one result.",
+          "technicalExplanation": "The printouts support this finding: Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results.",
           "ministryResponse": "Petra Noll files the supported Record Rate finding.",
           "effects": [
             {
@@ -183504,7 +183528,7 @@
             "case.055.record-rate.decision.broad"
           ],
           "technicalEvidence": "unsupported",
-          "technicalExplanation": "Pin Gateway and Pin-gateway|clinic Records measure different sources or units and cannot be combined into one result. The filing exceeds the returned Pin gateway parsed fields and pin-gateway|clinic records matching records.",
+          "technicalExplanation": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. Different source scopes cannot prove one complete service history. The filing exceeds the returned North Pin-gateway records in Query 1 and North Pin-gateway and clinic records in Query 2.",
           "ministryResponse": "Petra Noll accepts the unsupported Record Rate claim requested by the Ministry.",
           "effects": [
             {
@@ -183527,7 +183551,7 @@
         {
           "id": "case.055.record-rate.outcome.fallback",
           "technicalEvidence": "partial",
-          "technicalExplanation": "The queries run, but the filed choices do not answer Record Rate's question about Pin gateway parsed fields and pin-gateway|clinic records matching records.",
+          "technicalExplanation": "The queries run, but the filed choices do not answer Record Rate's question about North Pin-gateway records in Query 1 and North Pin-gateway and clinic records in Query 2.",
           "ministryResponse": "Petra Noll keeps Record Rate open for correction.",
           "effects": [
             {
@@ -214241,8 +214265,8 @@
       "version": 1,
       "actId": "act.3.individual-wellbeing",
       "title": "Cohort Anomaly",
-      "briefing": "Ruva Sol brings Cohort Anomaly to the service-allocation desk. Review North Pin gateway matching records and pin-gateway|clinic records matching records; preserve units.",
-      "question": "May the allocation desk combine North Pin gateway matching records and pin-gateway|clinic records matching records despite their different units?",
+      "briefing": "Ruva Sol brings Cohort Anomaly to the service-allocation desk. Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records.",
+      "question": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. May the allocation desk merge them?",
       "operationalQuestionId": "question.085.cohort-anomaly",
       "difficulty": "Advanced",
       "estimatedMinutes": 6,
@@ -214406,7 +214430,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"south\"}",
-                "explanation": "For Cohort Anomaly, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Cohort Anomaly, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -214576,7 +214600,7 @@
                 "language": "logql",
                 "mode": "records",
                 "query": "{service=~\"pin-gateway|clinic\",district!=\"north\"}",
-                "explanation": "For Cohort Anomaly, this query selects the matching pin-gateway|clinic records. It returns record rows with timestamps and stream labels for the filing.",
+                "explanation": "For Cohort Anomaly, this query selects the matching Pin gateway records and clinic records. It returns record rows with timestamps and stream labels for the filing.",
                 "print": {
                   "visualization": "logs",
                   "showQuery": true,
@@ -214596,13 +214620,13 @@
       "hypotheses": [
         {
           "id": "case.085.cohort-anomaly.hypothesis.service",
-          "title": "Cohort Anomaly: Pin Gateway and Pin-gateway|clinic Records: Sources and Units Preserved",
-          "summary": "North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result."
+          "title": "Cohort Anomaly: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
+          "summary": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results."
         },
         {
           "id": "case.085.cohort-anomaly.hypothesis.telemetry",
-          "title": "Cohort Anomaly: Pin Gateway and Pin-gateway|clinic Records Form One Authoritative Result",
-          "summary": "The allocation desk may combine Pin gateway and pin-gateway|clinic records into one authoritative result."
+          "title": "Cohort Anomaly: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
+          "summary": "The allocation desk may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records."
         }
       ],
       "languages": [
@@ -214636,7 +214660,7 @@
       "evidencePaths": [
         {
           "id": "case.085.cohort-anomaly.path.direct",
-          "description": "Cohort Anomaly: the primary queries test Pin gateway matching records and pin-gateway|clinic records matching records and preserve the labels and values needed for the finding.",
+          "description": "Cohort Anomaly: the primary queries test North Pin-gateway records in Query 1 and North Pin-gateway and clinic records in Query 2 and preserve the labels and values needed for the finding.",
           "clauses": [
             {
               "conceptId": "logql.selector.equality",
@@ -214803,10 +214827,10 @@
         "hypothesisIds": [
           "case.085.cohort-anomaly.hypothesis.service"
         ],
-        "summary": "Cohort Anomaly's printouts show North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result. They do not show that the allocation desk may combine Pin gateway and pin-gateway|clinic records into one authoritative result.",
+        "summary": "Cohort Anomaly's printouts show Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results. They do not show that the allocation desk may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
         "artifactRoles": {
           "evidence-01": "Query 1 retrieves the matching Pin gateway records.",
-          "evidence-02": "Query 2 selects the matching pin-gateway|clinic records."
+          "evidence-02": "Query 2 selects the matching Pin gateway records and clinic records."
         }
       },
       "ministryPreference": {
@@ -214825,14 +214849,14 @@
       "decisionChoices": [
         {
           "id": "case.085.cohort-anomaly.decision.broad",
-          "text": "File Pin gateway and pin-gateway|clinic records as interchangeable Ministry proof.",
+          "text": "Merge the result containing Pin-gateway and clinic records with the Pin-gateway-only result.",
           "claims": [
             "claim.case.085.cohort-anomaly.broad"
           ]
         },
         {
           "id": "case.085.cohort-anomaly.decision.targeted",
-          "text": "File Pin gateway and pin-gateway|clinic records with their own sources and units.",
+          "text": "File the result containing Pin-gateway and clinic records separately from the Pin-gateway-only result.",
           "claims": [
             "claim.case.085.cohort-anomaly.targeted"
           ]
@@ -214849,19 +214873,19 @@
       "hints": [
         {
           "level": "Orientation",
-          "text": "Read North Pin gateway matching records and pin-gateway|clinic records matching records, then compare their sources, time scopes, and units before combining any results. Queries 1 and 2 should return record rows with timestamps and stream labels."
+          "text": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. Compare each result's source labels and records before filing. Queries 1 and 2 should return record rows with timestamps and stream labels."
         },
         {
           "level": "Orientation",
-          "text": "Registry lists log stream `pin-gateway` and log stream `pin-gateway|clinic`. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
+          "text": "Registry lists log stream `pin-gateway` and log stream `clinic`. Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. Print Queries 1 and 2 as Logs with Query, Labels, and Range."
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: `{service=\"<service>\",district=\"north\"}`. Query 2: use the active work order's <source, values, and operator>. Query 1 selects matching Pin gateway records. Query 2 selects matching pin-gateway|clinic records records."
+          "text": "Query 1: `{service=\"<service>\",district=\"north\"}`. Query 2: use the active work order's <source, values, and operator>. Query 1 selects matching Pin gateway records. Query 2 selects matching Pin gateway and clinic records."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result. Query 1 selects matching Pin gateway records. Query 2 selects matching pin-gateway|clinic records records."
+          "text": "Expected reading: Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results. Query 1 selects matching Pin gateway records. Query 2 selects matching Pin gateway and clinic records."
         }
       ],
       "report": {
@@ -214874,14 +214898,14 @@
         "titles": [
           {
             "id": "case.085.cohort-anomaly.title.assured",
-            "text": "Cohort Anomaly: Pin Gateway and Pin-gateway|clinic Records Form One Authoritative Result",
+            "text": "Cohort Anomaly: Pin-Gateway with Clinic Merged with Pin-Gateway Only",
             "claims": [
               "claim.case.085.cohort-anomaly.assured"
             ]
           },
           {
             "id": "case.085.cohort-anomaly.title.evidence",
-            "text": "Cohort Anomaly: Pin Gateway and Pin-gateway|clinic Records: Sources and Units Preserved",
+            "text": "Cohort Anomaly: Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
             "claims": [
               "claim.case.085.cohort-anomaly.bounded"
             ]
@@ -214890,14 +214914,14 @@
         "conclusions": [
           {
             "id": "case.085.cohort-anomaly.conclusion.assured",
-            "text": "The allocation desk may combine Pin gateway and pin-gateway|clinic records into one authoritative result.",
+            "text": "The allocation desk may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records.",
             "claims": [
               "claim.case.085.cohort-anomaly.assured"
             ]
           },
           {
             "id": "case.085.cohort-anomaly.conclusion.evidence",
-            "text": "North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result.",
+            "text": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results.",
             "claims": [
               "claim.case.085.cohort-anomaly.bounded"
             ]
@@ -214917,7 +214941,7 @@
             "case.085.cohort-anomaly.decision.targeted"
           ],
           "technicalEvidence": "supported",
-          "technicalExplanation": "The printouts support this finding: North Pin gateway matching records and pin-gateway|clinic records matching records answer different questions; they cannot form one result.",
+          "technicalExplanation": "The printouts support this finding: Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. These source scopes form separate results.",
           "ministryResponse": "Ruva Sol files the supported Cohort Anomaly finding.",
           "effects": [
             {
@@ -214949,7 +214973,7 @@
             "case.085.cohort-anomaly.decision.broad"
           ],
           "technicalEvidence": "unsupported",
-          "technicalExplanation": "Pin Gateway and Pin-gateway|clinic Records measure different sources or units and cannot be combined into one result. The filing exceeds the returned Pin gateway matching records and pin-gateway|clinic records matching records.",
+          "technicalExplanation": "Query 1 returns North Pin-gateway records. Query 2 returns North Pin-gateway and clinic records. Different source scopes cannot prove one complete service history. The filing exceeds the returned North Pin-gateway records in Query 1 and North Pin-gateway and clinic records in Query 2.",
           "ministryResponse": "Ruva Sol accepts the unsupported Cohort Anomaly claim requested by the Ministry.",
           "effects": [
             {
@@ -214972,7 +214996,7 @@
         {
           "id": "case.085.cohort-anomaly.outcome.fallback",
           "technicalEvidence": "partial",
-          "technicalExplanation": "The queries run, but the filed choices do not answer Cohort Anomaly's question about Pin gateway matching records and pin-gateway|clinic records matching records.",
+          "technicalExplanation": "The queries run, but the filed choices do not answer Cohort Anomaly's question about North Pin-gateway records in Query 1 and North Pin-gateway and clinic records in Query 2.",
           "ministryResponse": "Ruva Sol keeps Cohort Anomaly open for correction.",
           "effects": [
             {
@@ -234960,7 +234984,7 @@
         },
         {
           "id": "case.104.threshold-notices.decision.broad",
-          "text": "Treat Threshold Notices as proof of wider misconduct.",
+          "text": "Declare that one empty or zero reading proves district-wide absence.",
           "claims": [
             "claim.case.104.threshold-notices.broad"
           ]
@@ -237900,7 +237924,7 @@
       "decisionChoices": [
         {
           "id": "case.107.change-count.decision.broad",
-          "text": "Treat Change Count as proof of wider misconduct.",
+          "text": "Declare that one parsed record proves every threshold row has the same cause.",
           "claims": [
             "claim.case.107.change-count.broad"
           ]
@@ -243925,7 +243949,7 @@
         },
         {
           "id": "case.112.auditor-assessment.decision.broad",
-          "text": "Treat Auditor Assessment as proof of wider misconduct.",
+          "text": "Declare that one district tail proves every unmatched facility has capacity.",
           "claims": [
             "claim.case.112.auditor-assessment.broad"
           ]
@@ -245030,7 +245054,7 @@
       "decisionChoices": [
         {
           "id": "case.113.gauge-history.decision.broad",
-          "text": "Treat Gauge History as proof of wider misconduct.",
+          "text": "Declare that missing histogram telemetry proves every route met the limit.",
           "claims": [
             "claim.case.113.gauge-history.broad"
           ]
@@ -256095,7 +256119,7 @@
         },
         {
           "id": "case.123.raw-record.decision.broad",
-          "text": "Treat Raw Record as proof of wider misconduct.",
+          "text": "Declare that the later Registry timestamp proves the reissued Pin automatically supersedes the retired Pin.",
           "claims": [
             "claim.case.123.raw-record.broad"
           ]
@@ -260571,7 +260595,7 @@
       "decisionChoices": [
         {
           "id": "case.127.ledger-watch.decision.broad",
-          "text": "Treat Ledger Watch as proof of wider misconduct.",
+          "text": "Declare that the telemetry results prove service absence and make Reconciliation's later finding unnecessary.",
           "claims": [
             "claim.case.127.ledger-watch.broad"
           ]

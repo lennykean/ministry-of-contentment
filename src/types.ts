@@ -130,7 +130,10 @@ export interface Act {
   id: string; name: string; order: number; entry?: Condition; completion?: Condition; conceptIds?: string[];
   reportPresentation: { guidance: string; responseLabel: string; responseHeading: string; confirmation: string };
 }
-export interface Rank { id: string; name: string; order: number; grants: string[]; condition?: Condition; watchAuthority?: number; requiresWinningEnding?: boolean }
+export interface Rank {
+  id: string; name: string; order: number; grants: string[]; eligibilityText: string; appointmentText: string;
+  condition?: Condition; watchAuthority?: number; requiresWinningEnding?: boolean;
+}
 export type InboxKind = "case" | "audit" | "directive" | "message" | "scene";
 export interface InboxRef { kind: InboxKind; id: string; condition?: Condition }
 export interface WatchCheckpoint { id: string; time: string; datasetId: string; execution: "execute" | "error" | "cancelled"; errorMessage?: string; scenarioIds?: string[] }

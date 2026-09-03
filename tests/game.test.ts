@@ -613,6 +613,7 @@ describe("game engine", () => {
     const campaign = structuredClone(fixture) as any;
     campaign.ranks.push({
       id: "rank.two", name: "Fixture Watch Officer", order: 2, grants: [], watchAuthority: 3,
+      eligibilityText: "The fixture promotion is earned.", appointmentText: "The fixture office opened a vacant watch desk.",
       condition: { op: "compare", left: { fact: "standing.value" }, relation: ">=", right: 0 },
     });
     const index = loadCampaign(campaign);
@@ -626,7 +627,10 @@ describe("game engine", () => {
 
   it("treats an already-earned authored promotion as idempotent", () => {
     const campaign = structuredClone(fixture) as any;
-    campaign.ranks.push({ id: "rank.two", name: "Fixture Clerk", order: 2, grants: [], watchAuthority: 1 });
+    campaign.ranks.push({
+      id: "rank.two", name: "Fixture Clerk", order: 2, grants: [], watchAuthority: 1,
+      eligibilityText: "The fixture promotion is earned.", appointmentText: "The fixture office opened a vacant clerk desk.",
+    });
     campaign.cases[0].outcomes[0].effects = [{ type: "promote", rankId: "rank.two" }];
     const index = loadCampaign(campaign);
     const state = createGameState(index, 19);

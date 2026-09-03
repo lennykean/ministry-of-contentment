@@ -126,7 +126,11 @@
     }
   ],
   "ranks": [
-    { "id": "rank.one", "name": "Fixture Rank", "order": 1, "grants": ["access.fixture"], "watchAuthority": 1 }
+    {
+      "id": "rank.one", "name": "Fixture Rank", "order": 1, "grants": ["access.fixture"], "watchAuthority": 1,
+      "eligibilityText": "The fixture appointment is accepted.",
+      "appointmentText": "The fixture office opened a vacant desk."
+    }
   ],
   "shifts": [
     {

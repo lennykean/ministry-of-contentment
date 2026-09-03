@@ -3,7 +3,7 @@ import campaign from "../content/campaign.json";
 import { createGameState, evaluateCondition, GameEngine } from "../src/game";
 import { loadCampaign } from "../src/loader";
 import { executeQuery } from "../src/query";
-import { renderDrawer } from "../src/ui/drawers";
+import { renderDrawer, renderLedger } from "../src/ui/drawers";
 import { acknowledgeOfficialItems, completeCampaign, controlsFor, mixedEndingRoutes, printAll } from "./campaign-route";
 
 function expectRankCadence(index: ReturnType<typeof loadCampaign>, rankTimeline: string[]): void {
@@ -320,10 +320,44 @@ describe("canonical campaign progression", () => {
       op: "state", value: { fact: `progress:shift:${shiftId}.phase` }, expected: "completed",
     })));
     expect(ranks.every((rank) => Array.isArray(rank.grants))).toBe(true);
+    expect(ranks.every((rank) => rank.eligibilityText.trim() && rank.appointmentText.trim())).toBe(true);
+    for (const rank of ranks) {
+      expect(`${rank.eligibilityText} ${rank.appointmentText}`, rank.id)
+        .not.toMatch(/(?:progress|access|watch_authority|world|relationship|tag):/);
+      for (const grant of rank.grants) expect(index.campaign.rightDeclarations.find((right) => right.id === grant)?.name, `${rank.id} ${grant}`).toBeTruthy();
+    }
+    for (const rank of ranks.slice(1)) expect(rank.appointmentText, rank.id).toMatch(/\b(?:vacan\w*|transfer\w*|absorb\w*|opened)\b/i);
     expect(ranks.at(-1)).toMatchObject({ id: "rank.party-leader", requiresWinningEnding: true });
     expect(index.campaign.cases.flatMap((item) => item.outcomes.flatMap((outcome) => outcome.effects ?? []))
       .filter((effect) => effect.type === "promote" || effect.type === "grant"
         || (effect.type === "change" && effect.target === "watch_capacity.limit"))).toEqual([]);
+  });
+
+  it("renders authored promotion eligibility and benefits without internal condition ids", () => {
+    const index = loadCampaign(campaign);
+    const game = new GameEngine(index, executeQuery, readyToCloseShift(index, 4, "rank.reconciliation-trainee"));
+    const personnel = renderDrawer("personnel", {
+      index, engine: game, registryKind: "metrics", registrySearch: "", selectedReport: "",
+    });
+
+    expect(personnel).toContain("The clerk&#039;s-seal review at the end of Shift 4 is complete.");
+    expect(personnel).toContain("The first national review class closed and left a Reconciliation Clerk vacancy.");
+    expect(personnel).toContain("Attendance and civic-service sources");
+    expect(personnel).toContain("Lantern watch authority");
+    expect(personnel).toContain("Standing-query capacity: 1");
+    expect(personnel).not.toMatch(/progress:|shift\.04\.clerks-seal|access\.civic-services|authority\.lantern/);
+
+    game.advanceShift();
+    const ledger = renderLedger({
+      shiftTitle: "Clerks Seal", shiftNumber: 4, closedAt: "2041-01-08T17:00:00Z", reportIds: [],
+      standingBefore: 0, standingAfter: 0, rankBefore: "rank.reconciliation-trainee", rankAfter: game.state.rankId,
+      runs: 0, hintsCalled: 0, minutesUnused: 0, watchesScored: 0, noticesAdded: 0, memoIds: [], conceptIds: [],
+    }, game, index);
+    expect(ledger).toContain("Appointed Reconciliation Clerk.");
+    expect(ledger).toContain("Eligibility met: The clerk&#039;s-seal review at the end of Shift 4 is complete.");
+    expect(ledger).toContain("The first national review class closed and left a Reconciliation Clerk vacancy.");
+    expect(ledger).toContain("New data access and authority: Attendance and civic-service sources; Lantern watch authority; Standing-query capacity: 1.");
+    expect(ledger).not.toMatch(/progress:|shift\.04\.clerks-seal|access\.civic-services|authority\.lantern/);
   });
 
   it("uses one rank gate for Registry, syntax, Worked execution, metrics, logs, and histograms", () => {

@@ -1881,7 +1881,9 @@
         "id",
         "name",
         "order",
-        "grants"
+        "grants",
+        "eligibilityText",
+        "appointmentText"
       ],
       "properties": {
         "id": {
@@ -1897,6 +1899,14 @@
         },
         "grants": {
           "$ref": "#/$defs/idList"
+        },
+        "eligibilityText": {
+          "type": "string",
+          "minLength": 1
+        },
+        "appointmentText": {
+          "type": "string",
+          "minLength": 1
         },
         "condition": {
           "$ref": "#/$defs/condition"

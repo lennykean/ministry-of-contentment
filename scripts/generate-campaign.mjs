@@ -623,18 +623,66 @@ const sourceStages = [
 // This is the campaign's one progression plan. Rank conditions, rights, source
 // visibility, concept visibility, and standing-query capacity are derived from it.
 const rankPlan = [
-  { id: "rank.reconciliation-trainee", accessRightId: "access.infrastructure", grants: ["access.registry", "access.infrastructure"], watchAuthority: 0 },
-  { id: "rank.reconciliation-clerk", accessRightId: "access.civic-services", grants: ["access.civic-services", "authority.lantern"], watchAuthority: 1, after: "shift.04.clerks-seal" },
-  { id: "rank.signal-registrar", accessRightId: "access.press", grants: ["access.press", "authority.press"], watchAuthority: 2, after: "shift.08.lantern-watch" },
-  { id: "rank.watch-officer", accessRightId: "access.population", grants: ["access.population"], watchAuthority: 2, after: "shift.12.watch-board" },
-  { id: "rank.wellbeing-analyst", accessRightId: "access.movement", grants: ["access.movement"], watchAuthority: 2, after: "shift.16.clean-bulletin" },
-  { id: "rank.assurance-liaison", accessRightId: "access.dispatch", grants: ["access.dispatch", "authority.threshold"], watchAuthority: 3, after: "shift.20.liaisons-card" },
-  { id: "rank.senior-reconciliation-officer", accessRightId: "access.audit", grants: ["access.audit"], watchAuthority: 3, after: "shift.24.first-visit" },
-  { id: "rank.district-auditor", accessRightId: "access.directorate", grants: ["access.directorate", "authority.ledger"], watchAuthority: 4, after: "shift.28.auditors-seal" },
-  { id: "rank.deputy-director", accessRightId: "access.contentment", grants: ["access.contentment"], watchAuthority: 5, after: "shift.32.district-audit" },
-  { id: "rank.director-public-assurance", accessRightId: "access.strategy", grants: ["access.strategy"], watchAuthority: 5, after: "shift.36.deputys-desk" },
-  { id: "rank.continuity-secretary", accessRightId: "access.continuity", grants: ["access.continuity", "authority.continuity"], watchAuthority: 5, after: "shift.40.directorate" },
-  { id: "rank.party-leader", grants: [], watchAuthority: 5, after: "shift.48.all-is-well", requiresWinningEnding: true },
+  {
+    id: "rank.reconciliation-trainee", accessRightId: "access.infrastructure", grants: ["access.registry", "access.infrastructure"], watchAuthority: 0,
+    eligibilityText: "The Ministry Intern appointment or Ministry Agent transfer is accepted.",
+    appointmentText: "The National Reconciliation Review assigns Personnel File Seven to its temporary review desk in the Signal Reconciliation Bureau.",
+  },
+  {
+    id: "rank.reconciliation-clerk", accessRightId: "access.civic-services", grants: ["access.civic-services", "authority.lantern"], watchAuthority: 1, after: "shift.04.clerks-seal",
+    eligibilityText: "The clerk's-seal review at the end of Shift 4 is complete.",
+    appointmentText: "The first national review class closed and left a Reconciliation Clerk vacancy.",
+  },
+  {
+    id: "rank.signal-registrar", accessRightId: "access.press", grants: ["access.press", "authority.press"], watchAuthority: 2, after: "shift.08.lantern-watch",
+    eligibilityText: "The Lantern Watch review at the end of Shift 8 is complete.",
+    appointmentText: "The Lantern Board transferred a vacant Signal Registrar desk into the national review.",
+  },
+  {
+    id: "rank.watch-officer", accessRightId: "access.population", grants: ["access.population"], watchAuthority: 2, after: "shift.12.watch-board",
+    eligibilityText: "The Watch Board review at the end of Shift 12 is complete.",
+    appointmentText: "The Watch Officer board opened one vacant seat after reviewing press queues and saved searches.",
+  },
+  {
+    id: "rank.wellbeing-analyst", accessRightId: "access.movement", grants: ["access.movement"], watchAuthority: 2, after: "shift.16.clean-bulletin",
+    eligibilityText: "The Clean Bulletin review at the end of Shift 16 is complete.",
+    appointmentText: "The new press watch absorbed a vacant Well-being Analyst desk into the national review.",
+  },
+  {
+    id: "rank.assurance-liaison", accessRightId: "access.dispatch", grants: ["access.dispatch", "authority.threshold"], watchAuthority: 3, after: "shift.20.liaisons-card",
+    eligibilityText: "The liaison's-card review at the end of Shift 20 is complete.",
+    appointmentText: "New liaison routes opened a vacant Assurance Liaison office between Reconciliation and Well-being Assurance.",
+  },
+  {
+    id: "rank.senior-reconciliation-officer", accessRightId: "access.audit", grants: ["access.audit"], watchAuthority: 3, after: "shift.24.first-visit",
+    eligibilityText: "The First Visit review at the end of Shift 24 is complete.",
+    appointmentText: "The field review transferred a vacant Senior Reconciliation Officer desk to Personnel File Seven.",
+  },
+  {
+    id: "rank.district-auditor", accessRightId: "access.directorate", grants: ["access.directorate", "authority.ledger"], watchAuthority: 4, after: "shift.28.auditors-seal",
+    eligibilityText: "The auditor's-seal review at the end of Shift 28 is complete.",
+    appointmentText: "The Office of Records Integrity transferred a vacant District Auditor office to Personnel File Seven after the watch audit.",
+  },
+  {
+    id: "rank.deputy-director", accessRightId: "access.contentment", grants: ["access.contentment"], watchAuthority: 5, after: "shift.32.district-audit",
+    eligibilityText: "The District Audit review at the end of Shift 32 is complete.",
+    appointmentText: "The district audit opened one of three vacant Deputy Director offices for appointment.",
+  },
+  {
+    id: "rank.director-public-assurance", accessRightId: "access.strategy", grants: ["access.strategy"], watchAuthority: 5, after: "shift.36.deputys-desk",
+    eligibilityText: "The deputy's-desk review at the end of Shift 36 is complete.",
+    appointmentText: "The portfolio review opened the vacant Director of Public Assurance office to Personnel File Seven.",
+  },
+  {
+    id: "rank.continuity-secretary", accessRightId: "access.continuity", grants: ["access.continuity", "authority.continuity"], watchAuthority: 5, after: "shift.40.directorate",
+    eligibilityText: "The Directorate review at the end of Shift 40 is complete.",
+    appointmentText: "The Directorate transferred an open Continuity Secretariat office to Personnel File Seven for the continuity exercise.",
+  },
+  {
+    id: "rank.party-leader", grants: [], watchAuthority: 5, after: "shift.48.all-is-well", requiresWinningEnding: true,
+    eligibilityText: "The All Is Well review at the end of Shift 48 is complete, and the Directorate has confirmed a winning record.",
+    appointmentText: "The leadership transfer vacated the Party Leader office for the successor confirmed by the Directorate.",
+  },
 ];
 const knownSources = new Set([...campaign.metrics.map((metric) => metric.name), ...campaign.logSources.map((source) => source.id)]);
 let cumulative = [];
@@ -2108,6 +2156,41 @@ function compositeThesis(item, thesis, roles) {
     observeAction: `Hold all ${subjects} results for review.`,
   };
 
+  const separatesPinAndClinic = roles.some((role) => role.domains.length === 2
+    && role.domains.includes("Pin gateway records") && role.domains.includes("clinic records"))
+    && roles.some((role) => role.domains.length === 1 && role.domains[0] === "Pin gateway records");
+  if (separatesPinAndClinic) {
+    const results = groupedRoles(roles).map(({ domains, roles: groupRoles }) => {
+      const query = `${groupRoles.length === 1 ? "Query" : "Queries"} ${naturalList(groupRoles.map((role) => String(role.number)))}`;
+      const records = `${location ? `${location} ` : ""}${domains.includes("clinic records") ? "Pin-gateway and clinic records" : "Pin-gateway records"}`;
+      return { query, records, sentence: `${query} ${groupRoles.length === 1 ? "returns" : "return"} ${records}.` };
+    });
+    const querySummary = results.map((result) => result.sentence).join(" ");
+    const scope = naturalList(results.map((result) => `${result.records} in ${result.query}`));
+    const finding = `${querySummary} These source scopes form separate results`;
+    const alternative = `${office} may merge the query containing Pin-gateway and clinic records with the query containing only Pin-gateway records`;
+    return {
+      ...common,
+      brief: querySummary,
+      question: `${querySummary} May ${office} merge them?`,
+      look: `${querySummary} Compare each result's source labels and records before filing.`,
+      scope,
+      finding,
+      findingTitle: "Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
+      findingSummary: `${finding}.`,
+      alternative,
+      alternativeTitle: "Pin-Gateway with Clinic Merged with Pin-Gateway Only",
+      alternativeSummary: sentence(alternative),
+      evidenceTitle: "Pin-Gateway with Clinic Kept Separate from Pin-Gateway Only",
+      assuredTitle: "Pin-Gateway with Clinic Merged with Pin-Gateway Only",
+      rebuttal: `${querySummary} Different source scopes cannot prove one complete service history.`,
+      targetedAction: "File the result containing Pin-gateway and clinic records separately from the Pin-gateway-only result.",
+      broadAction: "Merge the result containing Pin-gateway and clinic records with the Pin-gateway-only result.",
+      observeAction: "Hold both query results for separate review.",
+      querySummary,
+    };
+  }
+
   const membershipRole = roles.find((role) => role.queries.every((query) =>
     /100\s*\*.*sum\(ministry_registered_population\)\s*\/\s*sum\(ministry_registered_population\)/.test(query)));
   if (membershipRole) {
@@ -2254,7 +2337,11 @@ function completeThesis(item, roles) {
   const needsRoleComposition = base.composeFromRoles || base.kind === "fixed-records";
   const thesis = needsRoleComposition && roles.length > 1 ? compositeThesis(item, base, roles) : base;
   assert(thesis.rebuttal, `${item.id} lacks an evidence-limiting rebuttal`);
-  return { ...thesis, assuredConclusion: thesis.assuredConclusion ?? sentence(thesis.alternative) };
+  return {
+    ...thesis,
+    assuredConclusion: thesis.assuredConclusion ?? sentence(thesis.alternative),
+    broadAction: thesis.broadAction ?? (item.actId === "act.4.official-truth" ? `Declare that ${thesis.alternative}.` : undefined),
+  };
 }
 
 const actCopy = {
@@ -2322,12 +2409,7 @@ function sourceSummary(artifacts) {
         if (new RegExp(`\\b${name}\\b`).test(artifact.query)) sources.push(`metric \`${name}\``);
       }
       if (/\bup\b/.test(artifact.query)) sources.push("metric `up`");
-    } else {
-      for (const match of artifact.query.matchAll(/\{([^}]*)\}/g)) {
-        const service = match[1].match(/\bservice\s*(?:=|=~)\s*"([^"]+)"/);
-        if (service) sources.push(`log stream \`${service[1]}\``);
-      }
-    }
+    } else for (const service of logServiceNames(artifact.query)) sources.push(`log stream \`${service}\``);
   }
   const unique = [...new Set(sources)];
   if (unique.length === 0) return "the sources named in the work order";
@@ -2375,6 +2457,18 @@ const logDomains = new Map([
   ["continuity", "continuity records"],
 ]);
 
+function logServiceNames(query) {
+  const services = [];
+  for (const [, operator, value] of query.matchAll(/\bservice\s*(=|=~)\s*"([^"]+)"/g)) {
+    if (operator === "=") services.push(value);
+    else {
+      const pattern = new RegExp(`^(?:${value})$`);
+      for (const service of logDomains.keys()) if (pattern.test(service)) services.push(service);
+    }
+  }
+  return [...new Set(services)];
+}
+
 function artifactDomains(artifact) {
   const domains = [];
   for (const [metric, domain] of metricDomains) if (new RegExp(`\\b${metric}\\b`).test(artifact.query)) domains.push(domain);
@@ -2384,8 +2478,8 @@ function artifactDomains(artifact) {
     else domains.push("target reachability");
   }
   if (artifact.language === "logql") {
-    const services = [...artifact.query.matchAll(/\bservice\s*(?:=|=~)\s*"([^"]+)"/g)].map((match) => match[1]);
-    if (services.includes("pin-gateway") && /district="hillside"/.test(artifact.query) && /record_type="pin"/.test(artifact.query)) {
+    const services = logServiceNames(artifact.query);
+    if (services.length === 1 && services[0] === "pin-gateway" && /district="hillside"/.test(artifact.query) && /record_type="pin"/.test(artifact.query)) {
       domains.push("Hillside Registry Pin records");
     } else {
       for (const service of services) domains.push(logDomains.get(service) ?? `${service} records`);
@@ -2984,6 +3078,8 @@ for (const plan of rankPlan) {
   assert(rank, `progression references missing rank ${plan.id}`);
   rank.grants = [...plan.grants];
   rank.watchAuthority = plan.watchAuthority;
+  rank.eligibilityText = plan.eligibilityText;
+  rank.appointmentText = plan.appointmentText;
   if (plan.requiresWinningEnding) rank.requiresWinningEnding = true;
   else delete rank.requiresWinningEnding;
   if (!plan.after) delete rank.condition;
@@ -3113,7 +3209,7 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
       text: `Open Registry and find ${sourceSummary(sourceArtifacts)}. Query 1 uses ${naturalList(firstArtifactOperators)}. Use only labels and values shown in the Registry or work order.`,
     } : {
       level: "Orientation",
-      text: `Registry lists ${sourceSummary(sourceArtifacts)}.${printInstruction(item)}`,
+      text: `Registry lists ${sourceSummary(sourceArtifacts)}.${thesis.querySummary ? ` ${thesis.querySummary}` : ""}${printInstruction(item)}`,
     },
     oneArtifact && singleArtifactScaffolds.length === 1 ? {
       level: "Scaffold",

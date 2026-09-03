@@ -93,6 +93,46 @@ describe("campaign narrative integration", () => {
     expect(mixed.hints[2]!.text).toContain("Query 3 measures maximum dispatch duration.");
   });
 
+  it("names every source selected by a LogQL service regex without leaking regex syntax into prose", () => {
+    const expectedQueries = new Map([
+      ["case.007.upload-gap", ["Query 1 returns North Pin-gateway and clinic records.", "Query 2 returns North Pin-gateway records."]],
+      ["case.017.annex-heat", ["Query 1 returns North Pin-gateway records.", "Query 2 returns North Pin-gateway and clinic records."]],
+      ["case.028.watch-rehearsal", ["Query 1 returns North Pin-gateway and clinic records.", "Query 2 returns North Pin-gateway records."]],
+      ["case.043.repair-ranking", ["Query 1 returns North Pin-gateway and clinic records.", "Queries 2 and 3 return North Pin-gateway records."]],
+      ["case.055.record-rate", ["Query 1 returns North Pin-gateway records.", "Query 2 returns North Pin-gateway and clinic records."]],
+      ["case.085.cohort-anomaly", ["Query 1 returns North Pin-gateway records.", "Query 2 returns North Pin-gateway and clinic records."]],
+    ]);
+    for (const [caseId, expected] of expectedQueries) {
+      const item = index.cases.get(caseId)!;
+      const playerCopy = JSON.stringify(item, (key, value) => key === "query" ? undefined : value);
+      expect(playerCopy, caseId).toContain("Pin gateway");
+      expect(playerCopy, caseId).toContain("clinic");
+      expect(playerCopy, caseId).not.toMatch(/pin-gateway\|clinic|records records/i);
+      expect(playerCopy, caseId).not.toMatch(/Pin gateway(?: and clinic)? (?:matching records|parsed fields) and Pin gateway(?: and clinic)? matching records/i);
+      expect(playerCopy, caseId).not.toContain("despite their different units");
+      expect(item.hints[1]!.text, caseId).toContain("log stream `pin-gateway` and log stream `clinic`");
+      expect(item.variants.every((variant) => variant.workedEvidenceSet.artifacts.some((artifact) =>
+        artifact.query.includes('service=~"pin-gateway|clinic"'))), caseId).toBe(true);
+      for (const text of [
+        item.briefing, item.question, item.hypotheses[0]!.summary, item.technicalTruth.summary,
+        ...item.hints.map((hint) => hint.text),
+        item.report.conclusions.find((choice) => choice.id.endsWith(".conclusion.evidence"))!.text,
+        ...item.outcomes.map((result) => result.technicalExplanation ?? ""),
+      ]) {
+        expect(text, caseId).toContain("Query 1");
+        expect(text, caseId).toMatch(/Quer(?:y|ies) 2/);
+      }
+      for (const sentence of expected) {
+        expect([item.briefing, item.question, item.hypotheses[0]!.summary, item.technicalTruth.summary,
+          ...item.hints.slice(0, 2).map((hint) => hint.text)].every((text) => text.includes(sentence)), `${caseId}: ${sentence}`).toBe(true);
+      }
+      for (const choice of [...item.report.titles, ...item.report.conclusions, ...item.decisionChoices]) {
+        expect(choice.text, `${caseId}: ${choice.id}`).toMatch(/Pin-gateway/i);
+        expect(choice.text, `${caseId}: ${choice.id}`).toMatch(/clinic/i);
+      }
+    }
+  });
+
   it("keeps generated Party-membership grammar singular or plural as appropriate", () => {
     const membershipCases = index.campaign.cases.filter((item) => Object.values(item.technicalTruth.artifactRoles)
       .some((purpose) => purpose.includes("equal registered-population operands produce 100%")) && item.variants[0]!.workedEvidenceSet.artifacts.length > 1);
@@ -253,7 +293,7 @@ describe("campaign narrative integration", () => {
 
   it("puts the organization, vocabulary, and desk sequence in both readable appointment packets", () => {
     const appointments = index.campaign.opening.appointments!;
-    const organization = "Party Directorate → Ministry of Contentment → Signal Reconciliation → Elian Marr → you, Personnel File Seven";
+    const organization = "Party Directorate → Ministry of Contentment → Signal Reconciliation Bureau → Elian Marr → you, Personnel File Seven";
     const terms = [
       "Well-being Pin", "collector", "target", "scrape", "metric", "label", "series", "Registry", "query", "printout", "Evidence", "report",
     ];
@@ -268,6 +308,8 @@ describe("campaign narrative integration", () => {
       const body = appointment.body.join(" ");
       expect(body).toContain("Elian Marr, Reconciliation Supervisor");
       expect(body).toContain(organization);
+      expect(body).toContain("Directorate of Public Assurance publishes conclusions");
+      expect(body).toContain("Office of Records Integrity archives reports");
       expect(appointment.agreeLabel).toBe("AGREE");
       expect(appointment.complaintLabel).toBe("FILE A MOTION WITH THE MINISTRY OF COMPLAINTS");
       expect(appointment.finePrint).toHaveLength(3);
@@ -289,6 +331,11 @@ describe("campaign narrative integration", () => {
         lastDeskPart = position;
       }
     }
+    expect(Object.fromEntries(index.campaign.factions.map((faction) => [faction.id, faction.name]))).toMatchObject({
+      "faction.reconciliation": "Signal Reconciliation Bureau",
+      "faction.public-assurance": "Directorate of Public Assurance",
+      "faction.records-integrity": "Office of Records Integrity",
+    });
     expect(wordCount(appointments[1]!.body.join(" "))).toBeLessThan(wordCount(appointments[0]!.body.join(" ")));
   });
 
@@ -602,6 +649,23 @@ describe("campaign narrative integration", () => {
       .toContain("3.5 °C");
     expect(index.cases.get("case.132.allocation-result")!.report.conclusions.find((choice) => choice.id.endsWith(".conclusion.evidence"))!.text)
       .toContain("zero capacity");
+  });
+
+  it("keeps Act IV assured actions on the same specific operational claim", () => {
+    const actions = new Map([
+      ["case.104.threshold-notices", "Declare that one empty or zero reading proves district-wide absence."],
+      ["case.107.change-count", "Declare that one parsed record proves every threshold row has the same cause."],
+      ["case.112.auditor-assessment", "Declare that one district tail proves every unmatched facility has capacity."],
+      ["case.113.gauge-history", "Declare that missing histogram telemetry proves every route met the limit."],
+      ["case.123.raw-record", "Declare that the later Registry timestamp proves the reissued Pin automatically supersedes the retired Pin."],
+      ["case.127.ledger-watch", "Declare that the telemetry results prove service absence and make Reconciliation's later finding unnecessary."],
+    ]);
+    for (const [caseId, expected] of actions) {
+      const item = index.cases.get(caseId)!;
+      expect(item.decisionChoices.find((choice) => choice.id.endsWith(".decision.broad"))!.text, caseId).toBe(expected);
+    }
+    expect(index.campaign.cases.filter((item) => item.actId === "act.4.official-truth")
+      .flatMap((item) => item.decisionChoices).map((choice) => choice.text).join(" ")).not.toContain("wider misconduct");
   });
 
   it("keeps every assured hypothesis and report on the same affirmative Ministry overclaim", () => {

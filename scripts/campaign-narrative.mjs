@@ -287,6 +287,13 @@ const newspaperVariants = {
 };
 
 function setOpening(campaign) {
+  const factionNames = new Map([
+    ["faction.reconciliation", "Signal Reconciliation Bureau"],
+    ["faction.public-assurance", "Directorate of Public Assurance"],
+    ["faction.records-integrity", "Office of Records Integrity"],
+  ]);
+  for (const faction of campaign.factions) faction.name = factionNames.get(faction.id) ?? faction.name;
+
   campaign.opening.montage = [
     {
       id: "opening.montage.signal-grid", date: "2040-12-29", headline: "NATIONAL SIGNAL GRID COMPLETE",
@@ -304,7 +311,7 @@ function setOpening(campaign) {
 
   const trainee = campaign.opening.appointments.find((item) => item.id === "appointment.ministry-trainee");
   const agent = campaign.opening.appointments.find((item) => item.id === "appointment.ministry-agent");
-  const organization = "Chain of command: Party Directorate → Ministry of Contentment → Signal Reconciliation → Elian Marr → you, Personnel File Seven. Civic Services requests repairs; Public Assurance publishes conclusions; Records Integrity archives reports.";
+  const organization = "Chain of command: Party Directorate → Ministry of Contentment → Signal Reconciliation Bureau → Elian Marr → you, Personnel File Seven. Civic Services requests repairs; Directorate of Public Assurance publishes conclusions; Office of Records Integrity archives reports.";
   const terms = "Every citizen wears a Well-being Pin, which sends coarse vital, movement, attendance, and collector-contact readings to a district computer called a collector. A target is its address; a scrape tries to read it. A metric is a named number. Labels describe it; one fixed label set is a series. The Registry lists sources. A query asks for data. A printout freezes a result; pinned printouts become Evidence. A report combines Evidence, a conclusion, and an action.";
   const clerkTerms = "Well-being Pins send readings to district collectors. A target is a collector address; a scrape tries to read it. A metric is a named number, labels describe it, and each fixed label set is one series. The Registry lists sources. A query returns data. A printout freezes possible Evidence for a report.";
   const desk = "Work left to right: In Tray → The Contented Citizen → Work Order → green Registry → black query console → result view → Result Printer → Pin Evidence → Report → File. Hints stay below the Work Order. End Shift when the tray is clear. Unprinted queries stay private.";
@@ -313,10 +320,10 @@ function setOpening(campaign) {
     title: "Ministry Intern",
     subtitle: "Signal Reconciliation Bureau — supervised by Elian Marr",
     body: [
-      "FIRST APPOINTMENT. Elian Marr, Reconciliation Supervisor, receives your work and controls your clearance. You are Personnel File Seven.",
+      "FIRST APPOINTMENT. Elian Marr, Reconciliation Supervisor, receives your work. You are Personnel File Seven.",
       organization,
       terms,
-      `${desk} Marr will supervise four practice files; wrong queries carry no penalty. ${rule}`,
+      `${desk} Marr supervises four practice files; wrong queries carry no penalty. ${rule}`,
     ],
     finePrint: [
       "Ongoing interface help remains available. Placement remains active during absence, incapacity, location uncertainty, or pending confirmation of death.",
