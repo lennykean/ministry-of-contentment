@@ -1,0 +1,290 @@
+{
+  "schemaVersion": "moc-campaign-1",
+  "behaviorContractVersion": "moc-behavior-1",
+  "conceptRegistryVersion": "moc-ql-1",
+  "detectorContractVersion": "moc-detector-1",
+  "id": "fixture",
+  "title": "Engine Fixture",
+  "subtitle": "Not campaign content",
+  "standing": {
+    "minimum": -100,
+    "maximum": 100,
+    "bands": [
+      { "id": "standing.suspect", "name": "Suspect", "minimum": -100 },
+      { "id": "standing.acceptable", "name": "Acceptable", "minimum": 0 },
+      { "id": "standing.trusted", "name": "Trusted", "minimum": 35 },
+      { "id": "standing.excellent", "name": "Excellent", "minimum": 70 }
+    ]
+  },
+  "opening": {
+    "shiftId": "shift.one",
+    "rankId": "rank.one",
+    "standing": 0,
+    "watchCapacity": 1
+  },
+  "features": {
+    "promql": ["selector"],
+    "logql": ["selector"]
+  },
+  "concepts": [
+    {
+      "id": "fixture.selector",
+      "accessRightId": "access.fixture",
+      "language": "promql",
+      "family": "selector",
+      "stage": "Foundation",
+      "unitKinds": ["query-artifact"],
+      "competency": "Select a registered metric.",
+      "semantic": {
+        "kind": "A",
+        "selector": "artifact",
+        "node": "metric-selector",
+        "parameters": {}
+      },
+      "evidence": {
+        "kind": "R",
+        "selector": "artifact",
+        "property": "result-type",
+        "relation": "=",
+        "expected": "instant-vector"
+      },
+      "prerequisites": []
+    }
+  ],
+  "metrics": [
+    {
+      "name": "fixture_signal",
+      "accessRightId": "access.fixture",
+      "type": "gauge",
+      "unit": "state",
+      "description": "A loader and evaluator fixture signal.",
+      "source": "fixture",
+      "labels": ["district"],
+      "knownLabelValues": { "district": ["north"] },
+      "sampleSeries": { "labels": { "district": "north" }, "value": 1 },
+      "standard": false
+    }
+  ],
+  "logSources": [
+    {
+      "id": "fixture.logs",
+      "accessRightId": "access.fixture",
+      "description": "Fixture records.",
+      "streamLabels": ["job"],
+      "knownLabelValues": { "job": ["fixture"] },
+      "fields": [
+        { "name": "message", "type": "string", "description": "Fixture message.", "parser": "json" }
+      ],
+      "sampleRecord": "{\"message\":\"ok\"}"
+    }
+  ],
+  "datasets": [
+    {
+      "id": "data.one",
+      "series": [
+        {
+          "id": "series.one",
+          "metric": "fixture_signal",
+          "labels": { "district": "north" },
+          "samples": [
+            { "time": "2030-01-01T08:00:00Z", "value": 1 }
+          ]
+        }
+      ],
+      "streams": [
+        {
+          "id": "stream.one",
+          "sourceId": "fixture.logs",
+          "labels": { "job": "fixture" },
+          "records": [
+            { "id": "record.one", "time": "2030-01-01T08:00:00Z", "line": "{\"message\":\"ok\"}" }
+          ]
+        }
+      ]
+    }
+  ],
+  "factions": [],
+  "characters": [],
+  "worldDeclarations": [],
+  "relationshipDeclarations": [],
+  "tagDeclarations": [],
+  "rightDeclarations": [
+    { "id": "access.fixture", "kind": "access", "name": "Fixture sources", "initial": false }
+  ],
+  "acts": [
+    {
+      "id": "act.one",
+      "name": "Fixture Act",
+      "order": 1,
+      "conceptIds": ["fixture.selector"],
+      "reportPresentation": {
+        "guidance": "Match the report to the fixture evidence.",
+        "responseLabel": "FIXTURE RESPONSE",
+        "responseHeading": "Recorded",
+        "confirmation": "Fixture report filed."
+      }
+    }
+  ],
+  "ranks": [
+    { "id": "rank.one", "name": "Fixture Rank", "order": 1, "grants": ["access.fixture"], "watchAuthority": 1 }
+  ],
+  "shifts": [
+    {
+      "id": "shift.one",
+      "actId": "act.one",
+      "title": "Fixture Shift",
+      "directive": "Inspect the fixture.",
+      "time": "2030-01-01T08:00:00Z",
+      "datasetId": "data.one",
+      "caseSelectionMode": "fixed",
+      "inbox": [
+        { "kind": "case", "id": "case.one" }
+      ],
+      "next": []
+    }
+  ],
+  "cases": [
+    {
+      "id": "case.one",
+      "version": 1,
+      "actId": "act.one",
+      "title": "Fixture Case",
+      "briefing": "A fixture signal is available.",
+      "question": "Which signal is present?",
+      "operationalQuestionId": "question.one",
+      "difficulty": "Foundation",
+      "estimatedMinutes": 1,
+      "mode": "critical",
+      "datasetId": "data.one",
+      "availableSources": ["fixture_signal", "fixture.logs"],
+      "variants": [
+        {
+          "id": "variant.one",
+          "dataShapeId": "shape.one",
+          "datasetId": "data.one",
+          "evaluationTime": "2030-01-01T08:00:00Z",
+          "referenceSets": [
+            {
+              "id": "reference.selector",
+              "evidencePathId": "path.selector",
+              "artifacts": [
+                { "role": "signal", "language": "promql", "mode": "instant", "query": "fixture_signal" }
+              ]
+            },
+            {
+              "id": "reference.result",
+              "evidencePathId": "path.result",
+              "artifacts": [
+                { "role": "signal", "language": "promql", "mode": "instant", "query": "fixture_signal" }
+              ]
+            }
+          ],
+          "workedEvidenceSet": {
+            "evidencePathId": "path.selector",
+            "artifacts": [
+              {
+                "role": "signal",
+                "language": "promql",
+                "mode": "instant",
+                "query": "fixture_signal",
+                "explanation": "Select the registered signal and inspect whether a series is present.",
+                "print": {
+                  "visualization": "table",
+                  "showQuery": true,
+                  "showLabels": true,
+                  "showRange": true,
+                  "zeroAxis": false
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "evaluationTime": "2030-01-01T08:00:00Z",
+      "hypotheses": [
+        { "id": "hypothesis.present", "title": "Present", "summary": "The signal is present." },
+        { "id": "hypothesis.absent", "title": "Absent", "summary": "The signal is absent." }
+      ],
+      "languages": ["promql"],
+      "conceptIds": ["fixture.selector"],
+      "masteryUses": [
+        { "conceptId": "fixture.selector", "targetState": "Observed", "unitKind": "query-artifact", "maxAssistance": "Worked", "artifactSelectors": ["artifact[1]"] }
+      ],
+      "evidencePaths": [
+        {
+          "id": "path.selector",
+          "clauses": [
+            { "conceptId": "fixture.selector", "artifactSelectors": ["artifact[1]"], "requirements": { "kind": "A", "selector": "artifact", "node": "metric-selector", "parameters": {} } }
+          ]
+        },
+        {
+          "id": "path.result",
+          "clauses": [
+            {
+              "conceptId": "fixture.selector",
+              "artifactSelectors": ["artifact[1]"],
+              "requirements": {
+                "op": "all",
+                "items": [
+                  { "kind": "A", "selector": "artifact", "node": "metric-selector", "parameters": {} },
+                  { "kind": "R", "selector": "artifact", "property": "result-type", "relation": "=", "expected": "instant-vector" }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "technicalTruth": {
+        "hypothesisIds": ["hypothesis.present"],
+        "summary": "The series exists and has value one.",
+        "artifactRoles": { "signal": "The fixture signal query establishes that the registered series exists with value one." }
+      },
+      "ministryPreference": { "summary": "File the observed state.", "titleChoiceIds": ["title.signal"], "conclusionChoiceIds": ["conclusion.present"], "decisionChoiceIds": ["decision.clear"] },
+      "decisionId": "decision.one",
+      "decisionChoices": [
+        { "id": "decision.clear", "text": "Clear" },
+        { "id": "decision.review", "text": "Review" }
+      ],
+      "reportId": "report.one",
+      "hints": [
+        { "level": "Orientation", "text": "Inspect the metric registry." },
+        { "level": "Orientation", "text": "Select the registered fixture metric." },
+        { "level": "Scaffold", "text": "Use the metric name as the selector." },
+        { "level": "Worked", "text": "Run the complete selector.", "query": "fixture_signal" }
+      ],
+      "report": {
+        "minArtifacts": 1,
+        "maxArtifacts": 2,
+        "visualizations": ["table", "stat"],
+        "titles": [
+          { "id": "title.signal", "text": "Fixture Signal" }
+        ],
+        "conclusions": [
+          { "id": "conclusion.present", "text": "The signal is present." },
+          { "id": "conclusion.absent", "text": "The signal is absent." }
+        ]
+      },
+      "outcomes": [
+        {
+          "id": "outcome.fallback",
+          "technicalEvidence": "supported",
+          "technicalExplanation": "The fixture accepts any filed report.",
+          "ministryResponse": "Recorded."
+        }
+      ]
+    }
+  ],
+  "watchScenarios": [],
+  "narrativeItems": [],
+  "consequences": [],
+  "endings": [
+    {
+      "id": "ending.fixture",
+      "title": "Fixture Complete",
+      "body": "The engine fixture completed.",
+      "condition": { "op": "compare", "left": { "fact": "standing.value" }, "relation": ">=", "right": 100 },
+      "priority": 0,
+      "winning": true
+    }
+  ]
+}
