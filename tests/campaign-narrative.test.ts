@@ -89,7 +89,7 @@ describe("campaign narrative integration", () => {
     const mixed = index.cases.get("case.100.dispatch-choice")!;
     expect(mixed.question).toBe("What does prior-day collector queue report, and do mean Pin battery ratio and maximum dispatch duration describe the same fault?");
     expect(mixed.hints[2]!.text).toContain("Query 1 reads the prior-day collector queue.");
-    expect(mixed.hints[2]!.text).toContain("Query 2 measures mean Pin battery ratio.");
+    expect(mixed.hints[2]!.text).toContain("Query 2 measures the window mean of unwrapped Pin battery_ratio samples.");
     expect(mixed.hints[2]!.text).toContain("Query 3 measures maximum dispatch duration.");
   });
 
@@ -108,7 +108,7 @@ describe("campaign narrative integration", () => {
     const rolePurposes = (caseId: string) => Object.values(index.cases.get(caseId)!.technicalTruth.artifactRoles);
     expect(rolePurposes("case.070.current-position")[0]).toBe("Query 1 measures the window percentile of Assurance dispatch records.");
     expect(rolePurposes("case.100.dispatch-choice").slice(1)).toEqual([
-      "Query 2 measures the window mean of Pin gateway records.",
+      "Query 2 measures the window mean of unwrapped Pin battery_ratio samples.",
       "Query 3 measures the window maximum of Assurance dispatch records.",
     ]);
     expect(rolePurposes("case.116.audit-target")).toEqual([
@@ -123,7 +123,7 @@ describe("campaign narrative integration", () => {
       ["case.106.fixed-evaluation", 1, /^sum\(rate\(/, "Query 2 calculates the request-failure rate ratio from service request flow."],
       ["case.132.allocation-result", 0, / \/ on /, "Query 1 calculates the demand-to-capacity ratio."],
       ["case.132.allocation-result", 1, / unless on /, "Query 2 finds facility demand with no matching capacity."],
-      ["case.132.allocation-result", 2, /^max_over_time\(/, "Query 3 measures the window maximum of facility demand and facility capacity."],
+      ["case.132.allocation-result", 2, /^max_over_time\(/, "Query 3 measures the maximum demand-to-capacity ratio over the stated window."],
       ["case.142.multi-window", 0, /^max_over_time\(/, "Query 1 measures the window maximum of service request flow."],
       ["case.145.promql-cost", 1, /^max_over_time\(/, "Query 2 measures the window maximum of service request flow."],
       ["case.148.costly-evidence", 1, /^max_over_time\(/, "Query 2 measures the window maximum of service request flow."],
@@ -141,6 +141,34 @@ describe("campaign narrative integration", () => {
         expect(variant.workedEvidenceSet.artifacts[position]!.query, variant.id).toMatch(operation);
       }
     }
+  });
+
+  it("keeps the three final acceptance claims exact across every variant", () => {
+    const allocation = index.cases.get("case.132.allocation-result")!;
+    const maximumRatio = "Query 3 measures the maximum demand-to-capacity ratio over the stated window.";
+    expect(allocation.technicalTruth.artifactRoles["evidence-03"]).toBe(maximumRatio);
+    expect(allocation.hints[2]!.text).toContain(maximumRatio);
+    for (const variant of allocation.variants) {
+      expect(variant.workedEvidenceSet.artifacts[2]!.explanation, variant.id).toContain(maximumRatio.slice(8));
+    }
+
+    const battery = index.cases.get("case.138.set-or")!;
+    const meanBattery = "Query 3 measures the window mean of unwrapped Pin battery_ratio samples.";
+    expect(battery.technicalTruth.artifactRoles["evidence-03"]).toBe(meanBattery);
+    expect(battery.hints[2]!.text).toContain(meanBattery);
+    for (const variant of battery.variants) {
+      expect(variant.workedEvidenceSet.artifacts[2]!.query, variant.id).toMatch(/^avg_over_time\(.+\|\s*unwrap battery_ratio/);
+      expect(variant.workedEvidenceSet.artifacts[2]!.explanation, variant.id).toContain(meanBattery.slice(8));
+    }
+
+    const membership = index.cases.get("case.117.membership-reopen")!;
+    const assuredTitle = "Membership Reopen: Every Registered Person Is a Party Member";
+    const assuredConclusion = "Every registered person is a Party member.";
+    expect(membership.hypotheses[1]).toMatchObject({ title: assuredTitle, summary: assuredConclusion });
+    expect(membership.report.titles.find((entry) => entry.id.endsWith(".title.assured"))!.text).toBe(assuredTitle);
+    expect(membership.report.conclusions.find((entry) => entry.id.endsWith(".conclusion.assured"))!.text).toBe(assuredConclusion);
+    expect(membership.decisionChoices.find((entry) => entry.id.endsWith(".decision.broad"))!.text)
+      .toBe("Declare every registered person a Party member.");
   });
 
   it("preserves offsets and reset-versus-change semantics for both variants", () => {

@@ -197487,7 +197487,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Gate Movement, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Gate Movement, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -197706,7 +197706,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Gate Movement, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Gate Movement, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -198087,7 +198087,7 @@
         ],
         "summary": "Gate Movement's printouts show North mean Pin battery ratio and maximum dispatch duration answer different questions; they cannot form one result. They do not show that the allocation desk may combine Pin gateway and Assurance dispatch into one authoritative result.",
         "artifactRoles": {
-          "evidence-01": "Query 1 measures the window mean of Pin gateway records.",
+          "evidence-01": "Query 1 measures the window mean of unwrapped Pin battery_ratio samples.",
           "evidence-02": "Query 2 measures the window maximum of Assurance dispatch records."
         }
       },
@@ -198139,11 +198139,11 @@
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 2: `max_over_time({service=\"<service>\",district=\"north\"} | logfmt | unwrap duration(elapsed) | __error__=\"\" [30m])`. Query 1 measures mean Pin battery ratio. Query 2 measures maximum dispatch duration."
+          "text": "Query 1: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 2: `max_over_time({service=\"<service>\",district=\"north\"} | logfmt | unwrap duration(elapsed) | __error__=\"\" [30m])`. Query 1 measures the window mean of unwrapped Pin battery_ratio samples. Query 2 measures maximum dispatch duration."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: North mean Pin battery ratio and maximum dispatch duration answer different questions; they cannot form one result. Query 1 measures mean Pin battery ratio. Query 2 measures maximum dispatch duration."
+          "text": "Expected reading: North mean Pin battery ratio and maximum dispatch duration answer different questions; they cannot form one result. Query 1 measures the window mean of unwrapped Pin battery_ratio samples. Query 2 measures maximum dispatch duration."
         }
       ],
       "report": {
@@ -229388,7 +229388,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Dispatch Choice, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Dispatch Choice, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -229607,7 +229607,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Dispatch Choice, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Dispatch Choice, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -229981,7 +229981,7 @@
         "summary": "Dispatch Choice's printouts show collector queue, Pin gateway, and Assurance dispatch supply metric and record evidence; linking them requires matching time, place, and identity. They do not show that prior-day collector queue and mean Pin battery ratio and maximum dispatch duration prove one fault across every returned symptom.",
         "artifactRoles": {
           "evidence-01": "Query 1 reads the prior collector queue depth.",
-          "evidence-02": "Query 2 measures the window mean of Pin gateway records.",
+          "evidence-02": "Query 2 measures the window mean of unwrapped Pin battery_ratio samples.",
           "evidence-03": "Query 3 measures the window maximum of Assurance dispatch records."
         }
       },
@@ -230033,11 +230033,11 @@
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: `ministry_collector_queue_depth{district=\"<district>\"} offset 1d`. Query 2: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 3: `max_over_time({service=\"<service>\",district=\"north\"} | logfmt | unwrap duration(elapsed) | __error__=\"\" [30m])`. Query 1 reads the prior-day collector queue. Query 2 measures mean Pin battery ratio. Query 3 measures maximum dispatch duration."
+          "text": "Query 1: `ministry_collector_queue_depth{district=\"<district>\"} offset 1d`. Query 2: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 3: `max_over_time({service=\"<service>\",district=\"north\"} | logfmt | unwrap duration(elapsed) | __error__=\"\" [30m])`. Query 1 reads the prior-day collector queue. Query 2 measures the window mean of unwrapped Pin battery_ratio samples. Query 3 measures maximum dispatch duration."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: Collector queue, Pin gateway, and Assurance dispatch supply metric and record evidence; linking them requires matching time, place, and identity. Query 1 reads the prior-day collector queue. Query 2 measures mean Pin battery ratio. Query 3 measures maximum dispatch duration."
+          "text": "Expected reading: Collector queue, Pin gateway, and Assurance dispatch supply metric and record evidence; linking them requires matching time, place, and identity. Query 1 reads the prior-day collector queue. Query 2 measures the window mean of unwrapped Pin battery_ratio samples. Query 3 measures maximum dispatch duration."
         }
       ],
       "report": {
@@ -246455,7 +246455,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Prediction Limit, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Prediction Limit, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -246622,7 +246622,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Prediction Limit, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Prediction Limit, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -246899,7 +246899,7 @@
         ],
         "summary": "Prediction Limit's printouts show North mean Pin battery ratio and maximum dispatch duration answer different questions; they cannot form one result. They do not show that Records Integrity may combine Pin gateway and Assurance dispatch into one authoritative result.",
         "artifactRoles": {
-          "evidence-01": "Query 1 measures the window mean of Pin gateway records.",
+          "evidence-01": "Query 1 measures the window mean of unwrapped Pin battery_ratio samples.",
           "evidence-02": "Query 2 measures the window maximum of Assurance dispatch records."
         }
       },
@@ -246951,11 +246951,11 @@
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 2: `max_over_time({service=\"<service>\",district=\"north\"} | logfmt | unwrap duration(elapsed) | __error__=\"\" [30m])`. Query 1 measures mean Pin battery ratio. Query 2 measures maximum dispatch duration."
+          "text": "Query 1: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 2: `max_over_time({service=\"<service>\",district=\"north\"} | logfmt | unwrap duration(elapsed) | __error__=\"\" [30m])`. Query 1 measures the window mean of unwrapped Pin battery_ratio samples. Query 2 measures maximum dispatch duration."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: North mean Pin battery ratio and maximum dispatch duration answer different questions; they cannot form one result. Query 1 measures mean Pin battery ratio. Query 2 measures maximum dispatch duration."
+          "text": "Expected reading: North mean Pin battery ratio and maximum dispatch duration answer different questions; they cannot form one result. Query 1 measures the window mean of unwrapped Pin battery_ratio samples. Query 2 measures maximum dispatch duration."
         }
       ],
       "report": {
@@ -248817,8 +248817,8 @@
         },
         {
           "id": "case.117.membership-reopen.hypothesis.telemetry",
-          "title": "Party Membership Reconfirmed",
-          "summary": "The archived title is treated as proof that every registered person is a Party member."
+          "title": "Membership Reopen: Every Registered Person Is a Party Member",
+          "summary": "Every registered person is a Party member."
         }
       ],
       "languages": [
@@ -249073,7 +249073,7 @@
       "decisionChoices": [
         {
           "id": "case.117.membership-reopen.decision.broad",
-          "text": "Treat Membership Reopen as proof of wider misconduct.",
+          "text": "Declare every registered person a Party member.",
           "claims": [
             "claim.case.117.membership-reopen.broad"
           ]
@@ -249123,7 +249123,7 @@
         "titles": [
           {
             "id": "case.117.membership-reopen.title.assured",
-            "text": "Party Membership Reconfirmed",
+            "text": "Membership Reopen: Every Registered Person Is a Party Member",
             "claims": [
               "claim.case.117.membership-reopen.assured"
             ]
@@ -249139,7 +249139,7 @@
         "conclusions": [
           {
             "id": "case.117.membership-reopen.conclusion.assured",
-            "text": "The archived title is treated as proof that every registered person is a Party member.",
+            "text": "Every registered person is a Party member.",
             "claims": [
               "claim.case.117.membership-reopen.assured"
             ]
@@ -260974,7 +260974,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Deputy Promotion, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Deputy Promotion, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -261141,7 +261141,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Deputy Promotion, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Deputy Promotion, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -261405,7 +261405,7 @@
         "summary": "Deputy Promotion's printouts show collector queue and Pin gateway supply metric and record evidence; linking them requires matching time, place, and identity. They do not show that prior-day collector queue and mean Pin battery ratio prove one fault across every returned symptom.",
         "artifactRoles": {
           "evidence-01": "Query 1 reads the prior collector queue depth.",
-          "evidence-02": "Query 2 measures the window mean of Pin gateway records."
+          "evidence-02": "Query 2 measures the window mean of unwrapped Pin battery_ratio samples."
         }
       },
       "ministryPreference": {
@@ -261456,11 +261456,11 @@
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: `ministry_collector_queue_depth{district=\"<district>\"} offset 1d`. Query 2: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 1 reads the prior-day collector queue. Query 2 measures mean Pin battery ratio."
+          "text": "Query 1: `ministry_collector_queue_depth{district=\"<district>\"} offset 1d`. Query 2: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 1 reads the prior-day collector queue. Query 2 measures the window mean of unwrapped Pin battery_ratio samples."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: Collector queue and Pin gateway supply metric and record evidence; linking them requires matching time, place, and identity. Query 1 reads the prior-day collector queue. Query 2 measures mean Pin battery ratio."
+          "text": "Expected reading: Collector queue and Pin gateway supply metric and record evidence; linking them requires matching time, place, and identity. Query 1 reads the prior-day collector queue. Query 2 measures the window mean of unwrapped Pin battery_ratio samples."
         }
       ],
       "report": {
@@ -265743,7 +265743,7 @@
                 "language": "promql",
                 "mode": "instant",
                 "query": "max_over_time((ministry_facility_demand{district=\"north\"} / on (district, facility, service) ministry_facility_capacity{district=\"north\"})[30m:5m])",
-                "explanation": "For Allocation Result, this query measures the window maximum of facility demand and facility capacity. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Allocation Result, this query measures the maximum demand-to-capacity ratio over the stated window. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -266191,7 +266191,7 @@
                 "language": "promql",
                 "mode": "instant",
                 "query": "max_over_time((ministry_facility_demand{district=\"north\"} / on (district, facility, service) ministry_facility_capacity{district=\"north\"})[30m:5m])",
-                "explanation": "For Allocation Result, this query measures the window maximum of facility demand and facility capacity. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Allocation Result, this query measures the maximum demand-to-capacity ratio over the stated window. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -266533,7 +266533,7 @@
         "artifactRoles": {
           "evidence-01": "Query 1 calculates the demand-to-capacity ratio.",
           "evidence-02": "Query 2 finds facility demand with no matching capacity.",
-          "evidence-03": "Query 3 measures the window maximum of facility demand and facility capacity."
+          "evidence-03": "Query 3 measures the maximum demand-to-capacity ratio over the stated window."
         }
       },
       "ministryPreference": {
@@ -266584,11 +266584,11 @@
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: `ministry_facility_demand{district=\"<district>\"} / on (district, facility, service) ministry_facility_capacity{district=\"north\"}`. Query 2: `ministry_facility_demand{district=\"<district>\"} unless on (district, facility, service) ministry_facility_capacity{district=\"north\"}`. Query 3: `max_over_time((ministry_facility_demand{district=\"<district>\"} / on (district, facility, service) ministry_facility_capacity{district=\"north\"})[30m:5m])`. Query 1 calculates the demand-to-capacity ratio. Query 2 finds facility demand with no matching capacity. Query 3 measures the window maximum of facility demand and facility capacity."
+          "text": "Query 1: `ministry_facility_demand{district=\"<district>\"} / on (district, facility, service) ministry_facility_capacity{district=\"north\"}`. Query 2: `ministry_facility_demand{district=\"<district>\"} unless on (district, facility, service) ministry_facility_capacity{district=\"north\"}`. Query 3: `max_over_time((ministry_facility_demand{district=\"<district>\"} / on (district, facility, service) ministry_facility_capacity{district=\"north\"})[30m:5m])`. Query 1 calculates the demand-to-capacity ratio. Query 2 finds facility demand with no matching capacity. Query 3 measures the maximum demand-to-capacity ratio over the stated window."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: Ration Hall Three exceeds capacity; Clinic Nine and North Heat face zero capacity; River Clinic lacks capacity telemetry. Query 1 calculates the demand-to-capacity ratio. Query 2 finds facility demand with no matching capacity. Query 3 measures the window maximum of facility demand and facility capacity."
+          "text": "Expected reading: Ration Hall Three exceeds capacity; Clinic Nine and North Heat face zero capacity; River Clinic lacks capacity telemetry. Query 1 calculates the demand-to-capacity ratio. Query 2 finds facility demand with no matching capacity. Query 3 measures the maximum demand-to-capacity ratio over the stated window."
         }
       ],
       "report": {
@@ -272626,7 +272626,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Set Or, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Set Or, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -272845,7 +272845,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Set Or, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Set Or, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -273190,7 +273190,7 @@
         "artifactRoles": {
           "evidence-01": "Query 1 counts resets or value changes in attendance upload flow, as named by the active variant.",
           "evidence-02": "Query 2 reads the prior collector queue depth.",
-          "evidence-03": "Query 3 measures the window mean of Pin gateway records."
+          "evidence-03": "Query 3 measures the window mean of unwrapped Pin battery_ratio samples."
         }
       },
       "ministryPreference": {
@@ -273241,11 +273241,11 @@
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: use the active work order's <source, values, and operator>. Query 2: `ministry_collector_queue_depth{district=\"<district>\"} offset 1d`. Query 3: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 1 counts attendance-upload resets or value changes, as named by the active variant. Query 2 reads the prior-day collector queue. Query 3 measures mean Pin battery ratio."
+          "text": "Query 1: use the active work order's <source, values, and operator>. Query 2: `ministry_collector_queue_depth{district=\"<district>\"} offset 1d`. Query 3: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 1 counts attendance-upload resets or value changes, as named by the active variant. Query 2 reads the prior-day collector queue. Query 3 measures the window mean of unwrapped Pin battery_ratio samples."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: Attendance uploads, collector queue, and Pin gateway supply metric and record evidence; linking them requires matching time, place, and identity. Query 1 counts attendance-upload resets or value changes, as named by the active variant. Query 2 reads the prior-day collector queue. Query 3 measures mean Pin battery ratio."
+          "text": "Expected reading: Attendance uploads, collector queue, and Pin gateway supply metric and record evidence; linking them requires matching time, place, and identity. Query 1 counts attendance-upload resets or value changes, as named by the active variant. Query 2 reads the prior-day collector queue. Query 3 measures the window mean of unwrapped Pin battery_ratio samples."
         }
       ],
       "report": {
@@ -302895,7 +302895,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Courier Records, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Courier Records, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -303062,7 +303062,7 @@
                 "language": "logql",
                 "mode": "instant",
                 "query": "avg_over_time({service=\"pin-gateway\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])",
-                "explanation": "For Courier Records, this query measures the window mean of Pin gateway records. It returns one current value for each returned label set for the filing.",
+                "explanation": "For Courier Records, this query measures the window mean of unwrapped Pin battery_ratio samples. It returns one current value for each returned label set for the filing.",
                 "print": {
                   "visualization": "table",
                   "showQuery": true,
@@ -303339,7 +303339,7 @@
         ],
         "summary": "Courier Records' printouts show North mean Pin battery ratio and maximum dispatch duration answer different questions; they cannot form one result. They do not show that Continuity may combine Pin gateway and Assurance dispatch into one authoritative result.",
         "artifactRoles": {
-          "evidence-01": "Query 1 measures the window mean of Pin gateway records.",
+          "evidence-01": "Query 1 measures the window mean of unwrapped Pin battery_ratio samples.",
           "evidence-02": "Query 2 measures the window maximum of Assurance dispatch records."
         }
       },
@@ -303391,11 +303391,11 @@
         },
         {
           "level": "Scaffold",
-          "text": "Query 1: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 2: `max_over_time({service=\"<service>\",district=\"north\"} | logfmt | unwrap duration(elapsed) | __error__=\"\" [30m])`. Query 1 measures mean Pin battery ratio. Query 2 measures maximum dispatch duration."
+          "text": "Query 1: `avg_over_time({service=\"<service>\",district=\"north\"} | json | unwrap battery_ratio | __error__=\"\" [30m])`. Query 2: `max_over_time({service=\"<service>\",district=\"north\"} | logfmt | unwrap duration(elapsed) | __error__=\"\" [30m])`. Query 1 measures the window mean of unwrapped Pin battery_ratio samples. Query 2 measures maximum dispatch duration."
         },
         {
           "level": "Worked",
-          "text": "Expected reading: North mean Pin battery ratio and maximum dispatch duration answer different questions; they cannot form one result. Query 1 measures mean Pin battery ratio. Query 2 measures maximum dispatch duration."
+          "text": "Expected reading: North mean Pin battery ratio and maximum dispatch duration answer different questions; they cannot form one result. Query 1 measures the window mean of unwrapped Pin battery_ratio samples. Query 2 measures maximum dispatch duration."
         }
       ],
       "report": {
