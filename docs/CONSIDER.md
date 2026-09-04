@@ -2,7 +2,28 @@
 
 Written 2 September 2026 from a read-only audit of the current build. I played the prologue, the clearance shift, and the first shift, and read the content of all 49 shifts, the newspaper, the memos, and the endings. Everything here is a suggestion for the people writing the game, not a requirement. Where I give example copy it is to show the shape of the change, not the words to use. Counts are from the campaign content as it stood at 22:29 that evening.
 
-## Re-audit, 3 September
+## Re-audit, second pass (3 September, 15:50)
+
+Content as of 15:18. Typecheck clean, all 197 tests pass, the content validator passes, and a fresh scripted playthrough of the prologue, the clearance shift, and shift 1 ran with zero console errors, including a deliberate wrong filing that came back and was refiled Supported.
+
+| Item | Status now | Evidence |
+|---|---|---|
+| 1. Tempting lie | Done | 102 distinct titles, 162 conclusions, 56 actions across 196 cases, order shuffled. Both sides are concrete: "North-02 Answers; Queue Depth 2" against "Every District Service"; "support one fault only when time, place, and identity match" against "prove one fault across every returned symptom". The flipped tell from the first pass is gone. |
+| 2. Newspaper | Unchanged since first pass | Still 78 editions, 14 branching shifts, THE USEFUL DAY never changes with the previous filing, column items still printed twice each. |
+| 3. Work orders | Done for the brief, see the new finding below | "Lia Merev needs the reachable Pin gateways outside South before field crews leave." Closers no longer recycle (worst is 8 uses). 89 distinct questions, 157 distinct hypothesis summaries, competing explanations are now real rivals ("The query identifies only the returned targets" against "Every service in the district has the same state"). |
+| 4, 5, 7, 8 | Done | Signed memos, held outcomes on 11 cases, requester-credited relationships, Drost in the records. |
+| 6. Honesty costs | Rebalanced, see below | Honest filings cost a mark on 37 cases; the lie pays +2 on 37 cases and 0 on the other 153. |
+| 9. Acts and ranks | Half done | Ranks now carry grants, eligibility, and appointment text, shown in the Personnel File as "New data access and authority". Acts III and IV still share one concept list; Act VI still draws from all 66. |
+| 10. Prologue | Done except docs | Faction names now match the bible. The mechanics document and README still do not mention the newspaper, appointment, or clearance. |
+| 11. Learning | Mostly done | Hint rungs differ and rung 4 now states the claim the results support. Failure verdicts quote the filing. Validator passes all 196. Still: 70 cases share a worked set, every shift is four cases, watches cluster in shifts 35 to 39. |
+
+**New since the first pass.**
+
+- **The answer moved from the brief into a "Your task" box.** Every work order in every act now carries per-query steps that name the metric, the selector, the function, the window, and the aggregation. Shift 1: "Query 1: Select `up{service="pin-gateway",district!="south"}` for Pin gateway reachability." Act VI: "Select `ministry_active_pins{district=~"north",cohort="blue"}` for active Pins. Use `absent` to test whether the instant query returns no matching series." The brief above it is good, and the box beneath it turns the case back into transcription and makes the four hint rungs redundant. Consider keeping the task box to the result shape and what must be established ("one current value per district; whether the north gateway answers"), and letting the expression appear only at the Scaffold rung. If the box exists so the grader's requirements are transparent, it can say them in words ("a rate over a counter, grouped so district survives") without the expression.
+- **The honest-only route now ends in custody.** Summing the honest outcomes in shift order, Standing holds at 5 through shift 12, reaches 0 at shift 17, and falls to minus 32 by shift 48. Nothing in the campaign moves Standing upward except the 37 assured filings at +2, and no consequence changes Standing, so a player who never lies is escorted around shift 18 unless they lie roughly every other shift from then on. That is the "you have to lie to get ahead" the design asked for, and the retreat is finally reachable through honesty. Two things would make it feel authored rather than accidental: a warning in the fiction before the slide begins (Marr, around shift 12, saying what contradicting the morning edition costs), and a look at whether the held outcomes, which cost nothing, are too cheap a third way.
+- **Small visual things.** The "In tray" heading now runs into "Elm Exchange Competence · 2 open" on the shift 1 desk. The clearance form's "Reflects printouts" tag now sits on the correct option.
+
+## Re-audit, first pass (3 September, 01:00)
 
 Same method, run again against the content as of 00:56 on 3 September, while the rewrite was still in progress: a fresh scripted playthrough of the prologue, the clearance shift, and shift 1 (zero console errors), the game's own content validator, and the counts below. The tree typechecks; three or four tests fail depending on the run, all of them the rewrite's own new tests, including one that expects the honest route to end as Party Leader and currently ends as Continuity Secretary. That may be intended now that honesty costs standing, but it is worth a deliberate decision rather than a red test.
 

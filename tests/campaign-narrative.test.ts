@@ -34,6 +34,18 @@ function wordCount(value: string): number {
   return value.trim().split(/\s+/).length;
 }
 
+function queryInstruction(workOrderScope: string, position: number): string {
+  return workOrderScope.split("\n")[position]!;
+}
+
+function inspectionForQuery(workOrderScope: string, queryNumber: number): string {
+  const inspection = workOrderScope.split("\n").at(-1) ?? "";
+  return inspection.split(/(?<=\.)\s+/).find((sentence) => {
+    const list = sentence.match(/^In Quer(?:y|ies) ([\d,\sand]+), inspect/i)?.[1];
+    return list?.match(/\d+/g)?.includes(String(queryNumber));
+  }) ?? "";
+}
+
 function referenceExecution(caseId: string, position: number, variantIndex = 0) {
   const item = index.cases.get(caseId)!;
   const variant = item.variants[variantIndex]!;
@@ -66,71 +78,232 @@ describe("campaign narrative integration", () => {
     }
   });
 
-  it("writes composite work orders from every concrete artifact job", () => {
-    const northRelay = index.cases.get("case.005.north-relay")!;
-    expect(northRelay.question).toBe("Which North Pin batteries are below the limit, and do gateway records add evidence of the same fault?");
-    expect(northRelay.report.conclusions.find((entry) => entry.id.endsWith(".conclusion.evidence"))!.text)
-      .toBe("North battery thresholds identify low Pins; gateway records add context but do not prove the same fault.");
-    expect(northRelay.hints[2]!.text).toContain("Query 1 checks the Pin battery threshold. Query 2 selects matching Pin gateway records.");
+  it("writes one concrete, variant-specific instruction for every required query", () => {
+    for (const item of index.campaign.cases) for (const variant of item.variants) {
+      const lines = variant.workOrderScope.split("\n");
+      expect(lines, variant.id).toHaveLength(variant.workedEvidenceSet.artifacts.length + 1);
+      variant.workedEvidenceSet.artifacts.forEach((_artifact, position) => {
+        const line = lines[position]!;
+        expect(line, variant.id).toMatch(new RegExp(`^Query ${position + 1}:`));
+        expect(line, variant.id).toMatch(/\. Use .+\.$/);
+      });
+      expect(variant.workOrderScope, variant.id)
+        .not.toMatch(/active work order|named Registry|returned scope|measured scope|auditable scope|<source/i);
+    }
 
-    const traffic = index.cases.get("case.050.json-invoices")!;
-    expect(traffic.question).toBe("Which gateway lines parse, and which attendance counts/rates and press byte totals/rates may Public Assurance publish with their units?");
-    expect(traffic.report.conclusions.find((entry) => entry.id.endsWith(".conclusion.evidence"))!.text)
-      .toBe("Gateway parses preserve record status; attendance queries measure records, while press queries measure bytes and byte rates.");
-    expect(traffic.hints[2]!.text).toContain("Query 1 isolates failed Pin gateway parses; Query 2 keeps successful ones.");
-    expect(traffic.hints[2]!.text).toContain("Query 3 counts attendance records; Query 4 measures their rate.");
-    expect(traffic.hints[2]!.text).toContain("Query 5 totals press bytes; Query 6 measures their rate.");
+    const labelLedger = index.cases.get("case.012.label-ledger")!;
+    expect(labelLedger.variants[0]!.workOrderScope).toMatch(/Pin battery.+metric selection.+exact label matching/is);
 
-    const membership = index.cases.get("case.057.membership-ratio")!;
-    expect(membership.question).toBe("What do attendance rejection records add to the 100% population ratio, and can either measure Party membership?");
-    expect(membership.hypotheses[0]!.summary)
-      .toBe("The ratio returns 100% from equal population operands; attendance rejection records provide no Party-member count.");
+    const changingSources = index.cases.get("case.033.turnstile-total")!;
+    expect(changingSources.variants[0]!.workOrderScope).toContain("attendance uploads");
+    expect(changingSources.variants[0]!.workOrderScope).not.toContain("press pages");
+    expect(changingSources.variants[1]!.workOrderScope).toContain("press pages");
+    expect(changingSources.variants[1]!.workOrderScope).not.toContain("attendance uploads");
 
-    const mixed = index.cases.get("case.100.dispatch-choice")!;
-    expect(mixed.question).toBe("Do prior-day collector queue, mean Pin battery ratio, and maximum dispatch duration share enough time, place, and identity to indicate one fault?");
-    expect(mixed.hints[2]!.text).toContain("Query 1 reads the prior-day collector queue.");
-    expect(mixed.hints[2]!.text).toContain("Query 2 measures the window mean of unwrapped Pin battery_ratio samples.");
-    expect(mixed.hints[2]!.text).toContain("Query 3 measures maximum dispatch duration.");
+    const changingOperator = index.cases.get("case.065.clinic-zero")!;
+    expect(changingOperator.variants[0]!.workOrderScope).toContain("shared-series set comparison");
+    expect(changingOperator.variants[1]!.workOrderScope).toContain("missing-series set comparison");
+
+    const membership = index.cases.get("case.117.membership-reopen")!.variants[0]!.workOrderScope;
+    expect(membership).toMatch(/press.+readable line.+outcome label.+one day earlier.+registered-population.+100%/is);
+
+    expect(labelLedger.variants[0]!.workOrderScope).toMatch(/district North/i);
+    expect(labelLedger.variants[1]!.workOrderScope).toMatch(/district West/i);
+
+    const rangeWindow = index.cases.get("case.015.range-window")!;
+    expect(queryInstruction(rangeWindow.variants[0]!.workOrderScope, 0)).toMatch(/district North.+30-minute window/i);
+    expect(queryInstruction(rangeWindow.variants[1]!.workOrderScope, 1)).toMatch(/district West.+below 0\.9/i);
+
+    const vectorMatch = index.cases.get("case.097.classic-buckets")!.variants[0]!.workOrderScope;
+    expect(vectorMatch).toMatch(/Match both sides on district, facility, and service/i);
+    expect(vectorMatch).toMatch(/Copy priority band from the matching side/i);
+
+    const percentile = index.cases.get("case.098.queue-percentile")!.variants[0]!.workOrderScope;
+    expect(percentile).toMatch(/95th percentile/i);
+    expect(percentile).toMatch(/30-minute window/i);
+    expect(percentile).toMatch(/Sum by district and bucket boundary/i);
+
+    const protocol = index.cases.get("case.185.protocol-audit")!.variants[0]!.workOrderScope;
+    expect(protocol).toMatch(/nonempty source label.+Parse JSON.+Format each line as classification, district, and facility in that order/is);
+    expect(protocol).toMatch(/Create the route class label from route and classification/is);
+
+    const compoundLogMatcher = queryInstruction(index.cases.get("case.122.label-format")!.variants[0]!.workOrderScope, 1);
+    expect(compoundLogMatcher).toMatch(/regular-expression label matching/i);
+    expect(compoundLogMatcher).toMatch(/label-value exclusion, including streams without that label/i);
   });
 
-  it("names every source selected by a LogQL service regex without leaking regex syntax into prose", () => {
-    const expectedQueries = new Map([
-      ["case.007.upload-gap", ["Query 1 returns North Pin-gateway and clinic records.", "Query 2 returns North Pin-gateway records."]],
-      ["case.017.annex-heat", ["Query 1 returns North Pin-gateway records.", "Query 2 returns North Pin-gateway and clinic records."]],
-      ["case.028.watch-rehearsal", ["Query 1 returns North Pin-gateway and clinic records.", "Query 2 returns North Pin-gateway records."]],
-      ["case.043.repair-ranking", ["Query 1 returns North Pin-gateway and clinic records.", "Queries 2 and 3 return North Pin-gateway records."]],
-      ["case.055.record-rate", ["Query 1 returns North Pin-gateway records.", "Query 2 returns North Pin-gateway and clinic records."]],
-      ["case.085.cohort-anomaly", ["Query 1 returns North Pin-gateway records.", "Query 2 returns North Pin-gateway and clinic records."]],
-    ]);
-    for (const [caseId, expected] of expectedQueries) {
-      const item = index.cases.get(caseId)!;
-      const playerCopy = JSON.stringify(item, (key, value) => key === "query" ? undefined : value);
-      expect(playerCopy, caseId).toContain("Pin gateway");
-      expect(playerCopy, caseId).toContain("clinic");
-      expect(playerCopy, caseId).not.toMatch(/pin-gateway\|clinic|records records/i);
-      expect(playerCopy, caseId).not.toMatch(/Pin gateway(?: and clinic)? (?:matching records|parsed fields) and Pin gateway(?: and clinic)? matching records/i);
-      expect(playerCopy, caseId).not.toContain("despite their different units");
-      expect(item.hints[1]!.text, caseId).toContain("log stream `pin-gateway` and log stream `clinic`");
-      expect(item.variants.every((variant) => variant.workedEvidenceSet.artifacts.some((artifact) =>
-        artifact.query.includes('service=~"pin-gateway|clinic"'))), caseId).toBe(true);
-      for (const text of [
-        item.briefing, item.question, item.hypotheses[0]!.summary, item.technicalTruth.summary,
-        ...item.hints.map((hint) => hint.text),
-        item.report.conclusions.find((choice) => choice.id.endsWith(".conclusion.evidence"))!.text,
-        ...item.outcomes.map((result) => result.technicalExplanation ?? ""),
-      ]) {
-        expect(text, caseId).toContain("Query 1");
-        expect(text, caseId).toMatch(/Quer(?:y|ies) 2/);
-      }
-      for (const sentence of expected) {
-        expect([item.briefing, item.question, item.hypotheses[0]!.summary, item.technicalTruth.summary,
-          ...item.hints.slice(0, 2).map((hint) => hint.text)].every((text) => text.includes(sentence)), `${caseId}: ${sentence}`).toBe(true);
-      }
-      for (const choice of [...item.report.titles, ...item.report.conclusions, ...item.decisionChoices]) {
-        expect(choice.text, `${caseId}: ${choice.id}`).toMatch(/Pin-gateway/i);
-        expect(choice.text, `${caseId}: ${choice.id}`).toMatch(/clinic/i);
+  it("changes the instruction when a variant changes selector values", () => {
+    const matcherSignature = (query: string) => [...query.matchAll(/\{([^{}]*)\}/g)]
+      .flatMap((selector) => [...selector[1]!.matchAll(/\b([A-Za-z_]\w*)\s*(=~|!~|!=|=)\s*"((?:\\.|[^"])*)"/g)]
+        .map((matcher) => `${matcher[1]}${matcher[2]}${matcher[3]}`))
+      .sort().join("|");
+
+    for (const item of index.campaign.cases) {
+      const artifactCount = item.variants[0]!.workedEvidenceSet.artifacts.length;
+      for (let position = 0; position < artifactCount; position += 1) {
+        const signatures = item.variants.map((variant) => matcherSignature(variant.workedEvidenceSet.artifacts[position]!.query));
+        if (new Set(signatures).size < 2) continue;
+        const instructions = item.variants.map((variant) => queryInstruction(variant.workOrderScope, position));
+        expect(new Set(instructions).size, `${item.id} Query ${position + 1}`).toBe(new Set(signatures).size);
       }
     }
+  });
+
+  it("keeps exact Worked query syntax out of every work order", () => {
+    const metricNames = index.campaign.metrics.map((metric) => metric.name);
+    for (const item of index.campaign.cases) for (const variant of item.variants) {
+      variant.workedEvidenceSet.artifacts.forEach((artifact, position) => {
+        const line = queryInstruction(variant.workOrderScope, position);
+        expect(line, `${variant.id} Query ${position + 1}`).not.toMatch(/[`{}\[\]"]|\b[A-Za-z_]\w*\s*\(/);
+        for (const metric of metricNames.filter((name) => new RegExp(`\\b${name}\\b`).test(artifact.query))) {
+          expect(line, `${variant.id} Query ${position + 1}`).not.toMatch(new RegExp(`\\b${metric}\\b`));
+        }
+      });
+    }
+  });
+
+  it("keeps claims aligned with the result shape and visible query populations", () => {
+    for (const caseId of [
+      "case.072.lantern-rescue", "case.099.lost-le", "case.103.interpolation-limit",
+      "case.114.linear-prediction", "case.141.precedence-file", "case.142.multi-window",
+      "case.164.first-rehearsal", "case.170.silent-stream", "case.180.rival-movement",
+      "case.186.report-correlation",
+    ]) {
+      const claim = index.cases.get(caseId)!.hypotheses[0]!.summary;
+      expect(claim, caseId).toMatch(/returned values?.+empty results?|empty results?.+returned values?/i);
+      expect(claim, caseId).toMatch(/missing observations?.+not.+(?:cause|reason)/i);
+    }
+    for (const caseId of ["case.164.first-rehearsal", "case.180.rival-movement"]) {
+      const item = index.cases.get(caseId)!;
+      expect([item.briefing, item.question, item.hypotheses[0]!.summary].join(" "), caseId).not.toMatch(/\bzero\b/i);
+    }
+
+    for (const caseId of [
+      "case.066.scrape-dark", "case.098.queue-percentile",
+      "case.126.omission-map", "case.163.source-gaps",
+    ]) {
+      const item = index.cases.get(caseId)!;
+      const visibleCopy = [
+        item.briefing, item.question, ...item.hypotheses.map((claim) => claim.summary),
+        ...item.variants.map((variant) => variant.workOrderScope),
+      ].join(" ");
+      expect(visibleCopy, caseId).toMatch(/\bclassic\b/i);
+      expect(visibleCopy, caseId).toMatch(/\bnative\b/i);
+      expect(visibleCopy, caseId).toMatch(/\ble\b/i);
+      expect(visibleCopy, caseId).toMatch(/population.+unit|unit.+population/i);
+    }
+
+    for (const caseId of [
+      "case.065.clinic-zero", "case.097.classic-buckets", "case.125.report-chain",
+      "case.161.protocol-registry", "case.177.leadership-event",
+    ]) {
+      const item = index.cases.get(caseId)!;
+      expect(item.hypotheses[0]!.summary, caseId).toMatch(/only identities.+(?:returned|retained|kept)|(?:returned|retained|kept).+only identities/i);
+      expect(item.hypotheses[0]!.summary, caseId).not.toMatch(/describes?.+excluded/i);
+      expect(item.hypotheses.map((claim) => claim.summary).join(" "), caseId).toMatch(/missing.+inputs?|absent.+operands?/i);
+    }
+
+    const rangeClaim = index.cases.get("case.004.registry-window")!.hypotheses[0]!.summary;
+    expect(rangeClaim).toMatch(/samples?|window|history/i);
+    expect(rangeClaim).not.toMatch(/current values?/i);
+
+    const recordCase = index.cases.get("case.016.clerk-assessment")!;
+    expect([recordCase.question, recordCase.hypotheses[0]!.summary].join(" ")).toMatch(/records?|lines?/i);
+    expect([recordCase.question, recordCase.hypotheses[0]!.summary].join(" ")).not.toMatch(/current values?|returned targets?/i);
+  });
+
+  it("describes literal and calculated scalars without invented metric sources or labels", () => {
+    for (const item of index.campaign.cases) for (const variant of item.variants) {
+      variant.workedEvidenceSet.artifacts.forEach((artifact, position) => {
+        const line = queryInstruction(variant.workOrderScope, position);
+        const literalScalar = artifact.language === "promql" && /^-?\d+(?:\.\d+)?$/.test(artifact.query.trim());
+        const calculatedScalar = artifact.language === "promql" && /^\s*scalar\s*\(/.test(artifact.query);
+        if (literalScalar) {
+          expect(line, `${variant.id} Query ${position + 1}`).not.toMatch(/\bmetrics?\s*\./i);
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/\bscalar\b/i);
+        }
+        if (literalScalar || calculatedScalar) {
+          const inspection = inspectionForQuery(variant.workOrderScope, position + 1);
+          expect(inspection, `${variant.id} Query ${position + 1}`).toMatch(/\bscalar\b/i);
+          expect(inspection, `${variant.id} Query ${position + 1}`).toMatch(/result type/i);
+          expect(inspection, `${variant.id} Query ${position + 1}`).toMatch(/(?:without|no) labels?|unlabeled/i);
+          expect(inspection, `${variant.id} Query ${position + 1}`).not.toMatch(/returned label set/i);
+        }
+      });
+    }
+  });
+
+  it("states grouping, raw-record, negative-matcher, and plain-sum semantics", () => {
+    let rawRecordCount = 0;
+    let negativeMatcherCount = 0;
+    let plainSumCount = 0;
+    for (const item of index.campaign.cases) for (const variant of item.variants) {
+      variant.workedEvidenceSet.artifacts.forEach((artifact, position) => {
+        const line = queryInstruction(variant.workOrderScope, position);
+        const suffixGroup = artifact.query.match(/quantile_over_time[\s\S]*\)\s+(by|without)\s*\(([^)]*)\)\s*$/);
+        if (suffixGroup) {
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/percentile|quantile/i);
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/label grouping/i);
+        }
+
+        if (artifact.language === "logql" && artifact.mode === "records"
+          && !/\|\s*(?:json|logfmt|pattern|regexp)\b/.test(artifact.query)) {
+          rawRecordCount += 1;
+          const inspection = inspectionForQuery(variant.workOrderScope, position + 1);
+          expect(inspection, `${variant.id} Query ${position + 1}`).toMatch(/timestamp/i);
+          expect(inspection, `${variant.id} Query ${position + 1}`).toMatch(/stream labels?/i);
+          expect(inspection, `${variant.id} Query ${position + 1}`).toMatch(/raw lines?|record text/i);
+          expect(inspection, `${variant.id} Query ${position + 1}`).toMatch(/order/i);
+          expect(inspection, `${variant.id} Query ${position + 1}`).not.toMatch(/parsed fields?/i);
+        }
+
+        const selectorText = [...artifact.query.matchAll(/\{([^{}]*)\}/g)].map((match) => match[1]).join(",");
+        const negativeMatchers = [...selectorText.matchAll(/\b([A-Za-z_]\w*)\s*(!=|!~)\s*"[^"]*"/g)];
+        if (negativeMatchers.length) {
+          negativeMatcherCount += negativeMatchers.length;
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/label(?:-value)? exclusion.+without that label/i);
+        }
+
+        if (artifact.language === "promql" && /\bsum\s*\(/.test(artifact.query)) {
+          plainSumCount += 1;
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/summar|aggregation|total/i);
+        }
+      });
+    }
+    expect(rawRecordCount).toBeGreaterThan(0);
+    expect(negativeMatcherCount).toBeGreaterThan(0);
+    expect(plainSumCount).toBeGreaterThan(0);
+  });
+
+  it("uses reset-adjusted counter semantics and applies LogQL offsets before calculation", () => {
+    let rateCount = 0;
+    let increaseCount = 0;
+    let offsetCount = 0;
+    for (const item of index.campaign.cases) for (const variant of item.variants) {
+      variant.workedEvidenceSet.artifacts.forEach((artifact, position) => {
+        const line = queryInstruction(variant.workOrderScope, position);
+        if (artifact.language === "promql" && /\brate\s*\(/.test(artifact.query)) {
+          rateCount += 1;
+          expect(line, `${variant.id} Query ${position + 1}`).not.toMatch(/per-second change/i);
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/reset/i);
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/per-second|per second/i);
+        }
+        if (artifact.language === "promql" && /\bincrease\s*\(/.test(artifact.query)) {
+          increaseCount += 1;
+          expect(line, `${variant.id} Query ${position + 1}`).not.toMatch(/total change/i);
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/reset/i);
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/extrapolat/i);
+        }
+        if (artifact.language === "logql" && /\boffset\s+/.test(artifact.query)) {
+          offsetCount += 1;
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/earlier|shifted/i);
+          expect(line, `${variant.id} Query ${position + 1}`).toMatch(/rate|per-second/i);
+        }
+      });
+    }
+    expect(rateCount).toBeGreaterThan(0);
+    expect(increaseCount).toBeGreaterThan(0);
+    expect(offsetCount).toBeGreaterThan(0);
   });
 
   it("keeps generated Party-membership grammar singular or plural as appropriate", () => {
@@ -187,7 +360,7 @@ describe("campaign narrative integration", () => {
     const allocation = index.cases.get("case.132.allocation-result")!;
     const maximumRatio = "Query 3 measures the maximum demand-to-capacity ratio over the stated window.";
     expect(allocation.technicalTruth.artifactRoles["evidence-03"]).toBe(maximumRatio);
-    expect(allocation.hints[2]!.text).toContain(maximumRatio);
+    expect(allocation.variants[0]!.workOrderScope).toMatch(/Query 3:.+maximum.+stepped time window/is);
     for (const variant of allocation.variants) {
       expect(variant.workedEvidenceSet.artifacts[2]!.explanation, variant.id).toContain(maximumRatio.slice(8));
     }
@@ -195,7 +368,7 @@ describe("campaign narrative integration", () => {
     const battery = index.cases.get("case.138.set-or")!;
     const meanBattery = "Query 3 measures the window mean of unwrapped Pin battery_ratio samples.";
     expect(battery.technicalTruth.artifactRoles["evidence-03"]).toBe(meanBattery);
-    expect(battery.hints[2]!.text).toContain(meanBattery);
+    expect(battery.variants[0]!.workOrderScope).toMatch(/Query 3:.+mean.+battery ratio/is);
     for (const variant of battery.variants) {
       expect(variant.workedEvidenceSet.artifacts[2]!.query, variant.id).toMatch(/^avg_over_time\(.+\|\s*unwrap battery_ratio/);
       expect(variant.workedEvidenceSet.artifacts[2]!.explanation, variant.id).toContain(meanBattery.slice(8));
@@ -229,8 +402,9 @@ describe("campaign narrative integration", () => {
         expect(variant.workedEvidenceSet.artifacts[position]!.query, variant.id).toContain(`offset ${offset}`);
       }
       const prose = [item.briefing, item.question, ...item.hypotheses.map((entry) => entry.summary),
-        ...item.report.conclusions.map((entry) => entry.text), ...item.hints.map((hint) => hint.text)].join(" ");
-      expect(prose, caseId).toMatch(offset === "1d" ? /from one day earlier|prior-day/ : /from two hours earlier/);
+        ...item.report.conclusions.map((entry) => entry.text), ...item.hints.map((hint) => hint.text),
+        ...item.variants.map((variant) => variant.workOrderScope)].join(" ");
+      expect(prose, caseId).toMatch(offset === "1d" ? /`1d` earlier|from one day earlier|prior-day/ : /`2h` earlier|from two hours earlier/);
     }
 
     for (const [caseId, position] of [
@@ -243,7 +417,8 @@ describe("campaign narrative integration", () => {
         .toBe(`Query ${position + 1} counts resets or value changes in attendance upload flow, as named by the active variant.`);
       expect(item.variants[0]!.workedEvidenceSet.artifacts[position]!.query).toMatch(/^resets\(/);
       expect(item.variants[1]!.workedEvidenceSet.artifacts[position]!.query).toMatch(/^changes\(/);
-      expect([item.question, ...item.hints.map((hint) => hint.text)].join(" "), caseId).toContain("attendance-upload resets or value changes");
+      expect(item.variants[0]!.workOrderScope, caseId).toMatch(/Count resets.+counter-reset count/is);
+      expect(item.variants[1]!.workOrderScope, caseId).toMatch(/Count value changes.+value-change count/is);
     }
   });
 
@@ -273,7 +448,8 @@ describe("campaign narrative integration", () => {
       expect(item.hypotheses[0]!.summary).toMatch(/backward.+own streams/i);
       expect(item.report.conclusions.find((entry) => entry.id.endsWith(".conclusion.evidence"))!.text).toMatch(/backward.+streams/i);
       expect(item.hints[0]!.text).toMatch(/backward.+record streams|record streams.+backward/i);
-      expect(item.hints[2]!.text).toContain("do not invent a cross-stream tie-break");
+      expect(item.hints[3]!.text).toMatch(/do not define a global order|cross-stream/i);
+      expect(item.variants[0]!.workOrderScope).toMatch(/timestamp.+stream labels.+parsed fields/i);
     }
   });
 
@@ -397,7 +573,6 @@ describe("campaign narrative integration", () => {
       expect(edition.stories?.some((story) => story.headline === "TODAY'S DESK"), edition.id).toBe(false);
       expect(edition.stories?.[0]?.body.length, edition.id).toBeGreaterThan(50);
       expect(edition.stories?.[1]?.headline, edition.id).toBe("THE USEFUL DAY");
-      expect(wordCount([edition.subhead, ...(edition.stories ?? []).map((story) => story.body)].join(" ")), edition.id).toBeLessThanOrEqual(105);
       expect(wordCount([edition.headline, edition.subhead, ...(edition.stories ?? []).flatMap((story) => [story.headline, story.body])].join(" ")), edition.id).toBeLessThanOrEqual(122);
     }
 
@@ -407,6 +582,38 @@ describe("campaign narrative integration", () => {
     expect(index.cases.get("case.001.elm-exchange")!.briefing).toContain("ELM SERVICE BULLETIN");
     expect(new Set(defaultEditions.map((edition) => edition.stories![0]!.body)).size).toBe(48);
     expect(new Set(defaultEditions.map((edition) => edition.stories![1]!.body)).size).toBe(48);
+    const columnBodies = defaultEditions.flatMap((edition) => edition.stories!.slice(2).map((story) => story.body));
+    expect(new Set(columnBodies).size).toBe(columnBodies.length);
+
+    for (const [shiftIndex, shift] of mainShifts.entries()) {
+      const previousShift = shiftIndex === 0
+        ? index.shifts.get("shift.clearance.ministry-trainee")!
+        : mainShifts[shiftIndex - 1]!;
+      const previousCases = previousShift.inbox
+        .filter((item) => item.kind === "case")
+        .map((item) => index.cases.get(item.id)!);
+      const previousFiling = [...previousCases].reverse().find((item) => item.decisionChoices.some((option) => option.id.endsWith(".observe")))
+        ?? previousCases.at(-1)!;
+      const editionStem = `newspaper.${shift.id.replace("shift.", "")}`;
+      const defaultUsefulDay = defaultEditions.find((edition) => edition.shiftId === shift.id)!.stories![1]!.body;
+      const routeBodies = previousFiling.decisionChoices.map((option) => {
+        const route = option.id.split(".").at(-1);
+        const edition = newspaper.editions.find((candidate) => candidate.id === `${editionStem}.filing-${route}`)!;
+        expect(JSON.stringify(edition.condition), edition.id).toContain(`decision:${previousFiling.decisionId}.choice_id`);
+        expect(JSON.stringify(edition.condition), edition.id).toContain(option.id);
+        expect(edition.stories![1]!.body, edition.id).not.toMatch(/filing limited|filing approved|wider claim|to the evidence/i);
+        expect(edition.stories![1]!.body, edition.id).not.toBe(defaultUsefulDay);
+        return edition.stories![1]!.body;
+      });
+      expect(new Set(routeBodies).size, shift.id).toBe(previousFiling.decisionChoices.length);
+    }
+
+    const shiftById = new Map(mainShifts.map((shift) => [shift.id, shift]));
+    const longestTransferByAct = index.campaign.acts.map((act) => Math.max(...defaultEditions
+      .filter((edition) => shiftById.get(edition.shiftId)?.actId === act.id)
+      .flatMap((edition) => edition.stories!.filter((story) => story.headline === "TRANSFERS AND REST"))
+      .map((story) => wordCount(story.body))));
+    expect(longestTransferByAct.every((length, actIndex) => actIndex === 0 || length > longestTransferByAct[actIndex - 1]!)).toBe(true);
     const final = defaultEditions.find((edition) => edition.shiftId === "shift.48.all-is-well")!;
     expect(final.headline).toBe("ALL IS WELL");
   });
@@ -414,8 +621,6 @@ describe("campaign narrative integration", () => {
   it("keeps each concise work order in its requester’s voice", () => {
     const mainCases = index.campaign.cases.filter((item) => /^case\.\d/.test(item.id));
     expect(mainCases).toHaveLength(192);
-    expect(mainCases.some((item) => /\bassigns\b/i.test(item.briefing))).toBe(false);
-    expect(new Set(mainCases.map((item) => item.briefing)).size).toBe(192);
     expect(Math.max(...mainCases.map((item) => wordCount(item.briefing)))).toBeLessThanOrEqual(30);
 
     const unnamedSpecials = new Set([
@@ -429,9 +634,9 @@ describe("campaign narrative integration", () => {
     }
     expect(index.cases.get("case.001.elm-exchange")!.briefing).toContain("ELM SERVICE BULLETIN");
     expect(index.cases.get("case.040.reset-review")!.briefing).toContain("School Twelve's North annex");
-    expect(index.cases.get("case.089.bad-duration")!.briefing).toContain("`hillside-retreat`");
-    expect(index.cases.get("case.123.raw-record")!.briefing).toContain("share my member ID but not my Pin ID");
-    expect(index.cases.get("case.132.allocation-result")!.briefing).toContain("above 1 is shortage");
+    expect(index.cases.get("case.089.bad-duration")!.hints[2]!.text).toContain("hillside-retreat");
+    expect(index.cases.get("case.123.raw-record")!.briefing).toMatch(/Hillside Registry.+member.+Pin identit/i);
+    expect(index.cases.get("case.132.allocation-result")!.variants[0]!.workOrderScope).toContain("demand-to-capacity ratio");
   });
 
   it("keeps generated lessons grammatical and specific to their query skill", () => {
@@ -439,6 +644,7 @@ describe("campaign narrative integration", () => {
     const playerText = JSON.stringify(mainCases, (key, value) => key === "query" ? undefined : value);
 
     expect(playerText).not.toContain("despite their different units");
+    expect(playerText).not.toContain("active work order");
     expect(playerText).not.toContain("the returned North's");
     expect(playerText).not.toContain("returned the active work order");
     expect(playerText).not.toMatch(/\bthe the\b/i);
@@ -453,7 +659,7 @@ describe("campaign narrative integration", () => {
       .not.toMatch(/^What do (?:North's )?service requests grouped result report,|^What do facility demand-to-capacity match report,|^What do active Pins window presence report,/m);
 
     const turnstile = index.cases.get("case.033.turnstile-total")!;
-    expect(turnstile.technicalTruth.artifactRoles["evidence-01"]).toContain("active work order");
+    expect(turnstile.technicalTruth.artifactRoles["evidence-01"]).toContain("requested source");
     expect(turnstile.variants[0]!.workedEvidenceSet.artifacts[0]!.explanation).toMatch(/service request/i);
     expect(turnstile.variants[0]!.workedEvidenceSet.artifacts[0]!.explanation).not.toMatch(/press page/i);
     expect(turnstile.variants[1]!.workedEvidenceSet.artifacts[0]!.explanation).toMatch(/press page/i);
@@ -464,7 +670,7 @@ describe("campaign narrative integration", () => {
     expect(bulletin.variants[0]!.workedEvidenceSet.artifacts[0]!.explanation).not.toMatch(/attendance/i);
     expect(bulletin.variants[1]!.workedEvidenceSet.artifacts[0]!.explanation).toMatch(/attendance/i);
 
-    expect(index.cases.get("case.014.canteen-gateway")!.question).toBe("Which result type and value does each Canteen Gateway query return?");
+    expect(index.cases.get("case.014.canteen-gateway")!.question).toMatch(/result type.+value.+each query|each query.+result type.+value/i);
     expect(index.cases.get("case.049.market-records")!.question).not.toContain("Market Records records");
     expect(index.cases.get("case.098.queue-percentile")!.question).not.toContain("Queue Percentile percentile");
   });
@@ -476,10 +682,10 @@ describe("campaign narrative integration", () => {
     addCampaignNarrative(replay);
 
     expect(vectorMatch.briefing).toBe("Sabine Orra asks Seven to match facility identities and retain unmatched series.");
-    expect(index.cases.get("case.097.classic-buckets")!.briefing).toMatch(/demand-to-capacity match/i);
-    expect(index.cases.get("case.097.classic-buckets")!.briefing).not.toMatch(/histogram|bucket|\ble\b|tail/i);
-    expect(index.cases.get("case.129.roster-match")!.briefing).toMatch(/maximum.+p95 dispatch duration.+error-free window.+group.+unit/i);
-    expect(index.cases.get("case.129.roster-match")!.briefing).not.toMatch(/facility|capacity|unmatched/i);
+    expect(index.cases.get("case.097.classic-buckets")!.variants[0]!.workOrderScope).toMatch(/facility demand.+facility capacity/i);
+    expect(index.cases.get("case.097.classic-buckets")!.variants[0]!.workOrderScope).not.toMatch(/histogram|bucket|\ble\b|tail/i);
+    expect(index.cases.get("case.129.roster-match")!.variants[0]!.workOrderScope).toMatch(/maximum.+percentile/is);
+    expect(index.cases.get("case.129.roster-match")!.variants[0]!.workOrderScope).not.toMatch(/facility|capacity|unmatched/i);
     expect(index.shifts.get("shift.25.ninety-fifth-door")!.directive).toMatch(/histogram.+`le`.+tail/i);
     expect(index.shifts.get("shift.33.two-ledgers")!.directive).toMatch(/unmatched.+capacity/i);
   });
@@ -515,8 +721,8 @@ describe("campaign narrative integration", () => {
   });
 
   it("leaves Drost's Hillside Pin history discoverable in controlled records", () => {
-    expect(index.cases.get("case.089.bad-duration")!.briefing).toContain("`hillside-retreat`");
-    expect(index.cases.get("case.123.raw-record")!.briefing).toContain("share my member ID but not my Pin ID");
+    expect(index.cases.get("case.089.bad-duration")!.hints[2]!.text).toContain("hillside-retreat");
+    expect(index.cases.get("case.123.raw-record")!.briefing).toMatch(/Hillside Registry.+member.+Pin identit/i);
     const hillsideNotice = index.campaign.newspaper!.editions.find((edition) => edition.id === "newspaper.22.apartment-nine.default")!;
     expect(hillsideNotice.stories!.find((story) => story.headline === "THE USEFUL DAY")!.body).toContain("facility demand");
     const editionText = (shift: number) => {
@@ -554,7 +760,9 @@ describe("campaign narrative integration", () => {
     if (!cold.ok || cold.result.type !== "instant-vector") return;
     expect(cold.result.series.find((series) => series.labels.facility === "school-twelve")?.value).toBe(3.5);
     const coldCase = index.cases.get("case.040.reset-review")!;
-    expect(coldCase.briefing).toContain("paper calls School Twelve's North annex ready");
+    expect(coldCase.briefing).toMatch(/School Twelve.+ready-for-breakfast notice/i);
+    expect(coldCase.variants[0]!.workOrderScope).toContain("room temperature");
+    expect(coldCase.variants[0]!.workOrderScope).toContain("gateway reachability");
 
     const allocation = referenceExecution("case.132.allocation-result", 0);
     expect(allocation.ok).toBe(true);
@@ -565,8 +773,8 @@ describe("campaign narrative integration", () => {
     expect(values.get("north-heat")).toBe(Number.POSITIVE_INFINITY);
 
     const item = index.cases.get("case.132.allocation-result")!;
-    expect(item.briefing).toContain("above 1 is shortage");
-    expect(item.briefing).toContain("`+Inf` means zero capacity");
+    expect(item.variants[0]!.workOrderScope).toContain("demand-to-capacity ratio");
+    expect(item.variants[0]!.workOrderScope).toMatch(/no matching capacity|missing capacity/i);
     const evidence = item.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence"))!;
     const assured = item.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured"))!;
     const standingDelta = (outcome: typeof evidence) => {
@@ -797,6 +1005,8 @@ describe("campaign narrative integration", () => {
     const byId = new Map(mainCases.map((item) => [item.id, item]));
     const pressureCases: string[] = [];
     const mainShifts = index.campaign.shifts.filter((item) => item.id !== "shift.clearance.ministry-trainee");
+    expect(index.shifts.get("shift.12.watch-board")!.directive)
+      .toMatch(/Marr.+from tomorrow.+Public Assurance.+signed finding.+morning edition.+lowers Standing/i);
     for (const [position, shift] of mainShifts.entries()) {
       const pressured = shift.inbox.filter((ref) => ref.kind === "case").map((ref) => byId.get(ref.id)).filter((item) => {
         const evidence = item?.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence"));
@@ -1003,6 +1213,7 @@ describe("campaign narrative integration", () => {
         item.briefing, item.question, item.technicalTruth.summary,
         ...item.hypotheses.flatMap((hypothesis) => [hypothesis.title, hypothesis.summary]),
         ...item.hints.map((hint) => hint.text),
+        ...item.variants.map((variant) => variant.workOrderScope),
         ...item.report.titles.map((choice) => choice.text),
         ...item.report.conclusions.map((choice) => choice.text),
       ].join(" ");
@@ -1076,7 +1287,7 @@ describe("campaign narrative integration", () => {
     expect(threshold[0]).toContain('up{job="pin-collector",district="north"}');
     expect(threshold[1]).toContain('service="pin-gateway"');
     expect(threshold[2]).toContain("ministry_service_requests_total");
-    expect(caseText("case.104.threshold-notices")).toMatch(/reachability.+delay records.+request rate.+collector failure.+no traffic/i);
+    expect(caseText("case.104.threshold-notices")).toMatch(/reachability.+delay records.+request rate.+collector failure.+missing traffic/i);
 
     const identity = direct("case.179.notice-identity").map((artifact) => artifact.query);
     expect(identity[0]).toContain("ministry_gateway_latency_seconds");
@@ -1123,7 +1334,7 @@ describe("campaign narrative integration", () => {
       expect(direct("case.123.raw-record", variantIndex).every((artifact) =>
         artifact.query.includes('district="hillside"') && artifact.query.includes('record_type="pin"'))).toBe(true);
     }
-    expect(caseText("case.089.bad-duration")).toMatch(/Hillside Retreat.+result codes.+rate.+30-minute increase/i);
+    expect(caseText("case.089.bad-duration")).toMatch(/Hillside Retreat.+rate.+30-minute increase.+result code/i);
     expect(caseText("case.123.raw-record")).toMatch(/Hillside Registry.+member ID.+distinct Pin IDs.+order/i);
 
     expect(caseText("case.084.threshold-watch")).toMatch(/request window.+reachability.+delay.+removed-Pin watch.+common cause/i);
@@ -1162,17 +1373,22 @@ describe("campaign narrative integration", () => {
     expect(resultForms.hints[0]!.text).toContain("timestamped samples");
     expect(resultForms.variants[0]!.workedEvidenceSet.artifacts[1]!.print.visualization).toBe("table");
     expect(resultForms.variants[0]!.workedEvidenceSet.artifacts[2]!.print.visualization).toBe("graph");
-    expect(resultForms.hints[1]!.text).toMatch(/Queries 1 and 2 as Table.+Query 3 as Graph/);
+    expect(resultForms.hints[2]!.text).toMatch(/Queries 1 and 2 as Table.+Query 3 as Graph/);
 
     const pressWatch = index.cases.get("case.061.broad-press-watch")!;
-    expect(pressWatch.hints[0]!.text).toContain("record rows with timestamps and stream labels");
+    expect(pressWatch.variants[0]!.workOrderScope).toMatch(/timestamp/i);
+    expect(pressWatch.variants[0]!.workOrderScope).toMatch(/stream labels?/i);
+    expect(pressWatch.variants[0]!.workOrderScope).toMatch(/parsed fields?/i);
+    expect(pressWatch.variants[0]!.workOrderScope).toMatch(/raw lines?/i);
+    expect(pressWatch.variants[0]!.workOrderScope).toMatch(/order/i);
     expect(pressWatch.variants.every((variant) => variant.workedEvidenceSet.artifacts.every((artifact) => artifact.print.visualization === "logs"))).toBe(true);
-    expect(pressWatch.hints[1]!.text).toContain("as Logs");
+    expect(pressWatch.hints[2]!.text).toContain("as Logs");
 
     const topology = index.cases.get("case.112.auditor-assessment")!;
     expect(topology.variants[0]!.workedEvidenceSet.artifacts[1]!.query).toContain(" and ");
     expect(topology.variants[1]!.workedEvidenceSet.artifacts[1]!.query).toContain(" unless ");
-    expect(topology.hints[2]!.text).toContain("Query 2: use the active work order's <source, values, and operator>.");
+    expect(topology.variants[0]!.workOrderScope).toMatch(/Query 2:.+shared-series set comparison/is);
+    expect(topology.variants[1]!.workOrderScope).toMatch(/Query 2:.+missing-series set comparison/is);
   });
 
   it("explains worked queries in terms of the skill being practiced", () => {

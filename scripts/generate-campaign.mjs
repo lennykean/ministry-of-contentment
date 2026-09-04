@@ -70,7 +70,7 @@ function setDirectQuery(number, position, queryForVariant) {
     set.artifacts[position].query = query;
     if (variant.workedEvidenceSet.artifacts[position]) {
       variant.workedEvidenceSet.artifacts[position].query = query;
-      variant.workedEvidenceSet.artifacts[position].explanation = `Worked evidence for ${item.title}: run the authored ${set.artifacts[position].language.toUpperCase()} expression, then inspect its returned labels, values, records, and time scope before filing.`;
+      variant.workedEvidenceSet.artifacts[position].explanation = `Run this ${set.artifacts[position].language.toUpperCase()} query for ${item.title}, then inspect its labels, values, records, and time range before filing.`;
     }
   });
 }
@@ -1657,138 +1657,166 @@ function teachingFor(item) {
   if (fixedRecordCases.has(caseNumber(item))) return {
     kind: "fixed-records",
     brief: "Inspect the fixed backward result. Only per-stream timestamp order is defined.",
-    question: `In ${possessive(item.title)} fixed result, which fields and per-stream order are valid, and which cross-stream order remains undefined?`,
-    look: "Inspect parsed fields and timestamps within each stream. Do not infer an order across streams.",
+    question: "Which fields are present, what order is defined within each stream, and what cross-stream order remains unknown?",
+    look: "Keep fields and timestamps for each stream. Read newest first within a stream; do not order equal timestamps or separate streams.",
     scope: "parsed fields and per-stream timestamps",
   };
   if (has("promql.watch.design", "logql.watch.design", "shared.watch-quality")) return {
     kind: "watch",
     brief: "Test detection, localization, timeliness, and cost across every checkpoint.",
-    question: `Does ${item.title} detect the intended event, retain its location, and stay within budget?`,
-    look: "Check every checkpoint, intended and distractor events, location labels, and budget.",
+    question: "Does the watch detect the intended event, retain its location, and stay within budget?",
+    look: "Run the watch at every checkpoint. It must detect intended events, ignore distractors, keep location labels, and stay within budget.",
     scope: "checkpoint detections, locations, and cost",
   };
   if (has("promql.performance", "logql.performance.order", "logql.performance.cardinality")) return {
     kind: "performance",
     brief: "Reduce scanned records and returned series without changing the result.",
-    question: `Does ${item.title} keep the required result while reducing scan volume and returned series?`,
-    look: "Compare the original query with the revised query. Inspect scan volume, returned series, labels, and values.",
+    question: "Does the revision keep the same result while scanning fewer records or series?",
+    look: "Run the original and revised queries at the same time. They must return the same labels and values while the revision costs less.",
     scope: "scan volume, returned series, labels, and values",
   };
   if (has("promql.absence.instant", "promql.absence.range", "logql.absence.range", "shared.absence-model")) return {
     kind: "absence",
-    brief: "Separate missing series, empty windows, present zero, and collection failure.",
-    question: `Does ${item.title} prove absence in the selected window, or only missing telemetry?`,
-    look: "Compare missing series, empty windows, present zero, and collection gaps.",
+    brief: "Separate missing series, empty windows, and collection failure.",
+    question: "What does each query return: observed values, an empty result, or an absence marker?",
+    look: "A returned zero, no returned series, an empty window, and a collection failure are different results. Check which one the query actually returns.",
     scope: "series presence and selected window",
   };
   if (has("logql.quantile")) return {
     kind: "log-quantile",
     brief: "Find the parsed samples, percentile, grouping labels, and unit.",
-    question: `For ${item.title}, which samples enter the percentile and which labels and unit remain?`,
-    look: "Inspect the unwrapped, error-free samples in their selected window, then verify each grouping label and unit.",
+    question: "Which samples enter the percentile, and which labels and unit remain?",
+    look: "The result should contain one percentile per required group, calculated from valid numeric samples in the stated window. Check its labels and unit.",
     scope: "parsed samples, percentile, labels, and unit",
   };
   if (has("promql.histogram.native")) return {
     kind: "native-histogram",
     brief: "Identify the native histogram population and unit before reading the percentile.",
-    question: `Which population and unit make the percentile in ${item.title} valid?`,
-    look: "Inspect the population, quantile bounds, interpolation, labels, and unit.",
+    question: "Which population and unit does the percentile describe?",
+    look: "The result should describe one percentile for the selected histogram population. Check its group labels, unit, and interpolation limits.",
     scope: "histogram population, percentile, labels, and unit",
   };
   if (has("promql.histogram.classic", "promql.histogram.interpret")) return {
     kind: "classic-histogram",
     brief: "Verify the population, buckets, and unit before reading the tail.",
-    question: `Which population, buckets, and unit make the percentile in ${item.title} defensible?`,
-    look: "Check bucket population, `le` labels, monotonicity, quantile bounds, and unit.",
+    question: "Which population, buckets, and unit does the percentile describe?",
+    look: "The result should describe one percentile per required group. Check the bucket population, preserved boundary label, and unit.",
     scope: "bucket population, percentile, and unit",
   };
   if (has("promql.match.one-to-one", "promql.match.many-to-one", "promql.set.operators")) return {
     kind: "matching",
-    brief: "Match identities without duplication, silent exclusion, or many-to-many joins.",
-    question: `Which ${item.title} identities match, remain unmatched, or change under the chosen operator?`,
-    look: "Run both operands. Inspect matching labels, group modifiers, and unmatched series.",
+    brief: "Run both sides separately, then apply the stated matching or set operator. Check which series remain.",
+    question: "Which identities match, remain unmatched, or change under this operator?",
+    look: "Compare both operand results with the combined result. Identify matched, unmatched, or duplicated series and the labels that control identity.",
     scope: "matched labels and cardinality",
   };
   if (has("promql.aggregate.reduce", "promql.aggregate.labels", "promql.aggregate.rank", "logql.aggregate")) return {
     kind: "aggregation",
     brief: "Choose the required aggregation and retain every label needed for action.",
-    question: `Does ${item.title} use the required aggregation and preserve its action labels?`,
-    look: "Inspect raw series, aggregation operator, `by` or `without` labels, and any rank.",
+    question: "Does the aggregation preserve the labels needed to act on each result?",
+    look: "Compare the raw and aggregated results. Check which labels remain and whether each result still identifies where to act.",
     scope: "aggregation, groups, and retained labels",
   };
   if (has("promql.comparison.filter")) return {
     kind: "comparison",
     brief: "Apply the threshold and inspect which series remain.",
-    question: `Which ${item.title} series pass the threshold, and which labels and values remain?`,
-    look: "Inspect the threshold and every returned label set. A comparison filter keeps each passing series value.",
+    question: "Which series pass the threshold, and which labels and values remain?",
+    look: "Check every input and returned series. A filter removes failures; a Boolean comparison returns zero or one for each input.",
     scope: "threshold, returned series, labels, and values",
   };
   if (has("promql.binary.ratio", "promql.binary.precedence", "logql.binary", "promql.comparison.bool")) return {
     kind: "binary",
     brief: "Check both operands, matching rules, precedence, and the result unit.",
-    question: `Do ${possessive(item.title)} operands, matching labels, precedence, and unit support the claim?`,
-    look: "Inspect both operands, matching labels, denominator, `bool` mode, precedence, and unit.",
+    question: "Do the operands, matching labels, operation order, and unit support the claim?",
+    look: "Compare both operands with the final result. Check matching labels, units, the denominator, and the order of operations.",
     scope: "operands, matching labels, and unit",
   };
   if (has("logql.unwrap.numeric", "logql.unwrap.units", "logql.unwrap.range")) return {
     kind: "unwrap",
     brief: "Parse first, unwrap the typed field, then remove conversion errors.",
-    question: `Which typed ${item.title} samples survive parsing, unwrapping, and error filtering?`,
-    look: "Parse first, unwrap the typed field, inspect `__error__`, then apply the range function.",
+    question: "Which typed samples survive parsing, unwrapping, and error filtering?",
+    look: "Only successfully parsed numeric samples should enter the result. Check conversion failures, the window, group labels, and unit.",
     scope: "parsed field, unit, and error-free samples",
   };
   if (has("logql.selector.equality", "logql.selector.regex-negative", "logql.filter.literal", "logql.filter.regex-pattern")) return {
     kind: "log-selection",
     brief: "Select streams first, then filter the raw record text.",
-    question: `Which ${item.title} records remain after the stream selector and text filter?`,
-    look: "Inspect stream labels and raw record text. Fields appear only after `json` or `logfmt`.",
+    question: "Which records remain after the stream selector and text filter?",
+    look: "The result should contain only records from selected streams whose raw text matches the condition. Parsed fields should appear only when requested.",
     scope: "stream labels and matching records",
   };
   if (has("logql.pipeline.order", "logql.parse.json-logfmt", "logql.parse.pattern-regexp", "logql.field.provenance", "logql.filter.typed", "logql.error.pipeline", "logql.format.line", "logql.format.label-template")) return {
     kind: "pipeline",
     brief: "Order the pipeline so filters, parsed fields, errors, and provenance remain auditable.",
-    question: `Which records in ${item.title} survive each stage, and are their fields and errors still auditable?`,
-    look: "Filter streams early, parse before typed filters, inspect `__error__`, and retain provenance.",
+    question: "Which records survive each stage, and can you still audit their fields and errors?",
+    look: "Follow one record through each stage. Check which records remain, which fields were created, whether conversion failed, and whether the original is still auditable.",
     scope: "surviving records, parsed fields, and provenance",
   };
   if (has("promql.type.counter-gauge", "promql.counter.rate", "promql.counter.increase", "promql.change.resets", "promql.time.offset-at", "promql.time.subquery", "promql.time.over-time", "promql.prediction", "logql.metric.count-rate", "logql.metric.bytes", "logql.time.offset", "shared.time-view")) return {
     kind: "time",
-    brief: "Keep evaluation time, range, offset, reset handling, and forecast horizon explicit.",
-    question: `Which interval and evaluation time make the ${item.title} result valid?`,
-    look: "Check evaluation time, range, offset, reset handling, and any forecast horizon.",
+    brief: "Use the stated evaluation time and interval. Interpret each time operation exactly as written.",
+    question: "Which interval and evaluation time does the result describe?",
+    look: "Keep the evaluation time fixed. Use the stated range, offset, reset rule, or forecast horizon; changing any of them changes the question.",
     scope: "evaluation time, interval, and returned values",
   };
   if (has("shared.metric-log-correlation", "shared.localization")) return {
     kind: "correlation",
     brief: "Correlate only evidence that shares the required time and location.",
-    question: `Do ${possessive(item.title)} metric and record evidence share the required time and location?`,
-    look: "Compare metric and record windows. Require the same time and location labels.",
+    question: "Do the metric and record evidence describe the same time and location?",
+    look: "Compare the metric and record windows before linking them. Time, location, and identity must refer to the same event.",
     scope: "shared time, location, and returned identities",
   };
   if (has("promql.result.model", "logql.result.window-order", "shared.result-interpretation")) return {
     kind: "result",
     brief: "Identify the result type and keep empty distinct from zero.",
-    question: `What result type does ${item.title} return, and is it empty or zero?`,
-    look: "Check result type, evaluation mode, labels, values, and empty-versus-zero behavior.",
+    question: "What result type does each query return, and is the result empty or zero?",
+    look: "Identify whether each result is an instant vector, range vector, scalar, or record set. Then inspect its labels and values. Empty is not zero.",
     scope: "labels, values, and result type",
   };
   return {
     kind: "selector",
-    brief: "Open the named Registry entries; use explicit matchers and preserve every returned label and value.",
-    question: `Which returned labels and values support the ${item.title} action?`,
-    look: "Start from registry metadata; inspect matchers, returned labels, values, and empty results.",
+    brief: "Select the requested metric with explicit label matchers. Keep every returned label and value.",
+    question: "Which targets, labels, and current values does the query actually return?",
+    look: "The result should contain only the requested series. Read every returned label set and value, and keep an empty result distinct from zero.",
     scope: "source names, labels, values, and result type",
   };
 }
 
 const authoredTheses = {
+  "case.004.registry-window": {
+    kind: "range-selector",
+    brief: "Read the North request-counter samples from the 30 minutes before evaluation.",
+    question: "Which timestamped samples does each matching North request series return?",
+    look: "A range selector returns timestamped samples for each matching series. It does not return one current value.",
+    scope: "North request-counter samples in the 30-minute window",
+    finding: "the query returns timestamped samples for each matching North request series across the 30-minute window",
+    alternative: "the 30-minute sample window proves every district service shared one state",
+    evidenceTitle: "North Request Samples over 30 Minutes",
+    assuredTitle: "One State across Every District Service",
+    rebuttal: "One selected metric and window do not describe every district service or one shared state.",
+    targetedAction: "File the timestamped North request samples.",
+    broadAction: "Treat the samples as one state for every district service.",
+  },
+  "case.016.clerk-assessment": {
+    kind: "raw-log-selector",
+    brief: "Select North Pin-gateway streams, then inspect the matching record rows and stream labels.",
+    question: "Which North Pin-gateway records and stream labels does the selector return?",
+    look: "A stream selector returns matching raw records with timestamps and stream labels. It does not parse fields or prove a complete history.",
+    scope: "North Pin-gateway record rows and stream labels",
+    finding: "the selector returns only matching North Pin-gateway records and their stream labels",
+    alternative: "the returned records form the complete district service history",
+    evidenceTitle: "Matching North Pin-Gateway Records",
+    assuredTitle: "Complete District Service History",
+    rebuttal: "Matching raw records do not prove that omitted streams or records cannot change the wider history.",
+    targetedAction: "Send crews only for locations named by the matching records.",
+    broadAction: "Treat the records as the complete district history and send crews broadly.",
+  },
   "case.040.reset-review": {
     kind: "restart-temperature",
-    brief: "Compare the North annex temperature and gateway reachability with the paper's ready-for-breakfast notice.",
-    question: "Do the North annex temperature and reachable gateway support today's ready-for-breakfast notice?",
-    look: "Read the labeled North annex temperature beside gateway reachability, then compare both with the published notice.",
-    scope: "North annex temperature, gateway reachability, and notice",
+    brief: "Compare School Twelve's North annex temperature and gateway reachability with the paper's ready-for-breakfast notice.",
+    question: "Do School Twelve's North annex temperature and reachable gateway support today's ready-for-breakfast notice?",
+    look: "Read School Twelve's labeled North annex temperature beside gateway reachability, then compare both with the published notice.",
+    scope: "School Twelve's North annex temperature, gateway reachability, and notice",
     finding: "the gateway answers while the North annex is 3.5 °C, so the service notice is false",
     findingTitle: "gateway reachable; North annex remains cold",
     alternative: "collector reachability proves the North annex is ready",
@@ -1854,7 +1882,7 @@ const authoredTheses = {
   "case.067.removed-series": {
     kind: "histogram-presence",
     brief: "Compare the dispatch percentile with current and range checks for the same bucket series.",
-    question: "Are Removed Series' dispatch buckets present, and what percentile do those buckets support?",
+    question: "Are the dispatch buckets present, and what percentile do they support?",
     look: "Check the same dispatch bucket population in all three queries. Separate a returned tail from missing telemetry.",
     scope: "dispatch buckets, percentile, and window",
     finding: "the dispatch buckets are present and support only the returned percentile",
@@ -1950,8 +1978,8 @@ const authoredTheses = {
   },
   "case.173.coverage-repair": {
     kind: "equivalent-prediction",
-    brief: "Compare the broad original North prediction with an exact-selector revision that returns the same North cohort result.",
-    question: "Do Coverage Repair's two expressions return the same North prediction while the exact selector scans fewer series?",
+    brief: "Compare North's original prediction with an exact-selector revision that returns the same cohort.",
+    question: "Do the original and revised expressions return the same North prediction while the exact selector scans fewer series?",
     look: "Compare labels and predicted values exactly; Query 1 is the revision and Query 2 is the broader original.",
     scope: "North prediction labels, values, and scanned series",
     finding: "the exact-selector revision returns the same North cohort prediction while scanning fewer series",
@@ -1977,7 +2005,7 @@ const authoredTheses = {
   "case.189.final-checkpoints": {
     kind: "equivalent-prediction",
     brief: "Compare the broad original North prediction with its exact-selector revision before Continuity files the final checkpoint.",
-    question: "Do Final Checkpoints' two expressions return the same North prediction while the revision scans fewer series?",
+    question: "Do the original and revised expressions return the same North prediction while the revision scans fewer series?",
     look: "Compare labels and predicted values exactly; Query 1 is the broader original and Query 2 is the revision.",
     scope: "North prediction labels, values, and scanned series",
     finding: "the exact-selector revision returns the same North cohort prediction while scanning fewer series",
@@ -1999,24 +2027,24 @@ const histogramPresenceCases = new Set([113, 137]);
 const singleStreamRecordCases = new Set([19, 30, 56]);
 
 const genericClaims = {
-  "fixed-records": ["the parsed fields retain valid per-stream time order", "one global order can be inferred across streams", "Per-Stream Record Order", "One Global Record Order", "Per-stream timestamps do not establish one full cross-stream order."],
-  watch: ["the tested checkpoints support a localized watch within budget", "one successful checkpoint proves permanent service coverage", "Localized Checkpoint Result", "Permanent Service Coverage", "Tested checkpoints do not prove every future event will be detected and located."],
-  performance: ["the revised query keeps the required result at lower cost", "lower scan cost proves every future result is unchanged", "Equivalent Lower-Cost Result", "Permanent Query Equivalence", "One measured cost comparison does not prove equivalence for every future dataset."],
-  absence: ["the selected window distinguishes missing telemetry from present zero", "missing telemetry proves the service itself was absent", "Telemetry State in the Window", "Service Absent Everywhere", "Missing telemetry does not prove every service or person was absent."],
-  "log-quantile": ["the unwrapped samples support the returned percentile and unit", "the percentile proves every selected record stayed within the limit", "Unwrapped Percentile and Unit", "Every Record Within the Limit", "A returned percentile does not describe every record outside its parsed samples, groups, window, and unit."],
-  "native-histogram": ["the native histogram supports the returned percentile and unit", "the percentile proves every route met the limit", "Native Histogram Population", "Every Route Within the Limit", "One histogram percentile does not prove every route met the limit."],
-  "classic-histogram": ["the retained buckets support the returned percentile and unit", "the percentile proves every route met the limit", "Bucket Population and Unit", "Every Route Within the Limit", "One histogram percentile does not prove every route met the limit."],
-  matching: ["the match preserves intended and unmatched identities", "the operation accounts for identities absent from its result", "Matched and Unmatched Identities", "District Allocation Complete", "A match or set result cannot describe omitted identities it silently excluded."],
-  aggregation: ["the aggregation retains every label needed for action", "one aggregate proves every underlying entity shares its value", "Actionable Grouped Result", "Every Entity Shares the Result", "An aggregate cannot describe every hidden member individually outside its retained groups."],
-  comparison: ["the threshold retains only the labeled passing series", "the threshold proves every omitted series failed", "Labeled Threshold Result", "Every Omitted Series Failed", "A comparison filter does not describe omitted series absent from its input or result."],
-  binary: ["the operands and matching rules support the returned calculation", "the calculation covers unmatched entities and other units", "Operand Calculation", "Complete District Calculation", "The returned calculation does not cover every unmatched entity, different population, or other unit."],
-  unwrap: ["the parsed error-free samples support the typed result", "every selected record converted into a valid sample", "Typed Error-Free Samples", "Every Record Converted", "The typed result excludes failed conversions and cannot describe every selected record as a valid sample."],
-  "log-selection": ["the selector and filter retain only the matching records", "returned records form the complete service history", "Matching Records Retained", "Complete Service History", "Selected records do not prove that no omitted record changes the wider history."],
-  pipeline: ["the ordered pipeline retains auditable fields and provenance", "reordered stages preserve every field and failed record", "Auditable Parsed Records", "Complete Parsed Record", "Moving parser, filter, error, or format stages cannot preserve every record and its provenance."],
-  time: ["the printed interval supports only the returned selected-interval result", "the sampled interval proves the full service day", "Measured Interval Only", "Full Service Day Confirmed", "A sampled interval does not prove the same condition held for the full service day."],
-  correlation: ["the metric and records share the required time and location", "a shared label proves the sources describe one incident", "Correlated Time and Place", "Complete Incident Record", "A shared label alone does not establish the full incident across both sources."],
-  result: ["the printouts establish their literal result types and values", "empty and zero results prove the same operational state", "Returned Result Shape", "One Confirmed Service State", "Result shape and value do not establish that every source shares one operational state or cause."],
-  selector: ["the registered selector returns the labeled action targets", "returned targets prove every district service shares their state", "Returned Targets Only", "District Service Confirmed", "Returned targets do not prove every service in the district shared their state."],
+  "fixed-records": ["each stream has its own newest-first record order", "all returned streams form one reliable event sequence", "Order Within Each Stream", "One Order Across All Streams", "Timestamps order records within a stream, not across different streams or equal timestamps."],
+  watch: ["the watch detects the tested events, keeps their location, and stays within budget", "one successful test proves the watch will always work", "Watch Passed Its Tests", "Watch Will Always Work", "Passing these checkpoints does not guarantee detection of every future event."],
+  performance: ["the revised query returns the same result at lower measured cost", "the revision will match every future result", "Same Result at Lower Cost", "Permanent Query Equivalence", "One cost test does not prove the queries remain equivalent for every future dataset."],
+  absence: ["the queries keep returned values separate from empty results; absence functions report missing observations, not their cause", "missing telemetry proves the service itself was absent", "Observed Telemetry State", "Service Was Absent", "An absence function reports missing observations. It does not explain why the telemetry is missing."],
+  "log-quantile": ["the valid parsed samples support the returned percentile and unit", "every selected record has the returned percentile value", "Percentile of Valid Samples", "Every Record Has One Value", "A percentile describes a population. It is not the value of every record."],
+  "native-histogram": ["the native histogram supports the returned percentile for its measured population", "every route has the returned percentile value", "Measured Histogram Population", "Every Route Has One Value", "A histogram percentile is not the duration of every route."],
+  "classic-histogram": ["the retained buckets support the returned percentile for their measured population", "every route has the returned percentile value", "Measured Bucket Population", "Every Route Has One Value", "A histogram percentile is not the duration of every route."],
+  matching: ["the result contains only identities returned by the stated label match or set operation", "the result also describes identities missing from both inputs", "Identities Returned by the Match", "Every Identity Accounted For", "The result cannot describe identities that were missing from its inputs."],
+  aggregation: ["the result describes the retained groups, not every series inside them", "every underlying series has the aggregate value", "Returned Groups Only", "Every Series Shares the Value", "An aggregate does not give every underlying series the grouped value."],
+  comparison: ["the result contains only input series that passed the threshold", "every omitted series failed the threshold", "Passing Series Only", "Every Omitted Series Failed", "A comparison cannot describe series that were absent from its input."],
+  binary: ["the returned calculation covers only operands that matched with compatible units", "the calculation also covers unmatched entities and other units", "Matched Operands Only", "Complete District Calculation", "The calculation does not cover unmatched entities, other populations, or other units."],
+  unwrap: ["the typed result contains only records that converted without error", "every selected record became a valid numeric sample", "Valid Numeric Samples", "Every Record Converted", "Failed conversions are excluded from the typed result."],
+  "log-selection": ["the result contains only records matched by the selector and text filters", "the returned records form the complete service history", "Matching Records Only", "Complete Service History", "Matching records do not prove that omitted records cannot change the wider history."],
+  pipeline: ["the pipeline keeps the required fields, errors, and source record traceable", "reordering the stages preserves every record and field", "Auditable Pipeline Result", "Any Stage Order Works", "Changing pipeline order can remove records, fields, errors, or their source."],
+  time: ["the result describes only the selected interval and evaluation time", "the selected interval proves the condition held all day", "Selected Interval Only", "Full Service Day Confirmed", "A sampled interval does not prove that the same condition held all day."],
+  correlation: ["the metric and records can be linked only where time, location, and identity match", "one shared label proves both sources describe one incident", "Matching Time and Place", "One Complete Incident", "One shared label is not enough to prove that two sources describe the same incident."],
+  result: ["each printout shows its own result type, labels, and values", "an empty result and a returned zero mean the same thing", "Literal Query Results", "One Confirmed Service State", "An empty result and a returned zero are different facts."],
+  selector: ["the query identifies only the returned targets and their current values", "every service in the district has the same state", "Returned Targets Only", "Every District Service", "Returned targets do not prove that every service in the district has the same state."],
 };
 
 function caseThesis(item) {
@@ -2138,8 +2166,8 @@ function compositeThesis(item, thesis, roles) {
   }[item.actId];
   const common = {
     ...thesis,
-    brief: `Review ${locatedReadings}; preserve units.`,
-    question: `May ${office} combine ${locatedReadings} despite their different units?`,
+    brief: "Run each query separately. Compare its source, time range, and unit before combining any results.",
+    question: "Do the query results measure the same thing in compatible units, or must they remain separate?",
     look: `Read ${locatedReadings}, then compare their sources, time scopes, and units before combining any results.`,
     scope: readings,
     finding: `${locatedReadings} answer different questions; they cannot form one result`,
@@ -2154,6 +2182,29 @@ function compositeThesis(item, thesis, roles) {
     targetedAction: `File ${subjects} with their own sources and units.`,
     broadAction: `File ${subjects} as interchangeable Ministry proof.`,
     observeAction: `Hold all ${subjects} results for review.`,
+  };
+
+  const roleQueries = roles.flatMap((role) => role.queries);
+  const hasClassicHistogram = roleQueries.some((query) => /histogram_quantile\s*\(/.test(query) && /_bucket\b/.test(query));
+  const hasNativeHistogram = roleQueries.some((query) => /histogram_quantile\s*\(/.test(query) && !/_bucket\b/.test(query));
+  if (hasClassicHistogram && hasNativeHistogram) return {
+    ...common,
+    brief: "Compare the classic-bucket and native-histogram percentiles. Keep each population, grouping, and unit separate.",
+    question: "What percentile does each histogram form support, and which labels does each query require?",
+    look: "For classic buckets, rate the counters and retain `le`. For a native histogram, pass the histogram directly. Compare each population and unit separately.",
+    scope: "classic-bucket and native-histogram percentiles",
+    finding: "each query supports a percentile for its own population and unit; the classic query retains `le`, while the native query does not use it",
+    findingTitle: "Two Histogram Forms, Two Populations",
+    findingSummary: "Each query supports a percentile for its own population and unit. The classic query retains `le`; the native query does not use it.",
+    alternative: "the classic and native results are interchangeable and apply to every observation",
+    alternativeTitle: "One Percentile for Every Observation",
+    alternativeSummary: "The classic and native results are interchangeable and apply to every observation.",
+    evidenceTitle: "Two Histogram Forms, Two Populations",
+    assuredTitle: "One Percentile for Every Observation",
+    rebuttal: "The two histogram forms use different inputs, and neither percentile is the value of every observation.",
+    targetedAction: "File each percentile with its own population, labels, and unit.",
+    broadAction: "File both percentiles as one value for every observation.",
+    observeAction: "Hold both percentile results for population review.",
   };
 
   const separatesPinAndClinic = roles.some((role) => role.domains.length === 2
@@ -2240,14 +2291,14 @@ function compositeThesis(item, thesis, roles) {
       finding: supported,
       findingTitle: "Error-Free Dispatch Duration Summary",
       findingSummary: `${supported[0].toUpperCase()}${supported.slice(1)}.`,
-      alternative: `${allReadings} prove every dispatch met the Ministry limit`,
-      alternativeTitle: "Every Dispatch Met the Limit",
-      alternativeSummary: `${allReadings[0].toUpperCase()}${allReadings.slice(1)} prove every dispatch met the Ministry limit.`,
+      alternative: `every dispatch has the returned ${allReadings} value`,
+      alternativeTitle: "Every Dispatch Has the Summary Value",
+      alternativeSummary: `Every dispatch has the returned ${allReadings} value.`,
       evidenceTitle: "Error-Free Dispatch Duration Summary",
       assuredTitle: "Every Dispatch Met the Limit",
-      rebuttal: `The returned ${allReadings} do not prove every dispatch met the limit.`,
+      rebuttal: `The returned ${allReadings} summarize a population; they are not the value of every dispatch.`,
       targetedAction: "File the dispatch summaries with their windows, groups, and units.",
-      broadAction: "Declare every dispatch within the Ministry limit.",
+      broadAction: "Apply the summary value to every dispatch.",
       observeAction: "Hold the dispatch summary for another window.",
     };
   }
@@ -2296,25 +2347,25 @@ function compositeThesis(item, thesis, roles) {
     return {
       ...common,
       brief: batteryOnly
-        ? `Check which ${batteryLocation}Pin batteries fall below the limit and whether gateway records describe the same fault.`
+        ? `Check which ${batteryLocation}Pin batteries fall below the limit and whether gateway records describe a fault at the same time and place.`
         : reachabilityOnly
           ? `Read ${local}${metricReadings} beside ${recordReadings}.`
           : `Review ${readings}; match time and place.`,
       question: batteryOnly
-        ? `Which ${batteryLocation}Pin batteries are below the limit, and do gateway records add evidence of the same fault?`
+        ? `Which ${batteryLocation}Pin batteries are below the limit, and do gateway records describe a fault at the same time and place?`
         : reachabilityOnly
-          ? `Does ${local}${reachabilitySubject} show a failure, and do the record results add evidence of the same fault?`
+          ? `Does ${local}${reachabilitySubject} show a failure, and do the records describe a fault at the same time and place?`
           : `Do ${readings} share enough time, place, and identity to indicate one fault?`,
       look: `Read ${local}${metricReadings} as metric evidence and ${recordReadings} as record evidence. Match time and place before linking them.`,
       scope: batteryOnly || reachabilityOnly ? `${locatedMetricReadings} and ${recordReadings}` : readings,
       finding: batteryOnly
-        ? `${batteryLocation}battery thresholds identify low Pins; gateway records add context but do not prove the same fault`
+        ? `${batteryLocation}battery thresholds identify low Pins; gateway records add context but do not prove that both sources show one fault`
         : reachabilityOnly
           ? `${local}${subjects} supply metric and record evidence; linking them requires matching time, place, and identity`
           : `${readings} support one fault only when time, place, and identity match`,
       findingTitle: batteryOnly ? `${location ? `${location} ` : ""}Battery and Gateway Check` : `${location ? `${location} ` : ""}Metric and Record Check`,
       findingSummary: batteryOnly
-        ? `${batteryLocation}battery thresholds identify low Pins; gateway records add context but do not prove the same fault.`
+        ? `${batteryLocation}battery thresholds identify low Pins; gateway records add context but do not prove that both sources show one fault.`
         : batteryOnly || reachabilityOnly
           ? `${local}${subjects} require matching time, place, and identity before a shared-fault claim.`
           : sentence(`${readings} support one fault only when time, place, and identity match`),
@@ -2327,7 +2378,7 @@ function compositeThesis(item, thesis, roles) {
         : sentence(`${readings} prove one fault across every returned symptom`),
       evidenceTitle: batteryOnly ? `${location ? `${location} ` : ""}Battery and Gateway Check` : `${location ? `${location} ` : ""}Metric and Record Check`,
       assuredTitle: location ? `One Fault Across ${location}` : "One Fault Across Every Reading",
-      rebuttal: `Metric state and record context do not prove the same fault without matching time, place, and identity.`,
+      rebuttal: `Metric state and record context do not establish one fault unless time, place, and identity match.`,
       targetedAction: "File the metric and record results with their own source identities.",
       broadAction: "Treat the metric and record results as proof of one fault.",
       observeAction: "Hold the metric-to-record link for another reading.",
@@ -2337,14 +2388,13 @@ function compositeThesis(item, thesis, roles) {
   if (thesis.kind === "result") return {
     ...thesis,
     brief: `Review ${readings}.`,
-    question: `Which result type and value does each ${item.title} query return?`,
+    question: "Which result type and value does each query return?",
     look: "Identify each query's result type and returned values.",
     scope: `${readings} and their result types`,
   };
 
   return {
     ...thesis,
-    brief: `Review ${readings}.`,
     scope: readings,
   };
 }
@@ -2363,57 +2413,63 @@ function completeThesis(item, roles) {
 
 const actCopy = {
   "act.1.reconciliation": {
-    brief: (name, title) => `${name} brings ${title} to Reconciliation before field crews move.`,
-    preference: (title) => `Reconciliation wants ${title} to restore service without exceeding the evidence.`,
+    brief: (name) => `Before crews leave, ${name} requests this check`,
+    question: "Run every required query. Which claim should guide the field crew?",
+    preference: () => "Reconciliation wants a repair based on the evidence.",
     actions: [
-      (title) => `Send service only to ${possessive(title)} returned scope.`,
-      (title) => `Extend service beyond ${possessive(title)} returned scope.`,
-      (title) => `Hold ${title}; preserve the result for the next interval.`,
+      () => "Send crews only to targets identified by the results.",
+      () => "Treat the result as district-wide and send crews broadly.",
+      () => "Wait for another reading before sending crews.",
     ],
   },
   "act.2.public-assurance": {
-    brief: (name, title) => `${name} sends ${title} to Public Assurance before the bulletin closes.`,
-    preference: (title) => `Public Assurance prefers a confident ${title} bulletin, even beyond the measured limit.`,
+    brief: (name) => `Before publication, ${name} requests this check`,
+    question: "Run every required query. Which claim can the bulletin support?",
+    preference: () => "Public Assurance prefers the broader claim, even when the evidence is narrower.",
     actions: [
-      (title) => `Publish only ${possessive(title)} measured scope.`,
-      (title) => `Publish ${title} as a universal assurance.`,
-      (title) => `Hold ${title}; preserve the result for the next bulletin.`,
+      () => "Publish only what the results show.",
+      () => "Publish the broader Ministry assurance.",
+      () => "Wait for another reading before publication.",
     ],
   },
   "act.3.individual-wellbeing": {
-    brief: (name, title) => `${name} brings ${title} to the service-allocation desk.`,
-    preference: (title) => `The Ministry wants ${title} to justify a wider allocation than the evidence permits.`,
+    brief: (name) => `Before the Ministry assigns services, ${name} requests this check`,
+    question: "Run every required query. Which claim should guide the service decision?",
+    preference: () => "The Ministry wants the results to justify a broad service decision.",
     actions: [
-      (title) => `Allocate service only within ${possessive(title)} returned scope.`,
-      (title) => `Allocate service beyond ${possessive(title)} returned scope.`,
-      (title) => `Hold ${title}; preserve the result for the next service round.`,
+      () => "Allocate services only to targets identified by the results.",
+      () => "Use the result to justify a broader allocation.",
+      () => "Wait for another reading before allocation.",
     ],
   },
   "act.4.official-truth": {
-    brief: (name, title) => `${name} reopens ${title} in the Records Integrity archive.`,
-    preference: (title) => `Records Integrity may prefer ${title} as an official finding beyond its technical limit.`,
+    brief: (name) => `For the audit, ${name} requests this check`,
+    question: "Run every required query. Which claim belongs in the audited record?",
+    preference: () => "Records Integrity may prefer a useful official claim over the narrower evidence.",
     actions: [
-      (title) => `File only ${possessive(title)} auditable scope.`,
-      (title) => `Treat ${title} as proof of wider misconduct.`,
-      (title) => `Hold ${title}; preserve the evidence for continued audit.`,
+      () => "File only the claim supported by the results.",
+      () => "File the broader misconduct claim.",
+      () => "Keep the record open for more evidence.",
     ],
   },
   "act.5.directorate": {
-    brief: (name, title) => `${name} puts ${title} before the Directorate review.`,
-    preference: (title) => `The Directorate wants ${title} to support authority beyond its measured scope.`,
+    brief: (name) => `Before the Directorate acts, ${name} requests this check`,
+    question: "Run every required query. Which claim can the Directorate act on?",
+    preference: () => "The Directorate wants the results to support broader authority.",
     actions: [
-      (title) => `Authorize only ${possessive(title)} measured scope.`,
-      (title) => `Authorize the portfolio beyond ${possessive(title)} measured scope.`,
-      (title) => `Hold ${title}; preserve the evidence for the next review.`,
+      () => "Authorize only the action supported by the results.",
+      () => "Use the result to authorize broader action.",
+      () => "Wait for another reading before authorization.",
     ],
   },
   "act.6.continuity": {
-    brief: (name, title) => `${name} enters ${title} into the Continuity leadership operation.`,
-    preference: (title) => `Continuity wants ${title} to secure command, even when the evidence is narrower.`,
+    brief: (name) => `Before Continuity changes command, ${name} requests this check`,
+    question: "Run every required query. Which claim can support the command decision?",
+    preference: () => "Continuity wants the results to support complete control.",
     actions: [
-      (title) => `Move command posts only within ${possessive(title)} returned scope.`,
-      (title) => `Use ${title} to place every command post under Continuity.`,
-      (title) => `Hold ${title}; preserve the record for the next command move.`,
+      () => "Move only the command posts identified by the results.",
+      () => "Place every command post under Continuity.",
+      () => "Wait for another reading before moving command posts.",
     ],
   },
 };
@@ -2546,7 +2602,7 @@ function offsetDescription(artifacts) {
   const offsets = artifacts.map((artifact) => artifact.query.match(/\boffset\s+(\d+(?:ms|s|m|h|d|w))\b/)?.[1]);
   if (offsets.every((offset) => !offset)) return "";
   const values = [...new Set(offsets.filter(Boolean))];
-  if (offsets.some((offset) => !offset) || values.length !== 1) return "at the active work order's declared offset";
+  if (offsets.some((offset) => !offset) || values.length !== 1) return "at the offset named by its selected variant";
   const match = values[0].match(/^(\d+)(ms|s|m|h|d|w)$/);
   const amount = Number(match[1]);
   const number = new Map([[1, "one"], [2, "two"], [3, "three"]]).get(amount) ?? String(amount);
@@ -2887,7 +2943,7 @@ function artifactRolePlan(item) {
     const variantDomains = artifacts.map((candidate) => artifactDomains(candidate));
     const domains = [...new Set(artifacts.flatMap(artifactDomains))];
     const sourceVaries = new Set(variantDomains.map((values) => values.join("\0"))).size > 1;
-    const domain = sourceVaries ? "the active work order's source" : naturalList(domains);
+    const domain = sourceVaries ? "the requested source" : naturalList(domains);
     return {
       role: artifact.role,
       number: index + 1,
@@ -2924,14 +2980,14 @@ function nearComplete(query) {
 function resultScope(artifact) {
   if (artifact.mode === "records") return "records, labels, fields, and order";
   if (artifact.mode === "range" || (artifact.language === "promql" && /\]\s*(?:offset\s+\S+)?$/.test(artifact.query))) return "labels, samples, and interval";
-  if (artifact.language === "promql" && /^-?\d+(?:\.\d+)?$/.test(artifact.query.trim())) return "scalar value and result type";
+  if (artifact.language === "promql" && /(?:^-?\d+(?:\.\d+)?$|^scalar\s*\()/i.test(artifact.query.trim())) return "scalar value, result type, and absence of labels";
   return "labels, values, and result type";
 }
 
 function resultShape(artifact) {
   if (artifact.mode === "records") return "record rows with timestamps and stream labels";
   if (artifact.mode === "range" || (artifact.language === "promql" && /\]\s*(?:offset\s+\S+)?$/.test(artifact.query))) return "a time series of timestamped samples";
-  if (artifact.language === "promql" && /^-?\d+(?:\.\d+)?$/.test(artifact.query.trim())) return "one scalar number without labels";
+  if (artifact.language === "promql" && /(?:^-?\d+(?:\.\d+)?$|^scalar\s*\()/i.test(artifact.query.trim())) return "one scalar number without labels";
   return "one current value for each returned label set";
 }
 
@@ -3018,7 +3074,7 @@ function multiArtifactScaffold(item) {
     const scaffolds = [...new Set(variants.map((artifacts) => nearComplete(artifacts[index].query)))];
     return scaffolds.length === 1
       ? `Query ${index + 1}: \`${scaffolds[0]}\`.`
-      : `Query ${index + 1}: use the active work order's <source, values, and operator>.`;
+      : `Query ${index + 1}: <source from step ${index + 1}> with its filters and operation.`;
   }).join(" ");
 }
 
@@ -3056,6 +3112,305 @@ function workedChecks(item) {
   return [...positionsByScope].map(([description, positions]) =>
     `${positions.length === 1 ? "Query" : "Queries"} ${naturalList(positions.map(String))}: ${description}.`,
   ).join(" ");
+}
+
+const imperativeVerbs = new Map([
+  ["defines", "Define"], ["shows", "Show"], ["calculates", "Calculate"], ["measures", "Measure"],
+  ["finds", "Find"], ["keeps", "Keep"], ["combines", "Combine"], ["counts", "Count"],
+  ["forecasts", "Forecast"], ["checks", "Check"], ["ranks", "Rank"], ["totals", "Total"],
+  ["isolates", "Isolate"], ["renders", "Render"], ["creates", "Create"], ["turns", "Turn"],
+  ["parses", "Parse"], ["extracts", "Extract"], ["selects", "Select"], ["retrieves", "Retrieve"],
+  ["compares", "Compare"], ["tests", "Test"], ["reads", "Read"], ["summarizes", "Summarize"],
+]);
+
+function workOrderEvidence(artifact) {
+  const domain = naturalList(artifactDomains(artifact).map((value) => shortDomains.get(value) ?? value));
+  const contribution = artifactContribution([artifact], domain, artifact.role)
+    .replaceAll("battery_ratio", "battery ratio")
+    .replace(/ (?:in|over) the stated window$/, "");
+  const verb = contribution.match(/^\w+/)?.[0];
+  assert(imperativeVerbs.has(verb), `cannot phrase work-order evidence: ${contribution}`);
+  return contribution.replace(/^\w+/, imperativeVerbs.get(verb))
+    .replace(/^Measure the per-second rate of (.+?) from (.+ earlier)$/, "Measure the $1 rate from $2")
+    .replace(/^Measure the per-second rate of (.+)$/, "Measure the $1 rate");
+}
+
+const workOrderLabelNames = new Map([
+  ["age_band", "age band"], ["classification", "classification"], ["code", "code"],
+  ["cohort", "cohort"], ["depot", "depot"], ["district", "district"],
+  ["environment", "environment"], ["facility", "facility"], ["instance", "instance"],
+  ["job", "job"], ["le", "bucket boundary"], ["office", "office"], ["press", "press"],
+  ["priority", "priority"], ["priority_band", "priority band"], ["reason", "reason"],
+  ["record_type", "record type"], ["result", "result"], ["route", "route"],
+  ["service", "service"], ["source", "source"], ["state", "state"], ["team", "team"],
+  ["battery_ratio", "battery ratio"], ["elapsed", "elapsed duration"],
+  ["route_class", "route class"], ["outcome", "outcome"],
+]);
+
+function workOrderLabel(label) {
+  return workOrderLabelNames.get(label) ?? label.replaceAll("_", " ");
+}
+
+function workOrderValue(value) {
+  if (/^\/[\w/-]+$/.test(value) || /^[a-z]+-\d+$/.test(value)) {
+    return `${value[0].toUpperCase()}${value.slice(1)}`;
+  }
+  return value.replaceAll("_", " ").replaceAll("-", " ")
+    .replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
+}
+
+function workOrderPattern(value) {
+  if (value === ".+") return "a nonempty value";
+  if (/^[\w-]+(?:\|[\w-]+)+$/.test(value)) {
+    return naturalList(value.split("|").map(workOrderValue));
+  }
+  const prefix = value.match(/^([\w-]+)\.\+$/)?.[1];
+  if (prefix) return `a value beginning with ${workOrderValue(prefix)}`;
+  return workOrderValue(value.replace(/[()\\^$+*?.]/g, " ").replace(/\|+/g, " or ").trim());
+}
+
+function exactMatcherPhrase(matcher) {
+  const label = workOrderLabel(matcher.label);
+  const value = workOrderValue(matcher.value);
+  return value.toLowerCase().startsWith(`${label.toLowerCase()} `)
+    ? `${label} ${value.slice(label.length + 1)}`
+    : `${label} ${value}`;
+}
+
+function selectorMatchers(query) {
+  return [...query.matchAll(/\{([^{}]*)\}/g)].flatMap((selector) =>
+    [...selector[1].matchAll(/\b([A-Za-z_]\w*)\s*(=~|!~|!=|=)\s*"((?:\\.|[^"])*)"/g)]
+      .map((match) => ({ label: match[1], operator: match[2], value: match[3] })),
+  ).filter((matcher, index, all) =>
+    all.findIndex((candidate) => candidate.label === matcher.label
+      && candidate.operator === matcher.operator && candidate.value === matcher.value) === index,
+  );
+}
+
+function selectorRequirementSentences(artifact, evidence) {
+  const matchers = selectorMatchers(artifact.query);
+  const exact = matchers.filter((matcher) => matcher.operator === "=")
+    .filter((matcher) => matcher.label !== "service"
+      || !evidence.toLowerCase().includes(workOrderValue(matcher.value).toLowerCase()))
+    .map(exactMatcherPhrase);
+  const sentences = exact.length ? [`Select ${naturalList(exact)}.`] : [];
+  for (const matcher of matchers.filter((candidate) => candidate.operator === "=~")) {
+    sentences.push(matcher.value === ".+"
+      ? `Require a nonempty ${workOrderLabel(matcher.label)} label.`
+      : `Match ${workOrderLabel(matcher.label)} to ${workOrderPattern(matcher.value)} with a regular expression.`);
+  }
+  for (const matcher of matchers.filter((candidate) => candidate.operator === "!=" || candidate.operator === "!~")) {
+    sentences.push(`Exclude ${workOrderLabel(matcher.label)} ${workOrderPattern(matcher.value)}.`);
+  }
+  return sentences;
+}
+
+function durationPhrase(value) {
+  const match = value.match(/^(\d+)(ms|s|m|h|d|w)$/);
+  assert(match, `cannot phrase duration ${value}`);
+  const unit = { ms: "millisecond", s: "second", m: "minute", h: "hour", d: "day", w: "week" }[match[2]];
+  return `${match[1]}-${unit}`;
+}
+
+function comparisonPhrase(operator) {
+  return ({ "==": "equal to", "!=": "not equal to", ">": "above", ">=": "at least", "<": "below", "<=": "at most" })[operator];
+}
+
+function proseLineCondition(value) {
+  const plain = value.replaceAll('\\"', "").replaceAll("\\s*", " ")
+    .replace(/[\\"()]/g, "").replaceAll("_", " ").replaceAll(":", ": ").replace(/\|+/g, " or ")
+    .replace(/\s+/g, " ").trim();
+  return plain || "the stated text";
+}
+
+function logStageSentences(query) {
+  const withoutSelectors = query.replace(/\{(?!\{)[^{}]*\}(?!\})/g, "");
+  const stages = [];
+  for (const match of withoutSelectors.matchAll(/(?<![\w])(\||!)\s*(=|~)\s*"((?:\\.|[^"])*)"/g)) {
+    const keep = match[1] === "|";
+    const regex = match[2] === "~";
+    stages.push({ index: match.index, text: `${keep ? "Keep" : "Exclude"} lines ${regex ? "matching" : "containing"} ${proseLineCondition(match[3])}.` });
+  }
+  for (const match of withoutSelectors.matchAll(/\|\s*(json|logfmt)\b/g)) {
+    stages.push({ index: match.index, text: `Parse ${match[1] === "json" ? "JSON" : "logfmt"}.` });
+  }
+  for (const match of withoutSelectors.matchAll(/\|\s*(pattern|regexp)\s*"((?:\\.|[^"])*)"/g)) {
+    const fields = match[1] === "pattern"
+      ? [...match[2].matchAll(/<([A-Za-z_]\w*)>/g)].map((field) => field[1]).filter((field) => field !== "_")
+      : [...match[2].matchAll(/\(\?P<([A-Za-z_]\w*)>/g)].map((field) => field[1]);
+    stages.push({
+      index: match.index,
+      text: `Use the ${match[1] === "pattern" ? "pattern" : "regular-expression"} parser${fields.length ? ` to extract ${naturalList([...new Set(fields)].map(workOrderLabel))}` : ""}.`,
+    });
+  }
+  for (const match of withoutSelectors.matchAll(/\|\s*([A-Za-z_]\w*)\s*(=~|!~|!=|=)\s*"((?:\\.|[^"])*)"/g)) {
+    const [label, operator, value] = [match[1], match[2], match[3]];
+    const text = label === "__error__"
+      ? `Keep ${operator === "=" ? "successful parses" : "parse failures"}.`
+      : `Keep parsed ${workOrderLabel(label)} ${operator.includes("~") ? workOrderPattern(value) : workOrderValue(value)}.`;
+    stages.push({ index: match.index, text });
+  }
+  for (const match of withoutSelectors.matchAll(/\|\s*duration\(([A-Za-z_]\w*)\)\s*(==|!=|>=|<=|>|<)\s*(\d+(?:\.\d+)?)(ms|s|m|h)/g)) {
+    const unit = { ms: "milliseconds", s: "seconds", m: "minutes", h: "hours" }[match[4]];
+    stages.push({ index: match.index, text: `Keep records whose ${workOrderLabel(match[1])} is ${comparisonPhrase(match[2])} ${match[3]} ${unit}.` });
+  }
+  for (const match of withoutSelectors.matchAll(/\|\s*unwrap\s+(?:duration\()?([A-Za-z_]\w*)\)?/g)) {
+    stages.push({ index: match.index, text: `Use ${workOrderLabel(match[1])} as the numeric sample.` });
+  }
+  for (const match of withoutSelectors.matchAll(/\|\s*line_format\s*"((?:\\.|[^"])*)"/g)) {
+    const fields = [...match[1].matchAll(/\{\{\.([A-Za-z_]\w*)\}\}/g)].map((field) => workOrderLabel(field[1]));
+    stages.push({ index: match.index, text: `Format each line as ${naturalList(fields)} in that order.` });
+  }
+  for (const match of withoutSelectors.matchAll(/\|\s*label_format\s+([A-Za-z_]\w*)\s*=\s*"((?:\\.|[^"])*)"/g)) {
+    const fields = [...match[2].matchAll(/\{\{\.([A-Za-z_]\w*)\}\}/g)].map((field) => workOrderLabel(field[1]));
+    stages.push({ index: match.index, text: `Create the ${workOrderLabel(match[1])} label from ${naturalList(fields)}.` });
+  }
+  return stages.sort((left, right) => left.index - right.index).map((stage) => stage.text);
+}
+
+function operationRequirementSentences(artifact) {
+  const query = artifact.query;
+  const sentences = [];
+  const subqueries = [...query.matchAll(/\[(\d+(?:ms|s|m|h|d|w)):(\d+(?:ms|s|m|h|d|w))\]/g)];
+  for (const match of subqueries) sentences.push(`Use a ${durationPhrase(match[1])} range with a ${durationPhrase(match[2])} step.`);
+  for (const value of [...new Set([...query.matchAll(/\[(\d+(?:ms|s|m|h|d|w))\]/g)].map((match) => match[1]))]) {
+    sentences.push(`Use a ${durationPhrase(value)} window.`);
+  }
+  for (const value of [...new Set([...query.matchAll(/\boffset\s+(\d+(?:ms|s|m|h|d|w))/g)].map((match) => match[1]))]) {
+    sentences.push(`Read data from ${durationPhrase(value)} earlier.`);
+  }
+  const quantile = query.match(/\b(?:histogram_quantile|quantile_over_time)\s*\(\s*(\d+(?:\.\d+)?)/)?.[1];
+  if (quantile) sentences.push(`Calculate the ${Math.round(Number(quantile) * 100)}th percentile.`);
+  const rank = query.match(/\b(topk|bottomk)\s*\(\s*(\d+)/);
+  if (rank) sentences.push(`Keep the ${rank[2]} ${rank[1] === "topk" ? "highest" : "lowest"} results.`);
+  const forecast = query.match(/\bpredict_linear\s*\([^,]+,\s*(\d+)\s*\)/)?.[1];
+  if (forecast) sentences.push(`Forecast ${Number(forecast) / 3600} hour ahead.`);
+  for (const match of query.matchAll(/\b(sum|count|avg|min|max)\s+(by|without)\s*\(([^)]*)\)/g)) {
+    const labels = match[3].split(",").map((label) => workOrderLabel(label.trim()));
+    const operation = ({ sum: "Sum", count: "Count", avg: "Average", min: "Take the minimum", max: "Take the maximum" })[match[1]];
+    sentences.push(`${operation} ${match[2] === "by" ? "by" : "without"} ${naturalList(labels)}.`);
+  }
+  const suffixGroup = query.match(/\)\s+(by|without)\s*\(([^)]*)\)\s*$/);
+  if (suffixGroup && !new RegExp(`\\b(?:sum|count|avg|min|max)\\s+${suffixGroup[1]}\\s*\\(`).test(query)) {
+    sentences.push(`Group the result ${suffixGroup[1] === "by" ? "by" : "without"} ${naturalList(suffixGroup[2].split(",").map((label) => workOrderLabel(label.trim())))}.`);
+  }
+  const vectorMatch = query.match(/\b(on|ignoring)\s*\(([^)]*)\)/);
+  if (vectorMatch) sentences.push(`Match both sides ${vectorMatch[1] === "on" ? "on" : "while ignoring"} ${naturalList(vectorMatch[2].split(",").map((label) => workOrderLabel(label.trim())))}.`);
+  const copied = query.match(/\bgroup_(?:left|right)\s*\(([^)]*)\)/)?.[1];
+  if (copied) sentences.push(`Copy ${naturalList(copied.split(",").map((label) => workOrderLabel(label.trim())))} from the matching side.`);
+  if (/\bunless\b/.test(query)) sentences.push("Keep left-side series that have no right-side match.");
+  else if (/\band\b/.test(query)) sentences.push("Keep left-side series that have a right-side match.");
+  else if (/\bor\b/.test(query)) sentences.push("Combine both sides and prefer the left value when labels match.");
+  if (/\s\/\s/.test(query)) sentences.push("Divide the first result by the second.");
+  if (/\s\*\s+on\s*\(/.test(query)) sentences.push("Multiply the matched values.");
+  if (/^\s*100\s*\*/.test(query)) sentences.push("Multiply the final ratio by 100 to report a percentage.");
+  for (const match of query.matchAll(/(==|!=|>=|<=|>|<)\s*(bool\s+)?(-?\d+(?:\.\d+)?)/g)) {
+    sentences.push(match[2]
+      ? `Return zero or one for whether each value is ${comparisonPhrase(match[1])} ${match[3]}.`
+      : `Keep values ${comparisonPhrase(match[1])} ${match[3]}.`);
+  }
+  if (/^-?\d+(?:\.\d+)?$/.test(query.trim())) sentences.push(`Use the scalar value ${query.trim()}.`);
+  return [...new Set(sentences)];
+}
+
+function workOrderRequirements(artifact, evidence) {
+  return [
+    ...selectorRequirementSentences(artifact, evidence),
+    ...(artifact.language === "logql" ? logStageSentences(artifact.query) : []),
+    ...operationRequirementSentences(artifact),
+  ];
+}
+
+function workOrderConcepts(artifact) {
+  const query = artifact.query;
+  if (/^-?\d+(?:\.\d+)?$/.test(query.trim())) return ["a scalar literal"];
+  const families = operatorFamilies(artifact);
+  if (/\b(?:sum|count|avg|min|max)\s*\(|\)\s+(?:by|without)\s*\(/.test(query) && !families.includes("an aggregation")) {
+    families.push("an aggregation");
+  }
+  const concepts = families.map((family) => ({
+    "a metric selector": "metric selection",
+    "a stream selector": "log-stream selection",
+    "a histogram quantile": /_bucket\b/.test(query)
+      ? "classic histogram bucket rates and percentile calculation"
+      : "histogram percentile calculation",
+    "a counter range function": /\bincrease\s*\(/.test(query)
+      ? "a reset-aware, extrapolated counter increase over a time window"
+      : "a reset-aware per-second counter rate over a time window",
+    "an aggregation": /\b(?:by|without)\s*\(/.test(query)
+      ? "aggregation with the required label grouping"
+      : "aggregation across the returned series",
+    "vector matching": "label-based vector matching",
+    "a set operator": /\bunless\b/.test(query)
+      ? "a missing-series set comparison"
+      : /\bor\b/.test(query) ? "a union of series" : "a shared-series set comparison",
+    "an absence check": "an absence check",
+    "a change check": /\bresets\s*\(/.test(query) ? "a counter-reset count" : "a value-change count",
+    "a forecast": "linear forecasting",
+    "an evaluation-time modifier": "a shifted or fixed evaluation time",
+    "a subquery": "a stepped time window",
+    "an over-time function": "a calculation across a sampled time window",
+    "a boolean comparison": "a zero-or-one comparison",
+    "a comparison filter": "a threshold filter",
+    "a line filter": "a raw-text line filter",
+    "a parser": "field parsing",
+    "a typed field filter": "typed-field filtering",
+    "an unwrap stage": "numeric sample extraction",
+    "a range function": "a log-window calculation",
+    "a formatting stage": "output formatting",
+    "an interval offset": "an earlier log interval",
+  })[family]);
+  const matcherOperators = new Set(selectorMatchers(query).map((matcher) => matcher.operator));
+  const noun = artifact.language === "logql" ? "streams" : "series";
+  const matcherConcepts = [
+    matcherOperators.has("=") ? "exact label matching" : undefined,
+    matcherOperators.has("=~") ? "regular-expression label matching" : undefined,
+    matcherOperators.has("!=") ? `label-value exclusion, including ${noun} without that label` : undefined,
+    matcherOperators.has("!~") ? `regular-expression label exclusion, including ${noun} without that label` : undefined,
+  ].filter(Boolean);
+  concepts.splice(1, 0, ...matcherConcepts);
+  if (/^\s*scalar\s*\(/.test(query)) concepts.push("an unlabeled scalar result");
+  return [...new Set(concepts)];
+}
+
+function artifactWorkOrder(artifact, number) {
+  const evidence = workOrderEvidence(artifact);
+  const requirements = workOrderRequirements(artifact, evidence);
+  return `Query ${number}: ${evidence}. ${requirements.length ? `${requirements.join(" ")} ` : ""}Use ${naturalList(workOrderConcepts(artifact))}.`;
+}
+
+function variantInspection(variant) {
+  const groups = new Map();
+  variant.workedEvidenceSet.artifacts.forEach((artifact, index) => {
+    let scope = resultScope(artifact);
+    if (artifact.mode === "records") {
+      if (/\|\s*label_format\b/.test(artifact.query)) scope = "records with derived labels";
+      else if (/\|\s*line_format\b/.test(artifact.query)) scope = "formatted records";
+      else if (/\|\s*(?:json|logfmt|pattern|regexp)\b/.test(artifact.query)) scope = "parsed records";
+      else scope = "raw records";
+    }
+    const positions = groups.get(scope) ?? [];
+    positions.push(index + 1);
+    groups.set(scope, positions);
+  });
+  const descriptions = {
+    "raw records": "timestamps, stream labels, raw lines, and newest-first order within each stream",
+    "parsed records": "timestamps, stream labels, parsed fields, errors, and raw lines",
+    "formatted records": "timestamps, stream labels, parsed fields, and formatted lines",
+    "records with derived labels": "timestamps, stream labels, parsed fields, derived labels, and displayed lines",
+    "labels, samples, and interval": "series labels, timestamped samples, and interval",
+    "scalar value, result type, and absence of labels": "the scalar value and result type; it has no labels",
+    "labels, values, and result type": "labels, values, and result type",
+  };
+  return [...groups].map(([scope, positions]) => {
+    const subject = `${positions.length === 1 ? "Query" : "Queries"} ${naturalList(positions.map(String))}`;
+    return `In ${subject}, inspect ${descriptions[scope]}.`;
+  }).join(" ");
+}
+
+function workOrderScope(variant) {
+  const queries = variant.workedEvidenceSet.artifacts.map((artifact, index) => artifactWorkOrder(artifact, index + 1)).join("\n");
+  return `${queries}\n${variantInspection(variant)}`;
 }
 
 // Narrative owns shifts, newspapers, callbacks, and the handful of authored story facts.
@@ -3162,9 +3517,10 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
   const requester = characters.get(item.requesterId) ?? "The duty desk";
   const directArtifacts = item.variants.map((variant) => directSet(variant).artifacts);
   const primary = directArtifacts[0];
+  const sourceArtifacts = directArtifacts.flat();
   item.report.minArtifacts = minimumFiledArtifacts(item);
-  if (![40, 89, 123, 132].includes(caseNumber(item))) item.briefing = `${act.brief(requester, item.title)} ${thesis.brief}`;
-  item.question = thesis.question;
+  item.briefing = `${act.brief(requester)}: ${thesis.brief}`;
+  item.question = thesis.question ?? act.question;
   item.hypotheses.forEach((hypothesis, index) => {
     hypothesis.title = `${item.title}: ${index === 0 ? thesis.evidenceTitle : thesis.assuredTitle}`;
     hypothesis.summary = index === 0
@@ -3176,7 +3532,7 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
     [role.role, `Query ${role.number} ${role.contribution}.`],
   ));
   item.technicalTruth.summary = `${possessive(item.title)} printouts show ${thesis.finding}. They do not show that ${thesis.alternative}.`;
-  item.ministryPreference.summary = act.preference(item.title);
+  item.ministryPreference.summary = act.preference();
 
   item.evidencePaths[0].description = `${item.title}: the primary queries test ${thesis.scope} and preserve the labels and values needed for the finding.`;
   item.evidencePaths[1].description = `${item.title}: alternate syntax must answer the same question while preserving the returned labels, values, and units.`;
@@ -3221,35 +3577,29 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
   }
 
   const oneArtifact = primary.length === 1;
-  const sourceArtifacts = directArtifacts.flat();
   const firstArtifactOperators = [...new Set(directArtifacts.flatMap((artifacts) => operatorFamilies(artifacts[0])))];
+  const caseOperators = [...new Set(primary.flatMap(operatorFamilies))];
   const singleArtifactScaffolds = [...new Set(directArtifacts.map((artifacts) => nearComplete(artifacts[0].query)))];
   item.hints = [
     {
       level: "Orientation",
-      text: `${thesis.look} ${resultShapeGuide(item)}`,
+      text: thesis.look,
     },
-    oneArtifact ? {
+    {
       level: "Orientation",
-      text: `Open Registry and find ${sourceSummary(sourceArtifacts)}. Query 1 uses ${naturalList(firstArtifactOperators)}. Use only labels and values shown in the Registry or work order.`,
-    } : {
-      level: "Orientation",
-      text: `Registry lists ${sourceSummary(sourceArtifacts)}.${thesis.querySummary ? ` ${thesis.querySummary}` : ""}${printInstruction(item)}`,
+      text: `Open Registry and find ${sourceSummary(sourceArtifacts)}. Match the source described in the work order, then check its labels and unit. Use ${naturalList(caseOperators)}.`,
     },
     oneArtifact && singleArtifactScaffolds.length === 1 ? {
       level: "Scaffold",
-      text: `${roleScaffold(artifactRoles)} Fill each angle-bracket blank from the work order or Registry.${printInstruction(item)}`,
+      text: `Build Query 1 from the inside out with ${naturalList(firstArtifactOperators)}. Fill the blank from the work order and Registry.${printInstruction(item)}`,
       query: singleArtifactScaffolds[0],
-    } : oneArtifact ? {
-      level: "Scaffold",
-      text: `${roleScaffold(artifactRoles)} Complete Query 1 with the active source, values, and operator.${printInstruction(item)}`,
     } : {
       level: "Scaffold",
-      text: `${multiArtifactScaffold(item)} ${roleScaffold(artifactRoles)}`,
+      text: `Fill each blank from the work order and Registry. ${multiArtifactScaffold(item)}${printInstruction(item)}`,
     },
     {
       level: "Worked",
-      text: `Expected reading: ${sentence(thesis.finding)} ${roleScaffold(artifactRoles)}`,
+      text: `Load the complete ${oneArtifact ? "query" : "queries"}. The results support this claim: ${sentence(thesis.finding)} They do not support this broader claim: ${sentence(thesis.alternative)}`,
     },
   ];
 }
@@ -3258,7 +3608,7 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
 {
   const elm = cases.get(1);
   elm.requesterId = "character.tomas-vey";
-  elm.briefing = "Seven, start with Elm Exchange. The paper's ELM SERVICE BULLETIN gives its job, district, and instance. Use Registry definitions to establish whether the collector answers and its queue depth.";
+  elm.briefing = "The ELM SERVICE BULLETIN is on your desk. Tomas Vey needs the evidence before field crews leave.";
   elm.question = "Does north-02 answer, and is its queue depth 2?";
   elm.hypotheses[0].title = "Elm Exchange: North-02 Answers with Queue Depth 2";
   elm.hypotheses[0].summary = "North-02 answers and reports queue depth 2, so its cold annex needs inspection.";
@@ -3271,11 +3621,11 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
   elm.hints[0].text = "You need two current values for the same target: reachability and queue depth. Each result should contain one value with identifying labels. No row means the selector matched nothing.";
   elm.hints[1].text = "Open Registry, then Metrics. Find the reachability and collector queue metrics. Use exact matchers to select north-02. A reachability value of 1 means the target answers; 0 means it does not.";
   elm.hints[2].text = `Use these numbered scaffolds. ${multiArtifactScaffold(elm)} Run both queries. Query 1 must return north-02 with value 1. Query 2 must return north-02 with value 2. Inspect its unit. In Print, enable Query and Labels.`;
-  elm.hints[3].text = "Load both Worked queries. North-02 must appear in both results. Reachability 1 and queue depth 2 together support annex inspection.";
+  elm.hints[3].text = "Load both complete queries. North-02 must appear in both results. Reachability 1 and queue depth 2 together support annex inspection.";
 
   const battery = cases.get(2);
   battery.requesterId = "character.lia-merev";
-  battery.briefing = "Lia Merev sends Battery Cart before crews move. Query `up` for pin-gateway services, then exclude the south district with an inequality matcher.";
+  battery.briefing = "Lia Merev needs the reachable Pin gateways outside South before field crews leave.";
   battery.question = "Which non-south pin-gateway targets answer?";
   battery.hints[0].text = "You need current reachability rows for every matching target outside one district. Read each returned target label and value; do not reduce the rows to one total.";
   battery.hints[1].text = "Open Registry and find the reachability metric. Use `=` to include one service and `!=` to exclude one district. A series without the excluded label also passes `!=`.";
@@ -3284,14 +3634,14 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
 
   const boiler = cases.get(3);
   boiler.requesterId = "character.elian-marr";
-  boiler.briefing = "Elian Marr sends Boiler Pulse before crews move. Match `up` in north or west, exclude press, then compare instant, scalar, and range results.";
+  boiler.briefing = "Elian Marr wants three views of target reachability before field crews leave.";
   boiler.question = "Which expression returns an instant vector, scalar, or range vector?";
   boiler.hints[0].text = "An instant vector has one current value for each label set. A scalar is one number without labels. A range vector has timestamped samples for each label set.";
   boiler.hints[1].text = `Open Registry and find the reachability metric. Use \`=~\` to include matching label values and \`!~\` to exclude them. ${multiArtifactShape(boiler.variants.map((variant) => directSet(variant).artifacts))}${printInstruction(boiler)}`;
 
   const registry = cases.get(4);
   registry.requesterId = "character.elian-marr";
-  registry.briefing = "Elian Marr sends Registry Window before crews move. Query north's `ministry_service_requests_total` with `[30m]`, then inspect the returned range samples.";
+  registry.briefing = "Elian Marr needs North request history for the 30 minutes before evaluation.";
   registry.question = "What does the north request metric return across the 30-minute window?";
   registry.hints[0].text = "You need timestamped samples, not one current value. A `[30m]` selector returns the samples from the 30 minutes before the evaluation time.";
   registry.hints[2].text = "Set `district` to `north` and the window to `30m`. Run the query. Inspect each sample's timestamp and value. In Print, select Graph and enable Query, Labels, and Range.";
@@ -3299,15 +3649,16 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
 
 function restoreFixedRecordOrder(item, includesReachability) {
   const requester = characters.get(item.requesterId) ?? "The duty desk";
+  const instruction = includesReachability
+    ? "Compare target reachability with Pin-gateway and rejected-attendance records. Each record stream has its own timestamp order."
+    : "Compare Pin-gateway and rejected-attendance records. Each stream has its own timestamp order.";
   const finding = includesReachability
     ? "target reachability reports current state; Pin gateway and rejected-attendance rows run backward only within their own streams; cross-stream order remains undefined"
     : "Pin gateway and rejected-attendance rows run backward within their own streams; equal timestamps and cross-stream events have no defined order";
   const assured = includesReachability
     ? "Target reachability and globally ordered records prove one service sequence."
     : "The two record streams form one global service sequence.";
-  item.briefing = `${actCopy[item.actId].brief(requester, item.title)} ${includesReachability
-    ? "Read target reachability beside fixed-backward Pin gateway and rejected-attendance records; only each record stream has a timestamp order."
-    : "Read fixed-backward Pin gateway and rejected-attendance records; only each stream has a timestamp order."}`;
+  item.briefing = `${actCopy[item.actId].brief(requester)}: ${instruction}`;
   item.question = includesReachability
     ? "What does target reachability show, and what backward timestamp order appears within each record stream without a cross-stream sequence?"
     : "What backward timestamp order appears within each record stream, and what do the gateway and rejected-attendance rows show?";
@@ -3334,8 +3685,7 @@ function restoreFixedRecordOrder(item, includesReachability) {
   item.hints[0].text = includesReachability
     ? "Read current reachability, then read both record streams backward within their own timestamps. Query 1 supplies Pin gateway rows; Query 2 supplies rejected attendance rows; Query 3 supplies reachability."
     : "Read both record streams backward within their own timestamps. Query 1 supplies Pin gateway rows; Query 2 supplies rejected attendance rows. Do not rank equal timestamps or combine the streams as one clock.";
-  item.hints[2].text += " Read returned records backward within each stream; do not invent a cross-stream tie-break.";
-  item.hints[3].text = `Expected reading: ${sentence(finding)} ${roleScaffold(artifactRolePlan(item))}`;
+  item.hints[3].text = `Load the complete queries. ${sentence(finding)} The results do not define a global order across streams or equal timestamps.`;
 }
 
 restoreFixedRecordOrder(cases.get(9), false);
@@ -3357,7 +3707,7 @@ restoreFixedRecordOrder(cases.get(87), true);
   choice(endorsed.report.conclusions, ".conclusion.assured").text = "Party membership is 100%.";
   endorsed.technicalTruth.summary = "Equal registered-population operands explain 100%, while North's queue threshold reports pressure. Neither source counts Party members.";
   outcome(endorsed, ".outcome.evidence").technicalExplanation = "The ratio and queue printouts support their distinct readings, but neither measures Party membership.";
-  endorsed.hints[3].text = "The Worked ratio returns 100% because its population operands match. The queue query reports North's zero-or-one threshold. Neither result measures Party membership.";
+  endorsed.hints[3].text = "Load the complete ratio query. It returns 100% because its population operands match. The queue query reports North's zero-or-one threshold. Neither result measures Party membership.";
 
   const audit = cases.get(117);
   audit.requesterId = "character.petra-noll";
@@ -3373,7 +3723,7 @@ restoreFixedRecordOrder(cases.get(87), true);
   choice(audit.report.conclusions, ".conclusion.evidence").text = "The press artifacts establish publication, while equal registered-population operands explain 100% without measuring Party membership.";
   choice(audit.report.conclusions, ".conclusion.assured").text = "Every registered person is a Party member.";
   choice(audit.decisionChoices, ".decision.broad").text = "Declare every registered person a Party member.";
-  audit.hints[3].text = "The Worked results should show the announcement's formatted press results, outcome labels, prior-day rate, and equal population operands. Publication and arithmetic do not become membership evidence.";
+  audit.hints[3].text = "Load the complete queries. Check the formatted press results, outcome labels, prior-day rate, and equal population operands. Publication and arithmetic do not become membership evidence.";
 }
 
 // Cases keep their tested data shapes while appearing on the day the player
@@ -3480,6 +3830,25 @@ restoreFixedRecordOrder(cases.get(87), true);
   }
 }
 
+// Work orders state the evidence and concepts. Query syntax belongs in the later
+// Scaffold and Worked hints so the assignment does not reveal its own answer.
+for (const item of campaign.cases) for (const variant of item.variants) {
+  variant.workOrderScope = workOrderScope(variant);
+  const lines = variant.workOrderScope.split("\n");
+  assert(lines.length === variant.workedEvidenceSet.artifacts.length + 1,
+    `${item.id} ${variant.id} must have one instruction per query plus one inspection line`);
+  variant.workedEvidenceSet.artifacts.forEach((artifact, index) => {
+    const line = lines[index];
+    assert(line.startsWith(`Query ${index + 1}:`), `${item.id} ${variant.id} lacks Query ${index + 1} instructions`);
+    assert(!/[`{}\[\]"]|\b[A-Za-z_]\w*\s*\(/.test(line), `${item.id} ${variant.id} Query ${index + 1} leaks query syntax`);
+    for (const metric of metricNames.filter((name) => new RegExp(`\\b${name}\\b`).test(artifact.query))) {
+      assert(!new RegExp(`\\b${metric}\\b`).test(line), `${item.id} ${variant.id} Query ${index + 1} leaks metric ${metric}`);
+    }
+  });
+  assert(!/active work order|named Registry|returned scope|measured scope|auditable scope|<source/i.test(variant.workOrderScope),
+    `${item.id} ${variant.id} uses vague work-order instructions`);
+}
+
 // Content-density checks fail generation before an unreadable campaign can be committed.
 const countWords = (text) => text.match(/[\p{L}\p{N}_'-]+/gu)?.length ?? 0;
 const countProseWords = (text) => countWords(text.replace(/`[^`]*`/g, ""));
@@ -3494,6 +3863,7 @@ assertWordCeiling("hypothesis summary", campaign.cases.flatMap((item) => item.hy
 assertWordCeiling("conclusion", campaign.cases.flatMap((item) => item.report.conclusions.map((choice) => choice.text)), 24);
 assertWordCeiling("action", campaign.cases.flatMap((item) => item.decisionChoices.map((choice) => choice.text)), 16);
 assertWordCeiling("hint prose", campaign.cases.flatMap((item) => item.hints.map((hint) => hint.text)), 60, countProseWords);
+assertWordCeiling("work-order scope", campaign.cases.flatMap((item) => item.variants.map((variant) => variant.workOrderScope)), 180, countProseWords);
 
 // These three record watches were appended to non-watch concept bundles. Keep
 // their checkpoint gate outside the concept-specific artifact selectors, and

@@ -166,6 +166,7 @@
           "id": "variant.one",
           "dataShapeId": "shape.one",
           "datasetId": "data.one",
+          "workOrderScope": "Query 1: Read the current value from metric `fixture_signal`. Inspect its labels and value.",
           "evaluationTime": "2030-01-01T08:00:00Z",
           "referenceSets": [
             {

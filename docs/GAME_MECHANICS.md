@@ -74,6 +74,10 @@ Live Grafana access is a separate late mode. That mode is read-only and has no c
 
 ## 4. Observable player experience
 
+Before the first desk shift, the player chooses one of two appointment packets. Ministry Intern is the zero-knowledge route and includes a four-file supervised clearance shift. Ministry Agent skips that clearance and starts with live work. Both routes introduce the chain of command, Well-being Pins, the desk controls, and the Reconciliation Rule before the player must file a report.
+
+Every shift begins with an edition of *The Contented Citizen*. Its practical notices can identify a service, location, or time that matters at the desk. Its political claims can omit or distort what the telemetry supports, so the paper is context and never evidence by itself.
+
 The main screen represents the player’s Ministry desk. The desk contains the following work areas:
 
 - An inbox for cases, notices, directives, and follow-up records.
@@ -1223,6 +1227,7 @@ Each case defines these fields:
 - Required and optional concept-registry identities.
 - Allowed query languages and required simulator features.
 - Data references, time context, and complete registry entries.
+- Variant-scoped work-order instructions that name each required source, filter, operation, and result check without exposing the complete query.
 - Competing hypothesis identities, ground truth, and facts that support or refute each hypothesis.
 - Evidence requirements expressed as result facts.
 - The closed detector requirement records from Section 12 for every required concept and case variant.

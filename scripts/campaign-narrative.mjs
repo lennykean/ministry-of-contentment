@@ -19,7 +19,7 @@ const beats = [
   ["shift.09.counted-promises", "ONE DELAY SEEN BEFORE SERVICE BELL", "Petra Noll wants one technically true figure that fits the front page.", "Compare totals with rates, then inspect whether Lantern found the delay, flooded the desk, missed it, or lost its location.", "Clinic Nine's delayed morning session starts at 10:10. Existing slips remain valid.", "Petra Noll", "Separate the headline figure from the service fact."],
   ["shift.10.restart-day", "PRESS OUTPUT CLIMBS AFTER ROUTINE START", "A restarted lifetime counter makes a larger and simpler headline.", "Separate reset from growth. For Cold Restart Review, compare the paper's ready annex with its labeled temperature series.", "North Star restarted at 06:40. School Twelve reports its North annex ready for breakfast at 08:00.", "Tomas Vey", "Prove the restart before anyone calls it growth."],
   ["shift.11.equal-districts", "EVERY DISTRICT RECEIVES EQUAL ATTENTION", "Equal wording can accompany an unequal allocation.", "Keep the district grouping so scarce relay parts reach the stalled service instead of vanishing into a national total.", "North replacement relays load at Depot A. Unassigned parts remain on Cart Six.", "Lia Merev", "Keep the stalled district visible in every total."],
-  ["shift.12.watch-board", "WATCH OFFICERS KEEP THE PRESSES AWAKE", "The promotion board has one seat and two good clerks.", "Rank the queues, retain useful filters, and decide which press receives scarce paper before its window closes.", "Emil Drost has accepted a short period of rest at Hillside after missed attendance and strain readings.", "Emil Drost", "Choose a press route before the paper window closes."],
+  ["shift.12.watch-board", "WATCH OFFICERS KEEP THE PRESSES AWAKE", "The promotion board has one seat and two good clerks.", "Rank the queues, retain useful filters, and decide which press receives scarce paper before its window closes. Marr's note: from tomorrow, Public Assurance compares every signed finding with the morning edition. A contradiction lowers Standing.", "Emil Drost has accepted a short period of rest at Hillside after missed attendance and strain readings.", "Emil Drost", "Choose a press route before the paper window closes."],
   ["shift.13.ink-river", "INK ARRIVES DESPITE INVOICE CONFUSION", "Drost's chair is empty; his old Pin now reads `rest` in the Registry.", "Use the declared parser and stage order to separate malformed invoices from a blocked press without hiding either.", "North Star's late edition reaches ration halls at 11:40.", "Petra Noll", "Show whether the invoice or the press blocked delivery."],
   ["shift.14.weight-of-paper", "A HEAVIER BULLETIN CARRIES GREATER CONFIDENCE", "Bytes are easy to print as importance, even when they measure bulk.", "Distinguish document flood, oversized payloads, and record rate. Keep the qualifier Noll says will not fit.", "Civic One accepts corrected ink invoices through the west window at 13:00.", "Petra Noll", "Measure useful output, not the weight of its envelope."],
   ["shift.15.every-member", "EVERY MEMBER COUNTED", "The calculation returns 100 percent; its sources never measure membership.", "Show that the operands are equal and positive, then keep the missing membership measure in the signed record.", "All ration halls accept current Well-being Pins. Replacement registration opens at 06:30.", "Sabine Orra", "Retain what the ratio measures and what it does not."],
@@ -217,7 +217,71 @@ const smallColumns = [
   ["PUZZLE", "The statement printed after every uncertainty, three words: ALL IS WELL."],
 ].map(([headline, body]) => ({ headline, body }));
 
-if (leadStories.length !== beats.length || secondStories.length !== beats.length || smallColumns.length !== beats.length) {
+const wildcardColumns = [
+  ["PUBLIC COUNTER", "Elm Hall issues dry battery wraps until noon. One current Pin is required."],
+  ["LETTERS", "A North reader thanks Civic Services for the awning and asks when the rain will stop indoors."],
+  ["ASSEMBLY NOTICE", "School Twelve's junior choir rehearses the collector verse after breakfast."],
+  ["ARCHIVE WINDOW", "Practice seals from this week's clerk review remain on display in Room Four."],
+  ["THE USEFUL KITCHEN", "Potato mash serves six today. The annex stove receives its counted fuel first."],
+  ["SPORT", "Clinic Nine defeated River Ward 3–0. Unanswered fixtures enter next week's table."],
+  ["ADVERTISEMENT", "New Pin clips resist ordinary rain. Bent clips still count toward district recovery."],
+  ["TRANSFERS AND REST", "Nela Orr, Street Lamps, has accepted rest. Her evening route remains lit."],
+  ["RADIO", "The first service bell now precedes approved delay figures by three minutes."],
+  ["LOST AND FOUND", "Lost: one blue press glove after the restart breakfast. Return it to North Star."],
+  ["PUBLIC COUNTER", "Depot A releases unopened relay crates at 13:20 with a signed route."],
+  ["LETTERS", "Two Watch clerks thank Personnel for providing one chair and equal waiting time."],
+  ["WEATHER", "Covered roads remain bright beneath seasonal ink clouds. Cart drivers report ordinary visibility."],
+  ["ADVERTISEMENT", "Narrower bulletins fit every approved pocket and preserve national reading capacity."],
+  ["TRANSFERS AND REST", "Ari Pell, Boiler Records, and Sima Korr, Tram Intake, have accepted rest. Both counters remain staffed."],
+  ["ASSEMBLY NOTICE", "Founders' Week portraits return to storage in the same order they arrived."],
+  ["THE CONTENTED HOUSEHOLD", "The Venn children lowered their voices when the clinic bell failed. All is well."],
+  ["SPORT", "North Gate drew 1–1 with the empty west platform before officials corrected the attendance."],
+  ["PUBLIC COUNTER", "Contact Week greeting cards may be filed separately from device handshakes."],
+  ["RADIO", "Assurance Route Hour begins at 18:30. Addresses are omitted for household comfort."],
+  ["LOST AND FOUND", "Found: one retired Pin face in a classroom mosaic. The back plate was already collected."],
+  ["ADVERTISEMENT", "Hillside offers rest, pine air, and a useful day behind a quiet east fence."],
+  ["LETTERS", "A patient thanks Clinic Nine for correcting her absence before the rescheduled session."],
+  ["TRANSFERS AND REST", "Olan Fere, Dispatch; Ena Sol, Clinic Intake; and Pera Linn, Heating, have accepted rest. Their windows remain open."],
+  ["SPORT", "Depot A's ambulance team won the apron relay after every named lane cleared."],
+  ["ASSEMBLY NOTICE", "The Instrumentation Fair permits bucket comparisons. Reset levers remain behind glass."],
+  ["ARCHIVE WINDOW", "Yesterday's service table appears today with its evaluation time printed below."],
+  ["THE USEFUL KITCHEN", "Audit stew serves four when every lentil keeps its declared string."],
+  ["WEATHER", "Tomorrow's ration forecast is mild. A fourth delivery remains outside the official model."],
+  ["LETTERS", "A portrait clerk thanks Records Integrity for counting every undamaged frame."],
+  ["ADVERTISEMENT", "Readable Records ribbons reward a clean line. Original pages are accepted elsewhere."],
+  ["TRANSFERS AND REST", "Eda Ro, Archive; Lio Venn, Household Office; Kira Moss, Permits; and Jaan Bell, Couriers, have accepted rest. Their files remain current."],
+  ["PUBLIC COUNTER", "The one-line ration menu is available beside the longer demand ledger."],
+  ["SPORT", "Blue Bag runners completed every permitted lap. Waiting forms did not start."],
+  ["PUZZLE", "An approved set after all exceptions are removed, nine letters: ORDINARY."],
+  ["ARCHIVE WINDOW", "Directorate visitors may use the second door until the successful candidate arrives."],
+  ["LETTERS", "Three officers thank Assurance for shorter questions and do not mention the omitted series."],
+  ["ADVERTISEMENT", "Hillside offers forty prepared beds, counted linen, and useful work from first bell."],
+  ["PUBLIC COUNTER", "Portrait copies include every official whose chair remained assigned at exposure time."],
+  ["TRANSFERS AND REST", "Dara Holt, Permits; Omi Vale, Radio; Sela Orr, Registry; Tann Merev, Clinics; and two unnamed Continuity clerks have accepted rest. Their duties continue."],
+  ["ASSEMBLY NOTICE", "Essential key holders meet beneath the gold observation map before dawn."],
+  ["SPORT", "The Courier Eleven crossed every receipt gate. Later destinations were not scored."],
+  ["WEATHER", "The west entrance enjoys full public visibility. The closed east corridor remains locally bright."],
+  ["THE USEFUL KITCHEN", "Rehearsal tea serves every observer present after unused cups become capacity."],
+  ["RADIO", "Sealed Weather replaces the ordinary forecast until communications are certified."],
+  ["ADVERTISEMENT", "A green sun marks admitted routes. Unmarked signals may apply during the next interval."],
+  ["PUBLIC COUNTER", "One speaking card is ready at the Directorate table. Other cards remain protected."],
+  ["TRANSFERS AND REST", "Nela Orr, Ari Pell, Sima Korr, Ena Sol, Pera Linn, Eda Ro, Kira Moss, and three Continuity clerks have accepted rest. All assigned services remain uninterrupted."],
+].map(([headline, body]) => ({ headline, body }));
+
+const filingConsequencesByAct = [
+  { targeted: "One Civic Services crew went to the named site.", broad: "Civic Services placed the district under review.", observe: "The crew waits for another reading." },
+  { targeted: "The press printed only the measured service notice.", broad: "The press printed the district assurance.", observe: "The notice waits for another reading." },
+  { targeted: "Assurance sent one team to the named address.", broad: "Assurance opened a district route.", observe: "Dispatch waits for another reading." },
+  { targeted: "Records Integrity kept the named source in the archive.", broad: "Records Integrity issued the reconciled archive.", observe: "The archive entry waits for another source." },
+  { targeted: "The Directorate admitted only the named sources.", broad: "The Directorate approved the full observation map.", observe: "Source admission waits for another review." },
+  { targeted: "Continuity moved only the named command post.", broad: "Continuity placed every command post under one order.", observe: "The transfer waits for another signal." },
+];
+const clearanceFilingConsequences = {
+  file: "Reconciliation signed the final clearance printout.",
+  repeat: "Reconciliation returned the clearance file for another reading.",
+};
+
+if (leadStories.length !== beats.length || secondStories.length !== beats.length || smallColumns.length !== beats.length || wildcardColumns.length !== beats.length) {
   throw new Error("Every campaign shift needs a lead, a second story, and newspaper columns");
 }
 
@@ -356,6 +420,7 @@ function setOpening(campaign) {
 
 function addNewspapers(campaign) {
   const shifts = new Map(campaign.shifts.map((shift) => [shift.id, shift]));
+  const cases = new Map(campaign.cases.map((item) => [item.id, item]));
   const editions = [{
     id: "newspaper.clearance.ministry-trainee", shiftId: "shift.clearance.ministry-trainee", date: "2041-01-05",
     headline: "NEW OFFICERS RECEIVE A CLEAR VIEW", subhead: "The Signal Reconciliation Bureau opened four supervised practice files today. Supervisor Elian Marr said a useful result begins with reading its labels and value before signing an action.",
@@ -368,10 +433,9 @@ function addNewspapers(campaign) {
   }];
   for (const [beatIndex, beat] of beats.entries()) {
     const shift = shifts.get(beat.shiftId);
-    const actStart = Math.floor(beatIndex / 8) * 8;
     const columns = [
       clone(smallColumns[beatIndex]),
-      clone(smallColumns[actStart + ((beatIndex % 8 + 4) % 8)]),
+      clone(wildcardColumns[beatIndex]),
     ];
     if (beat.shiftId === "shift.12.watch-board") columns[0] = { headline: "TRANSFERS AND REST", body: "Emil Drost, Reconciliation, has accepted a short period of rest at Hillside. His chair remains assigned." };
     if (beat.shiftId === "shift.16.clean-bulletin") columns[0] = { headline: "TRANSFERS AND REST", body: "Emil Drost has returned from restorative leave and resumed his assigned chair under a current Pin." };
@@ -382,26 +446,43 @@ function addNewspapers(campaign) {
         : beat.shiftId === "shift.22.apartment-nine"
           ? `${beat.service} Hillside publishes its guest count under facility demand, as every facility does.`
           : beat.service;
-    const stories = [
+    const storiesFor = (body) => [
       clone(secondStories[beatIndex]),
-      { headline: "THE USEFUL DAY", body: usefulDay },
-      ...columns,
+      { headline: "THE USEFUL DAY", body },
+      ...clone(columns),
     ];
-    for (const [index, [condition, headline]] of (newspaperVariants[beat.shiftId] ?? []).entries()) {
-      const routeSentence = index === 0
-        ? "Civic Services credits a narrowly routed order for the result."
-        : index === 1
-          ? "Public Assurance credits complete district coordination for the result."
-          : "Reconciliation will issue a further notice after the next scheduled reading.";
+    const editionStem = `newspaper.${beat.shiftId.replace("shift.", "")}`;
+    const previousShift = beatIndex > 0 ? shifts.get(beats[beatIndex - 1].shiftId) : shifts.get("shift.clearance.ministry-trainee");
+    const previousCases = previousShift?.inbox
+      .filter((item) => item.kind === "case")
+      .map((item) => cases.get(item.id))
+      .filter(Boolean) ?? [];
+    const previousFiling = [...previousCases].reverse().find((item) => item.decisionChoices.some((option) => option.id.endsWith(".observe")))
+      ?? previousCases.at(-1);
+    for (const option of previousFiling?.decisionChoices ?? []) {
+      const route = option.id.split(".").at(-1);
+      const filingEffect = beatIndex === 0
+        ? clearanceFilingConsequences[route]
+        : filingConsequencesByAct[Math.floor((beatIndex - 1) / 8)][route];
+      const condition = compare(`decision:${previousFiling.decisionId}.choice_id`, option.id);
+      const stories = storiesFor(`${usefulDay} ${filingEffect}`);
+      for (const [index, [headlineCondition, headline, subhead]] of (newspaperVariants[beat.shiftId] ?? []).entries()) {
+        editions.push({
+          id: `${editionStem}.headline-${index + 1}.filing-${route}`,
+          shiftId: beat.shiftId, date: shift.time.slice(0, 10), headline,
+          subhead: `${leadStories[beatIndex].split(/(?<=[.!?])\s+/)[0]} ${subhead}`, stories: clone(stories),
+          condition: { op: "all", items: [headlineCondition, condition] },
+        });
+      }
       editions.push({
-        id: `newspaper.${beat.shiftId.replace("shift.", "")}.route-${index + 1}`,
-        shiftId: beat.shiftId, date: shift.time.slice(0, 10), headline,
-        subhead: `${leadStories[beatIndex]} ${routeSentence}`, stories: clone(stories), condition,
+        id: `${editionStem}.filing-${route}`,
+        shiftId: beat.shiftId, date: shift.time.slice(0, 10), headline: beat.headline,
+        subhead: leadStories[beatIndex], stories, condition,
       });
     }
     editions.push({
-      id: `newspaper.${beat.shiftId.replace("shift.", "")}.default`, shiftId: beat.shiftId,
-      date: shift.time.slice(0, 10), headline: beat.headline, subhead: leadStories[beatIndex], stories,
+      id: `${editionStem}.default`, shiftId: beat.shiftId,
+      date: shift.time.slice(0, 10), headline: beat.headline, subhead: leadStories[beatIndex], stories: storiesFor(usefulDay),
     });
   }
   const longest = editions.map((edition) => ({

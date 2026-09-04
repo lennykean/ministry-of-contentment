@@ -610,6 +610,8 @@ function documentCard(): string {
 function workOrderCard(item: CampaignCase): string {
   const engineRef = engine!;
   const adaptive = engineRef.adaptiveReason(item.id);
+  const workOrderScope = engineRef.caseVariant(item.id).workOrderScope;
+  const workOrderScopeHtml = workOrderScope.split("\n").map((line) => escapeHtml(line).replace(/`([^`]+)`/g, "<code>$1</code>")).join("<br>");
   const requester = index!.campaign.characters.find((character) => character.id === item.requesterId);
   const sender = requester ? `${requester.name}, ${requester.role}` : "The Ministry";
   const shiftTime = engineRef.currentShift().time;
@@ -624,10 +626,11 @@ function workOrderCard(item: CampaignCase): string {
     </header>
     <div class="work-body">
       <p>${escapeHtml(item.briefing)}</p>
+      <p class="work-scope"><b>Your task:</b><br>${workOrderScopeHtml}</p>
       <p class="work-question"><b>What is needed:</b> ${escapeHtml(item.question)}</p>
       ${adaptive ? `<p class="work-practice">Targeted practice. ${escapeHtml(adaptive)}</p>` : ""}
-      <section class="hypotheses" aria-label="Two explanations to test">
-        <h3>Two explanations to test</h3>
+      <section class="hypotheses" aria-label="Claims to compare">
+        <h3>Claims to compare</h3>
         ${item.hypotheses.map((hypothesis, position) => `<p><b>${String.fromCharCode(65 + position)} · ${escapeHtml(hypothesis.title.replace(`${item.title}: `, ""))}</b><span>${escapeHtml(hypothesis.summary)}</span></p>`).join("")}
       </section>
     </div>

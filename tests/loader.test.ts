@@ -55,6 +55,12 @@ describe("campaign loader", () => {
     expect(() => loadCampaign(campaign)).toThrow(/availableSources references missing telemetry source/);
   });
 
+  it("requires variant-specific work-order instructions", () => {
+    const campaign = structuredClone(fixture) as any;
+    delete campaign.cases[0].variants[0].workOrderScope;
+    expect(() => loadCampaign(campaign)).toThrow(/must have required property 'workOrderScope'/);
+  });
+
   it("rejects dangling or wrongly typed access-right references", () => {
     const missingConceptRight = structuredClone(fixture) as any;
     missingConceptRight.concepts[0].accessRightId = "access.missing";

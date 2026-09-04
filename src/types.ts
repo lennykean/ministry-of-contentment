@@ -156,7 +156,7 @@ export interface ReferenceSet { id: string; evidencePathId: string; artifacts: R
 export interface WorkedEvidenceArtifact extends ReferenceArtifact { explanation: string; print: PrintPlan }
 export interface WorkedEvidenceSet { evidencePathId: string; artifacts: WorkedEvidenceArtifact[] }
 export interface CaseVariant {
-  id: string; dataShapeId: string; datasetId: string; datasetTimeOffsetSeconds?: number; evaluationTime?: string; rangeStart?: string; rangeEnd?: string;
+  id: string; dataShapeId: string; datasetId: string; workOrderScope: string; datasetTimeOffsetSeconds?: number; evaluationTime?: string; rangeStart?: string; rangeEnd?: string;
   requiredValues?: RequiredValue[]; evidenceRequirements?: EvidenceRequirement[];
   referenceSets: ReferenceSet[]; workedEvidenceSet: WorkedEvidenceSet;
 }

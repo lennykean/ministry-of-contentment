@@ -2316,6 +2316,7 @@
         "id",
         "dataShapeId",
         "datasetId",
+        "workOrderScope",
         "referenceSets",
         "workedEvidenceSet"
       ],
@@ -2328,6 +2329,10 @@
         },
         "datasetId": {
           "$ref": "#/$defs/id"
+        },
+        "workOrderScope": {
+          "type": "string",
+          "minLength": 1
         },
         "datasetTimeOffsetSeconds": {
           "type": "integer"

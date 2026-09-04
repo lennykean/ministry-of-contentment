@@ -25,6 +25,8 @@ The current campaign uses authored local telemetry fixtures. It does not deploy 
 
 The game is a single screen: a banner showing the clock and Ministry Standing, an in tray, a query console with a print bar, and a work column holding the open case and its report form. The registry, standing queries, personnel file, archive, and a list of keyboard shortcuts open as dialogs over the desk.
 
+New players choose an appointment before reaching the desk. Ministry Intern starts with a four-file clearance shift that teaches the Registry, series, label matching, and the difference between zero and no result. Ministry Agent credits that clearance and begins with live work. Each shift opens with *The Contented Citizen*, whose service notices can provide clues and whose official claims are not evidence.
+
 ## Keyboard shortcuts
 
 Letter keys work only when focus is not in the console or a form field.
