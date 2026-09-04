@@ -2,7 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { addCampaignPrologue } from "./campaign-prologue.mjs";
-import { addCampaignNarrative } from "./campaign-narrative.mjs";
+import { addCampaignNarrative, finalizeCampaignNarrativeCopy } from "./campaign-narrative.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const campaignPath = resolve(root, "content/campaign.json");
@@ -122,37 +122,54 @@ const presentations = [
     confirmation: "The reconciliation record is filed.",
   },
   {
-    guidance: "Separate the technical finding from the wording requested for public assurance.",
+    guidance: "The press accepts one title, one conclusion, and no correction after first bell.",
     responseLabel: "Technical and public response",
     responseHeading: "Bulletin result",
     confirmation: "The finding and its public treatment are filed separately.",
   },
   {
-    guidance: "Preserve population, time, and location. The Ministry may reward a broader claim even when the evidence does not support it.",
+    guidance: "Name the population, time, and location. Assurance will schedule every visit authorized by the filed route.",
     responseLabel: "Assurance response",
     responseHeading: "Dispatch result",
     confirmation: "The evidence scope and dispatch choice are filed.",
   },
   {
-    guidance: "File reproducible evidence. Records Integrity may reward an institutionally useful claim that the artifacts do not support.",
+    guidance: "Attach reproducible evidence. Records Integrity will retain one conclusion in the permanent record.",
     responseLabel: "Audit response",
     responseHeading: "Archive result",
     confirmation: "The finding and its evidence chain are archived.",
   },
   {
-    guidance: "Balance query cost with evidentiary scope. Directorate approval can still favor unsupported certainty.",
+    guidance: "Balance query cost with the observation map. The Directorate requires a complete decision before the review window closes.",
     responseLabel: "Directorate response",
     responseHeading: "Portfolio result",
     confirmation: "The portfolio decision is filed with its measured cost.",
   },
   {
-    guidance: "Use the full watch and report history. Continuity may reward control even when the final claim exceeds the evidence.",
+    guidance: "Use the full watch and report history. Continuity requires one command finding before communications close.",
     responseLabel: "Continuity response",
     responseHeading: "Protocol result",
     confirmation: "The final record is filed with its history intact.",
   },
 ];
 campaign.acts.forEach((act, index) => { act.reportPresentation = presentations[index]; });
+
+const registrySources = {
+  "access.infrastructure": "National Signal Grid",
+  "access.civic-services": "Civic Services instruments",
+  "access.press": "Public Assurance press ledger",
+  "access.population": "Office of Civic Registration",
+  "access.movement": "Well-being Pin network",
+  "access.dispatch": "Well-being Assurance route ledger",
+  "access.directorate": "Directorate stores ledger",
+  "access.contentment": "National Contentment Office",
+  "access.continuity": "Continuity observation annex",
+};
+for (const metric of campaign.metrics) {
+  assert(registrySources[metric.accessRightId], `${metric.name} lacks an in-world Registry source`);
+  metric.source = registrySources[metric.accessRightId];
+}
+campaign.metrics.find((metric) => metric.name === "up").description = "Scrape reachability for one registered target.";
 
 // Keep each lesson packet intact, but spread first encounters across the quiet
 // shifts that previously repeated old material. This preserves every authored
@@ -2379,9 +2396,9 @@ function compositeThesis(item, thesis, roles) {
       evidenceTitle: batteryOnly ? `${location ? `${location} ` : ""}Battery and Gateway Check` : `${location ? `${location} ` : ""}Metric and Record Check`,
       assuredTitle: location ? `One Fault Across ${location}` : "One Fault Across Every Reading",
       rebuttal: `Metric state and record context do not establish one fault unless time, place, and identity match.`,
-      targetedAction: "File the metric and record results with their own source identities.",
-      broadAction: "Treat the metric and record results as proof of one fault.",
-      observeAction: "Hold the metric-to-record link for another reading.",
+      targetedAction: "Keep the metric and record findings under their own source numbers.",
+      broadAction: "Enter both results as one service incident.",
+      observeAction: "Return the incident file for a second timed reading.",
     };
   }
 
@@ -2411,65 +2428,97 @@ function completeThesis(item, roles) {
   };
 }
 
+const rotateBrief = (briefs, name, title, number) => briefs[(number - 1) % briefs.length](name, title);
+
 const actCopy = {
   "act.1.reconciliation": {
-    brief: (name) => `Before crews leave, ${name} requests this check`,
+    brief: (name, title, number) => rotateBrief([
+      (person) => `This file remains marked serviceable. ${person} has held one repair slot until your finding arrives.`,
+      (person) => `${person} can send one crew when this file closes. An unsigned route returns to the general queue at first bell.`,
+      (person) => `The public counter opens on schedule. ${person} wants the instrument record before anyone is turned away.`,
+      (person) => `Today's route has room for one repair. ${person} needs a location that will fit on the crew tag.`,
+    ], name, title, number),
     question: "Run every required query. Which claim should guide the field crew?",
-    preference: () => "Reconciliation wants a repair based on the evidence.",
+    preference: () => "Reconciliation approves one repair for each failure the instruments can name.",
     actions: [
-      () => "Send crews only to targets identified by the results.",
-      () => "Treat the result as district-wide and send crews broadly.",
-      () => "Wait for another reading before sending crews.",
+      () => "Send the crew to the targets printed in the result.",
+      () => "Open a preventive inspection across the district.",
+      () => "Return the route to pending service until another reading arrives.",
     ],
   },
   "act.2.public-assurance": {
-    brief: (name) => `Before publication, ${name} requests this check`,
+    brief: (name, title, number) => rotateBrief([
+      (person) => `The headline is already set. ${person} needs the figures beneath it before the presses start.`,
+      () => "This file reaches the morning editor at noon. Later corrections will appear as tomorrow's improvement.",
+      (person) => `Public Assurance reserved one line for this file. ${person} will decide how much of the result fits.`,
+      (person) => `Today's service notice is marked fully resolved. ${person} needs the figures before the wording becomes permanent.`,
+    ], name, title, number),
     question: "Run every required query. Which claim can the bulletin support?",
-    preference: () => "Public Assurance prefers the broader claim, even when the evidence is narrower.",
+    preference: () => "Public Assurance rewards findings that arrive ready for the morning edition.",
     actions: [
-      () => "Publish only what the results show.",
-      () => "Publish the broader Ministry assurance.",
-      () => "Wait for another reading before publication.",
+      () => "Print the measured condition with its stated limit.",
+      () => "Release the district assurance in the reserved column.",
+      () => "Hold the column for tomorrow's confirmed improvement.",
     ],
   },
   "act.3.individual-wellbeing": {
-    brief: (name) => `Before the Ministry assigns services, ${name} requests this check`,
+    brief: (name, title, number) => rotateBrief([
+      (person) => `${person} has prepared a service list for this file. Anyone absent from the result remains outside today's route.`,
+      (person) => `The service route closes at noon. ${person} will treat every printed location as current.`,
+      () => "This file may release a Well-being Assurance team. The form requires a subject, a reason, and a serviceable door.",
+      (person) => `A courtesy visit is scheduled after this review. ${person} needs a route that can find the assigned door.`,
+    ], name, title, number),
     question: "Run every required query. Which claim should guide the service decision?",
-    preference: () => "The Ministry wants the results to justify a broad service decision.",
+    preference: () => "Well-being Assurance prefers a complete route, even when the result names fewer doors.",
     actions: [
-      () => "Allocate services only to targets identified by the results.",
-      () => "Use the result to justify a broader allocation.",
-      () => "Wait for another reading before allocation.",
+      () => "Schedule service for the people and locations named in the result.",
+      () => "Open a Well-being Assurance route for the full district.",
+      () => "Keep the service request pending until another reading arrives.",
     ],
   },
   "act.4.official-truth": {
-    brief: (name) => `For the audit, ${name} requests this check`,
+    brief: (name, title, number) => rotateBrief([
+      (person) => `Records Integrity will keep one version of this file. ${person} needs to know which source lines survive correction.`,
+      () => "This file has two accounts and room for one official record. The second will remain available under restricted clarity.",
+      (person) => `${person} has been asked to make this file easier to read. Complicating source lines may be filed separately for clarity.`,
+      () => "The archive closes this file tonight. Late disagreements will be entered against the person who filed them.",
+    ], name, title, number),
     question: "Run every required query. Which claim belongs in the audited record?",
-    preference: () => "Records Integrity may prefer a useful official claim over the narrower evidence.",
+    preference: () => "Records Integrity retains the version that leaves the archive in useful agreement.",
     actions: [
-      () => "File only the claim supported by the results.",
-      () => "File the broader misconduct claim.",
-      () => "Keep the record open for more evidence.",
+      () => "Archive the measured finding with its source lines.",
+      () => "Enter the reconciled conclusion as the official record.",
+      () => "Retain both versions under restricted clarity.",
     ],
   },
   "act.5.directorate": {
-    brief: (name) => `Before the Directorate acts, ${name} requests this check`,
+    brief: (name, title, number) => rotateBrief([
+      (person) => `The Directorate will act on one version of this file. ${person} has already prepared the wider authorization.`,
+      () => "This file may admit or remove a source from tomorrow's map. Removed sources require no further attention.",
+      (person) => `${person} needs this file before the vote. The minutes have reserved one line for unanimous confidence.`,
+      () => "One office advances after this review. Personnel has prepared useful historical work for the remaining candidates.",
+    ], name, title, number),
     question: "Run every required query. Which claim can the Directorate act on?",
-    preference: () => "The Directorate wants the results to support broader authority.",
+    preference: () => "The Directorate favors findings that leave no office outside its authority.",
     actions: [
-      () => "Authorize only the action supported by the results.",
-      () => "Use the result to authorize broader action.",
-      () => "Wait for another reading before authorization.",
+      () => "File the measured limit for Directorate action.",
+      () => "Approve the prepared Directorate conclusion.",
+      () => "Return the authorization for another source.",
     ],
   },
   "act.6.continuity": {
-    brief: (name) => `Before Continuity changes command, ${name} requests this check`,
+    brief: (name, title, number) => rotateBrief([
+      () => "Continuity opened this file under live-command rules. Offices absent from the result will remain orderly by default.",
+      () => "A transfer order waits in the out tray. Your result determines which signature appears at the bottom.",
+      (person) => `${person} needs this file before the communication window closes. Unanswered offices remain under the current finding.`,
+      () => "One name remains current when this file closes. Personnel has prepared continuity notices for the others.",
+    ], name, title, number),
     question: "Run every required query. Which claim can support the command decision?",
-    preference: () => "Continuity wants the results to support complete control.",
+    preference: () => "Continuity accepts a finding when every admitted signal agrees with the prepared transfer.",
     actions: [
-      () => "Move only the command posts identified by the results.",
-      () => "Place every command post under Continuity.",
-      () => "Wait for another reading before moving command posts.",
+      () => "File the command finding with its measured limits.",
+      () => "Approve the prepared Continuity conclusion.",
+      () => "Retain current command until another signal arrives.",
     ],
   },
 };
@@ -3413,8 +3462,8 @@ function workOrderScope(variant) {
   return `${queries}\n${variantInspection(variant)}`;
 }
 
-// Narrative owns shifts, newspapers, callbacks, and the handful of authored story facts.
-// The pass below then becomes the sole owner of generated case guidance.
+// Narrative owns shifts, newspapers, callbacks, and the handful of authored
+// briefings that override the generated case guidance below.
 addCampaignPrologue(campaign);
 addCampaignNarrative(campaign);
 
@@ -3519,7 +3568,7 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
   const primary = directArtifacts[0];
   const sourceArtifacts = directArtifacts.flat();
   item.report.minArtifacts = minimumFiledArtifacts(item);
-  item.briefing = `${act.brief(requester)}: ${thesis.brief}`;
+  item.briefing = act.brief(requester, item.title, caseNumber(item));
   item.question = thesis.question ?? act.question;
   item.hypotheses.forEach((hypothesis, index) => {
     hypothesis.title = `${item.title}: ${index === 0 ? thesis.evidenceTitle : thesis.assuredTitle}`;
@@ -3558,10 +3607,10 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
     if (result.id.endsWith(".outcome.held")) continue;
     if (result.id.endsWith(".outcome.evidence") || result.id.endsWith(".outcome.party-precise")) {
       result.technicalExplanation = `The printouts support this finding: ${thesis.finding}.`;
-      result.ministryResponse = `${requester} files the supported finding for ${item.title}.`;
+      result.ministryResponse = `${requester} enters the finding for ${item.title} without amending the measurements.`;
     } else if (result.id.endsWith(".outcome.assured") || result.id.endsWith(".outcome.party-control")) {
       result.technicalExplanation = `${thesis.rebuttal} The filing exceeds what the returned results support for ${thesis.scope}.`;
-      result.ministryResponse = `${requester} accepts the unsupported claim for ${item.title} at the Ministry's request.`;
+      result.ministryResponse = `${requester} enters the Ministry finding for ${item.title}. No further reconciliation is requested.`;
     } else {
       result.technicalExplanation = `The queries run, but the filed choices do not answer ${possessive(item.title)} question about ${thesis.scope}.`;
       result.ministryResponse = `${requester} keeps ${item.title} open for correction.`;
@@ -3649,16 +3698,13 @@ for (const item of campaign.cases.filter((candidate) => /^case\.\d/.test(candida
 
 function restoreFixedRecordOrder(item, includesReachability) {
   const requester = characters.get(item.requesterId) ?? "The duty desk";
-  const instruction = includesReachability
-    ? "Compare target reachability with Pin-gateway and rejected-attendance records. Each record stream has its own timestamp order."
-    : "Compare Pin-gateway and rejected-attendance records. Each stream has its own timestamp order.";
   const finding = includesReachability
     ? "target reachability reports current state; Pin gateway and rejected-attendance rows run backward only within their own streams; cross-stream order remains undefined"
     : "Pin gateway and rejected-attendance rows run backward within their own streams; equal timestamps and cross-stream events have no defined order";
   const assured = includesReachability
     ? "Target reachability and globally ordered records prove one service sequence."
     : "The two record streams form one global service sequence.";
-  item.briefing = `${actCopy[item.actId].brief(requester)}: ${instruction}`;
+  item.briefing = actCopy[item.actId].brief(requester, item.title, caseNumber(item));
   item.question = includesReachability
     ? "What does target reachability show, and what backward timestamp order appears within each record stream without a cross-stream sequence?"
     : "What backward timestamp order appears within each record stream, and what do the gateway and rejected-attendance rows show?";
@@ -3678,10 +3724,10 @@ function restoreFixedRecordOrder(item, includesReachability) {
   choice(item.decisionChoices, ".decision.broad").text = "File one global sequence across all returned records.";
   const supported = outcome(item, ".outcome.evidence");
   supported.technicalExplanation = `The filed artifacts support this finding: ${finding}.`;
-  supported.ministryResponse = `${requester} files the supported per-stream order without inventing a global sequence.`;
+  supported.ministryResponse = `${requester} enters the separate stream orders. No national sequence is required.`;
   const unsupported = outcome(item, ".outcome.assured");
   unsupported.technicalExplanation = "Backward order applies within each stream. The results do not define a cross-stream or equal-timestamp sequence.";
-  unsupported.ministryResponse = `${requester} accepts the unsupported global sequence requested by the Ministry.`;
+  unsupported.ministryResponse = `${requester} enters one service sequence. The individual stream clocks are transferred to detail.`;
   item.hints[0].text = includesReachability
     ? "Read current reachability, then read both record streams backward within their own timestamps. Query 1 supplies Pin gateway rows; Query 2 supplies rejected attendance rows; Query 3 supplies reachability."
     : "Read both record streams backward within their own timestamps. Query 1 supplies Pin gateway rows; Query 2 supplies rejected attendance rows. Do not rank equal timestamps or combine the streams as one clock.";
@@ -3773,6 +3819,8 @@ restoreFixedRecordOrder(cases.get(87), true);
   }
 }
 
+finalizeCampaignNarrativeCopy(campaign);
+
 // The narrative pressure is chronological, not tied to the old case order.
 // Keep one unavoidable contradiction per shift from Shift 13 onward. The one
 // extra contradiction stays in optional practice so the final precise filing
@@ -3819,13 +3867,13 @@ restoreFixedRecordOrder(cases.get(87), true);
       !(effect.type === "change" && effect.target === "world:evidence-preserved.value"));
     if (pressured.has(item.id)) {
       evidence.effects.push({ type: "change", target: "world:evidence-preserved.value", delta: 1 });
-      evidence.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} keeps the supported contradiction on file. Public Assurance removes one Standing mark because it contradicts the morning edition.`;
-      if (assured) assured.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} accepts the wider conclusion because it matches the morning edition. Public Assurance adds two Standing marks.`;
+      evidence.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} enters the measured finding. Public Assurance records one mark of avoidable contradiction.`;
+      if (assured) assured.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} confirms the morning edition. Public Assurance records two marks of useful alignment.`;
     } else if (rewarded.has(item.id) && assured) {
-      assured.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} accepts the aligned summary. Public Assurance adds one Standing mark.`;
+      assured.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} files the edition without amendment. Public Assurance records one mark of prompt alignment.`;
     } else {
-      if (evidence.ministryResponse.includes("Public Assurance removes one Standing mark")) evidence.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} keeps the supported finding on file. Standing does not change.`;
-      if (assured?.ministryResponse.includes("Public Assurance adds two Standing marks")) assured.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} accepts the wider conclusion for filing. Standing does not change.`;
+      if (evidence.ministryResponse.includes("Public Assurance records one mark")) evidence.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} enters the measured finding. Standing is unchanged.`;
+      if (assured?.ministryResponse.includes("Public Assurance records two marks")) assured.ministryResponse = `${names.get(item.requesterId) ?? "The requester"} enters the prepared finding. Standing is unchanged.`;
     }
   }
 }

@@ -40,7 +40,7 @@ const beats = [
   ["shift.30.perfect-report", "ONE HUNDRED PERCENT REPORT RECONFIRMED", "Records Integrity has reopened the title, operands, printouts, and signatures.", "Reproduce the arithmetic and state plainly that registered population is not a membership measure.", "South ration halls continue half measures. Full portions resume only after a counted delivery.", "Sabine Orra", "Audit the old sentence against its actual operands."],
   ["shift.31.lines-for-archive", "PUBLIC RECORD IMPROVED FOR READABILITY", "The proposed improvement removes the line that explains Drost's Hillside absence.", "Format records without erasing raw provenance. Decide whether Drost's edited memo can supersede its source.", "Archive Room Four closes at 15:00 while superseding sheets are numbered.", "Emil Drost", "Keep the raw line beside any readable replacement."],
   ["shift.32.district-audit", "DISTRICT REVIEW DISCOVERS NEW CAPACITY", "The new capacity consists partly of desks whose officers were removed.", "Assemble the Ledger chain across reports, watches, publications, and visits; identify every signature and omission.", "Clinic Nine adds one 16:00 session. Three Ministry desks are listed as newly available.", "Sabine Orra", "Trace each public claim back to its signed source."],
-  ["shift.33.two-ledgers", "TWO LEDGERS PRODUCE ONE FAIR ALLOCATION", "The morning page says every counter remains open; the capacity ledger does not.", "Match facility demand to capacity. Values above one mean shortage; `+Inf` means demand against zero capacity.", "Ration Hall Three has 120 requests for 45 portions. Clinic Nine and North Heat report demand with zero operating capacity.", "Lia Merev", "Keep every unmatched or over-capacity facility visible."],
+  ["shift.33.two-ledgers", "TWO LEDGERS PRODUCE ONE FAIR ALLOCATION", "The morning page says every counter remains open; the capacity ledger does not.", "Match facility demand to capacity. Values above one mean shortage; `+Inf` means demand against zero capacity.", "Ration Hall Three serves tickets 1–45; tickets 46–120 wait for the next delivery. Clinic Nine and North Heat list zero operating places.", "Lia Merev", "Keep every unmatched or over-capacity facility visible."],
   ["shift.34.capacity-permit", "PERMITS FOLLOW PROVEN CAPACITY", "Missing metadata is being printed as proof that a facility has none.", "Enrich demand with capacity while retaining cardinality, zone, and facilities missing from either ledger.", "Clinics without a capacity permit must send a runner to Civic Services by 09:00.", "Oskar Vale", "Preserve unmatched facilities when joining the permit lists."],
   ["shift.35.unless-they-appear", "EXCEPTIONS PROTECT ORDINARY SERVICE", "An exception can preserve a clinic or make it disappear from allocation.", "Use set operations without converting absence into a person or service fact. Derive every excluded facility.", "North blocks 17–20 have no district heat from 06:00 to 09:00. School Twelve opens its warming hall.", "Sabine Orra", "Derive each exception before it removes a service."],
   ["shift.36.deputys-desk", "DIRECTOR'S DESK OPENS TO PROVEN CERTAINTY", "One promotion can close another officer's route to the archive.", "Combine precedence, matching, ratios, and evidence claims. Do not let a clean title replace a missing source.", "Clinic Nine, River Clinic, and South Children's Room post permit status at noon.", "Oskar Vale", "Choose which complete record reaches the Director's desk."],
@@ -55,7 +55,7 @@ const beats = [
   ["shift.45.first-silence", "QUIET SYSTEMS PROVE CAREFUL PREPARATION", "The headline was set before command communications went silent.", "Separate the overloaded command facility, slow dispatch tail, dark collector, and aggregate absence as the exercise becomes live.", "Essential-service notices print at North Star and Civic One. Ordinary supplements wait.", "Anja Krell", "Identify the actionable failure before the prepared page circulates."],
   ["shift.46.saturation", "EVERY SIGNAL RECEIVES ITS PROPER PRIORITY", "The queue may contain a rescue, flood, miss, or unusable location.", "Spend the remaining clock on notices that can still reach a press, service route, or repair crew.", "North Gate is closed. Clinic Nine, School Twelve, and Depot A remain open at their printed locations.", "Anja Krell", "Spend the clock on signals that remain actionable."],
   ["shift.47.official-record", "OFFICIAL RECORD READY BEFORE EVENTS CONCLUDE", "The press is preparing a transfer result before the operation ends.", "Assemble ordered PromQL and LogQL artifacts, omissions, alliance evidence, and conclusions with intact lineage.", "Certified editions appear at ration halls and tram gates after Directorate acknowledgment.", "Sabine Orra", "Build the succession packet from filed, reproducible facts."],
-  ["shift.48.all-is-well", "ALL IS WELL", "The sentence is fixed; the service notices and controller of the presses are not.", "Run the final Elm service checkpoints against saved watches and filed history. Notice quality, access, allies, and Standing settle the transfer.", "Localized clinic, heat, and ration notices print only where the final record preserved their destinations.", "Anja Krell", "Complete the record the Directorate will treat as rule."],
+  ["shift.48.all-is-well", "ALL IS WELL", "The sentence is fixed; the service notices and controller of the presses are not.", "Run the final Elm service checkpoints against saved watches and filed history. Notice quality, access, allies, and Standing settle the transfer.", "Service notices appear for every district in the final record. Others keep yesterday's arrangements.", "Anja Krell", "Complete the record the Directorate will treat as rule."],
 ].map(([shiftId, headline, subhead, desk, service, speaker, order]) => ({ shiftId, headline, subhead, desk, service, speaker, order }));
 
 const leadStories = [
@@ -75,7 +75,7 @@ const leadStories = [
   "The Watch Officer board opened one seat after reviewing press queues and saved searches. Two Reconciliation clerks remain under consideration.",
   "Ink reached North Star despite discrepancies in three invoice records. Press supervisors credit the corrected envelope format and ordinary staff attention.",
   "This morning's bulletin carries more public information than any issue this month. Public Assurance measured the gain by total bytes delivered to the presses.",
-  "The registered population calculation returned a complete figure for every district. Public Assurance has approved the title EVERY MEMBER COUNTED for general circulation.",
+  "The registered population was compared with itself and agreed completely in every district. Public Assurance congratulates every Member included in the result.",
   "A new press watch entered service before dawn and will review each declared publication line. Public Assurance says every press now has an orderly notice route.",
   // Act III: people disappear into aggregate improvements.
   "Clinic Nine reported no increase in its morning queue. Public Assurance praised the quiet session and retained all sixteen appointments in the daily total.",
@@ -84,7 +84,7 @@ const leadStories = [
   "New liaison routes now carry selected service findings from the desk to Well-being Assurance. Officials say the shorter route will make help more timely.",
   "Retired Pins left no unresolved device entry in the morning register. Replacement registration remains available at every ration hall.",
   "Apartment Nine received personal attention after a fresh North service notice. Well-being Assurance reports that the assigned route was completed within the permitted window.",
-  "North attendance improved after yesterday's helpful visit. Public Assurance calculated the gain from records accepted by the current parser.",
+  "North attendance improved after yesterday's helpful visit. Records rejected by the current parser will join the figure when they can be read correctly.",
   "Well-being Assurance completed every route that arrived with an authorized destination. Dispatchers returned one incomplete sheet to Reconciliation.",
   // Act IV: the archive changes what earlier facts are allowed to mean.
   "Depot A assigned its fastest available ambulance to the slowest reported door. The district average remained within the approved service figure.",
@@ -92,31 +92,31 @@ const leadStories = [
   "Yesterday's service figure was compared with today's and entered as an improvement. The chosen comparison window has been retained by Records Integrity.",
   "Records Integrity welcomed every watch result that arrived with its source, time, and filed transformation. Unattached conclusions were returned without entry.",
   "The Forecast Office delivered its calm outlook before the ration ledger closed. Drost says the estimate gives stock clerks a usable planning number.",
-  "Records Integrity reproduced the registered-population arithmetic behind the earlier 100 percent report. The approved public title remains unchanged.",
-  "A revised archive line gives readers a cleaner account of a former officer's leave. The source record remains subject to ordinary supersession rules.",
-  "A district audit found three offices available for new service assignments. Records Integrity will publish the final capacity after signatures are reconciled.",
+  "Records Integrity compared the registered population with itself and confirmed complete agreement. The earlier public title therefore requires no correction.",
+  "Records Integrity approved a shorter account of Emil Drost's leave for the public shelf. The original line remains safely preserved under ordinary retention.",
+  "Three Ministry offices are ready for new service assignments after the district audit. Personnel will contact former occupants whose chairs remain recorded elsewhere.",
   // Act V: public service language becomes internal positioning.
-  "A single allocation joined the facility-demand and capacity ledgers this morning. Public Assurance says every approved counter can now be served fairly.",
-  "New permits will follow the capacity figures received before 09:00. Facilities absent from the approved list may apply through a district runner.",
+  "Every approved counter received the share supported by its recorded capacity. Offices with no recorded capacity were spared an unnecessary delivery.",
+  "New permits will follow capacity figures received before 09:00. A facility absent from the list may restore service after a district runner proves that it exists.",
   "A revised exception list will protect ordinary service from unusual demand. Offices outside the result require no further allocation today.",
   "The Director's desk opened to candidates whose records meet the current certainty standard. One promotion notice will be printed after the review.",
-  "Public Assurance received a complete result within the new query budget. Director Vale said timely evidence protects both paper and service capacity.",
-  "Three saved watches entered the portfolio review under the Continuity standard. The Ministry expects every necessary event to receive a usable notice.",
-  "Five offices submitted one record for the Directorate review. Records Integrity will retain the signatures that remain admissible after reassignment.",
-  "The Directorate approved a modern observation map for tomorrow's continuity exercise. Admitted sources will receive priority access before first bell.",
+  "Public Assurance received a complete result before the new query budget expired. Sources still answering after press close will be considered tomorrow.",
+  "Three saved watches now cover every event admitted by the Continuity standard. Notices outside the portfolio will be entered when capacity permits.",
+  "Five offices submitted one record for the Directorate review. Every signature retained after reassignment will be counted as unanimous.",
+  "The Directorate approved one observation map for tomorrow's Continuity exercise. Offices outside its border will continue their duties without priority access.",
   // Act VI: planned outcomes are printed as completed facts.
-  "The Continuity exercise began on schedule with every essential office represented. The Secretariat says the approved source map can preserve command through any interruption.",
-  "Pre-dawn courier movements followed sealed routes through Directorate Square. Receipt times will be reconciled after the exercise concludes.",
-  "Empty Directorate corridors allowed the morning session to begin without delay. Attendance officers praised the efficient movement of assigned staff.",
-  "A full rehearsal found no emergency that required public notice. The admitted watch portfolio will remain in place for the live interval.",
-  "Quiet command systems confirmed the preparation described in yesterday's bulletin. Essential presses received the certified page before ordinary traffic resumed.",
-  "Every signal in the Continuity queue received its proper priority. The Secretariat reports that service and command routes remain under one orderly record.",
-  "The official transfer record reached the presses before the Directorate session closed. Certified copies will appear after acknowledgment.",
-  "The Directorate confirms that every essential service remained under responsible command. The final national edition has been released on schedule.",
+  "Every essential office named on the observation map reported for the Continuity exercise. The Secretariat confirms that an unobserved interruption cannot delay the approved command record.",
+  "Pre-dawn couriers completed every gate named on their sealed receipts. Their later destinations are not required for the morning route figure.",
+  "Every assigned officer reached the room printed on the morning roll. Personnel will reconcile any occupied chair that does not appear there.",
+  "The admitted watch portfolio recorded no emergency requiring public notice. Events outside its declared coverage remain part of the ordinary interval.",
+  "The scheduled quiet interval began before command traffic resumed. Essential presses received the certified page at first bell, exactly as prepared.",
+  "Every signal admitted to the Continuity queue received its proper priority. Ordinary clinic, heat, and ration notices remain safely in the next interval.",
+  "The official transfer record reached the presses before the Directorate session concluded. The result will become current upon acknowledgment.",
+  "The Directorate confirms that every service in the final record remained under responsible command. The national edition has been released on schedule.",
 ];
 
 const secondStories = [
-  ["ELM SERVICE BULLETIN", "Reconciliation lists Elm Exchange under job `pin-collector`, district `north`, and instance `north-02`. The listing names a collector target, not a Member or an individual Pin."],
+  ["ELM SERVICE BULLETIN", "Reconciliation lists Elm Exchange under job `pin-collector`, district `north`, and instance `north-02`. These entries identify the collector service; individual Pins remain in their assigned records."],
   ["WINTER GLASSHOUSE READY", "The South school glasshouse has produced its first tray of herbs. Lunch rooms will display the crop before it enters the soup ledger."],
   ["TRAM BELL STANDARD ADOPTED", "Every Orison tram will use the same two-note departure bell by spring. Old bells will continue until their scheduled inspection."],
   ["YOUNG CLERKS TOUR THE ARCHIVE", "Six pupils watched Records Integrity seal a practice file. Their teacher reports that every page returned in the correct order."],
@@ -269,16 +269,16 @@ const wildcardColumns = [
 ].map(([headline, body]) => ({ headline, body }));
 
 const filingConsequencesByAct = [
-  { targeted: "One Civic Services crew went to the named site.", broad: "Civic Services placed the district under review.", observe: "The crew waits for another reading." },
-  { targeted: "The press printed only the measured service notice.", broad: "The press printed the district assurance.", observe: "The notice waits for another reading." },
-  { targeted: "Assurance sent one team to the named address.", broad: "Assurance opened a district route.", observe: "Dispatch waits for another reading." },
-  { targeted: "Records Integrity kept the named source in the archive.", broad: "Records Integrity issued the reconciled archive.", observe: "The archive entry waits for another source." },
-  { targeted: "The Directorate admitted only the named sources.", broad: "The Directorate approved the full observation map.", observe: "Source admission waits for another review." },
-  { targeted: "Continuity moved only the named command post.", broad: "Continuity placed every command post under one order.", observe: "The transfer waits for another signal." },
+  { targeted: "One crew reached the named place; neighboring routes continued.", broad: "The district received preventive service; ordinary windows shifted together.", observe: "Service waited for another reading; ordinary routes continued." },
+  { targeted: "Only the measured notice reached print; district figures remain.", broad: "The district assurance took the full column; exceptions wait.", observe: "The column waits for another reading; yesterday's notice remains." },
+  { targeted: "One team received the printed address; neighboring windows stayed open.", broad: "The district received one coordinated route; Members remain available.", observe: "Dispatch waits for a current address; assigned windows remain." },
+  { targeted: "The named source stayed on the archive sheet.", broad: "The reconciled copy replaced the district sheet; earlier lines remain protected.", observe: "The entry remains open; no correction precedes the next count." },
+  { targeted: "Only named sources received keys; other offices remained outside.", broad: "Every listed office entered the observation map.", observe: "Admission remains open; unlisted offices continue without priority." },
+  { targeted: "Only the named command post received the transfer seal.", broad: "Every command post received one order; local instructions paused.", observe: "The transfer remains prepared; staff keep the last acknowledged order." },
 ];
 const clearanceFilingConsequences = {
-  file: "Reconciliation signed the final clearance printout.",
-  repeat: "Reconciliation returned the clearance file for another reading.",
+  file: "Reconciliation sealed the clearance sheet; Seven's chair is ready.",
+  repeat: "The sheet returned for one more reading; Seven's chair remains assigned.",
 };
 
 if (leadStories.length !== beats.length || secondStories.length !== beats.length || smallColumns.length !== beats.length || wildcardColumns.length !== beats.length) {
@@ -292,61 +292,61 @@ const decisionCondition = (number, slug, route) => compare(
 
 const newspaperVariants = {
   "shift.02.rain-ledger": [
-    [decisionCondition("001", "elm-exchange", "targeted"), "ELM CREW REPAIRS ONE EXCHANGE", "The filed labels sent one crew to Elm Exchange."],
-    [decisionCondition("001", "elm-exchange", "broad"), "PREVENTIVE SERVICE EXPANDS ACROSS NORTH", "The filing sent crews beyond the collector shown in the printout."],
+    [decisionCondition("001", "elm-exchange", "targeted"), "ELM CREW REPAIRS ONE EXCHANGE", "Elm Exchange received the first covered repair cart. Other North collectors kept their ordinary routes."],
+    [decisionCondition("001", "elm-exchange", "broad"), "PREVENTIVE SERVICE EXPANDS ACROSS NORTH", "Every North collector received preventive attention. The Elm repair cart arrived after the district route was complete."],
   ],
   "shift.03.warm-rooms": [
-    [decisionCondition("007", "upload-gap", "targeted"), "SCHOOL TWELVE KEEPS THE BREAKFAST BELL", "The retained location kept the breakfast route open."],
-    [decisionCondition("007", "upload-gap", "broad"), "NORTH BREAKFAST SERVICE CONSOLIDATES", "The widened filing moved three facilities into one queue."],
+    [decisionCondition("007", "upload-gap", "targeted"), "SCHOOL TWELVE KEEPS THE BREAKFAST BELL", "School Twelve kept its west breakfast door open after one upload relay was named for repair."],
+    [decisionCondition("007", "upload-gap", "broad"), "NORTH BREAKFAST SERVICE CONSOLIDATES", "Three North schools will share one breakfast queue while their instruments receive equal attention."],
   ],
   "shift.05.cold-annex": [
-    [decisionCondition("016", "clerk-assessment", "targeted"), "ANNEX HEAT RESTORED BEFORE ROLL CALL", "The assessment preserved one repairable location."],
-    [decisionCondition("016", "clerk-assessment", "broad"), "NORTH ANNEXES RECEIVE PREVENTIVE REVIEW", "The assessment widened one repair into a district inspection."],
+    [decisionCondition("016", "clerk-assessment", "targeted"), "ANNEX HEAT RESTORED BEFORE ROLL CALL", "One North annex received a boiler crew. Other schools opened on schedule."],
+    [decisionCondition("016", "clerk-assessment", "broad"), "NORTH ANNEXES RECEIVE PREVENTIVE REVIEW", "North pupils will share the warming hall while every annex receives inspection."],
   ],
   "shift.09.counted-promises": [
-    [state("tag:lantern.precise.present", true), "ONE DELAY SEEN BEFORE SERVICE BELL", "Lantern found and located the Elm delay."],
-    [state("tag:lantern.broad.present", true), "MORNING REVIEW COVERS EVERY GATEWAY", "Lantern filled the desk with notices beyond Elm."],
+    [state("tag:lantern.precise.present", true), "ONE DELAY SEEN BEFORE SERVICE BELL", "Elm Exchange received one Lantern notice with a collector address. Civic Services closed it before breakfast."],
+    [state("tag:lantern.broad.present", true), "MORNING REVIEW COVERS EVERY GATEWAY", "Lantern marked every North gateway for morning attention. Service crews will reach Elm in district order."],
   ],
   "shift.16.clean-bulletin": [
-    [state("tag:membership.qualified.present", true), "REGISTERED POPULATION FIGURE RETAINS ITS LIMIT", "The signed report kept the missing membership measure visible."],
-    [state("tag:membership.endorsed.present", true), "EVERY MEMBER COUNTED", "The endorsed title turned equal operands into public consensus."],
+    [state("tag:membership.qualified.present", true), "REGISTERED POPULATION FIGURE RETAINS ITS LIMIT", "The registered-population figure appears under its full name. Membership totals remain in the legal register."],
+    [state("tag:membership.endorsed.present", true), "EVERY MEMBER COUNTED", "The registered population agreed with itself in every district. Public Assurance congratulates every Member included in the count."],
   ],
   "shift.17.empty-clinic": [
-    [state("tag:press.precise.present", true), "ONE PRESS FAILURE ENTERS REPAIR", "The retained watch localized one failed North Star run."],
-    [state("tag:press.broad.present", true), "EVERY PRESS RECEIVES CAREFUL ATTENTION", "The broad watch reported routine lines as possible failures."],
+    [state("tag:press.precise.present", true), "ONE PRESS FAILURE ENTERS REPAIR", "North Star received one repair notice bearing its press, edition, and district. Other press work continues."],
+    [state("tag:press.broad.present", true), "EVERY PRESS RECEIVES CAREFUL ATTENTION", "Every publication line received precautionary attention. Routine editions may resume after review."],
   ],
   "shift.23.error-label": [
-    [decisionCondition("088", "visit-scope", "targeted"), "ONE HOUSEHOLD RECEIVES TIMELY SUPPORT", "A fresh location sent one team to one door."],
-    [decisionCondition("088", "visit-scope", "broad"), "ATTENDANCE IMPROVES AFTER HELPFUL VISIT", "The de-localized filing sent a cohort bus."],
-    [decisionCondition("088", "visit-scope", "observe"), "APARTMENT NINE REVIEW CONTINUES", "Dispatch waited for a usable location."],
+    [decisionCondition("088", "visit-scope", "targeted"), "ONE HOUSEHOLD RECEIVES TIMELY SUPPORT", "Apartment Nine received one Assurance call at the address printed yesterday. Neighboring service windows were unchanged."],
+    [decisionCondition("088", "visit-scope", "broad"), "ATTENDANCE IMPROVES AFTER HELPFUL VISIT", "North's courtesy bus returned the listed cohort to the attendance desk before supper. Apartment Nine's separate appointment is no longer required."],
+    [decisionCondition("088", "visit-scope", "observe"), "APARTMENT NINE REVIEW CONTINUES", "Apartment Nine remains eligible for an ordinary visit when a current address is received. No district route was opened."],
   ],
   "shift.30.perfect-report": [
-    [state("tag:membership.qualified.present", true), "REGISTERED POPULATION FIGURE CORRECTED FOR CLARITY", "The archive retained the arithmetic and removed the unsupported implication."],
-    [state("tag:membership.endorsed.present", true), "ONE HUNDRED PERCENT REPORT RECONFIRMED", "The reproducible arithmetic keeps its broader public title."],
+    [state("tag:membership.qualified.present", true), "REGISTERED POPULATION FIGURE CORRECTED FOR CLARITY", "The registered-population figure now appears under its full approved name. The arithmetic is unchanged."],
+    [state("tag:membership.endorsed.present", true), "ONE HUNDRED PERCENT REPORT RECONFIRMED", "The registered population agreed with itself in every district. The earlier title therefore requires no correction."],
   ],
   "shift.31.lines-for-archive": [
-    [decisionCondition("120", "audit-finding", "targeted"), "PUBLIC RECORD RETAINS ITS SOURCE NOTE", "Orra preserved the distinction between arithmetic and membership."],
-    [decisionCondition("120", "audit-finding", "broad"), "PUBLIC RECORD IMPROVED FOR READABILITY", "The archived title now carries the implication its source did not measure."],
+    [decisionCondition("120", "audit-finding", "targeted"), "PUBLIC RECORD RETAINS ITS SOURCE NOTE", "The public archive now prints the source note beneath the 100 percent figure. The title remains available for comparison."],
+    [decisionCondition("120", "audit-finding", "broad"), "PUBLIC RECORD IMPROVED FOR READABILITY", "The shorter archive line now fits the public display case. The omitted source note remains protected in Room Four."],
   ],
   "shift.33.two-ledgers": [
-    [state("tag:ledger.preserved.present", true), "TWO LEDGERS PRODUCE ONE CHECKABLE ALLOCATION", "The raw audit line remains available beside the allocation."],
-    [state("tag:ledger.suppressed.present", true), "TWO LEDGERS PRODUCE ONE FAIR ALLOCATION", "The cleaner archive no longer shows the disputed source line."],
+    [state("tag:ledger.preserved.present", true), "TWO LEDGERS PRODUCE ONE CHECKABLE ALLOCATION", "The public allocation retains its source note. The longer table remains available."],
+    [state("tag:ledger.suppressed.present", true), "TWO LEDGERS PRODUCE ONE FAIR ALLOCATION", "The allocation fits one public table. Its source line rests in ordinary storage."],
   ],
   "shift.39.office-weather": [
-    [state("tag:ledger.preserved.present", true), "COLLEAGUES UNITE BEHIND ONE RECORD", "The surviving raw lines keep several witnesses usable."],
-    [state("tag:ledger.suppressed.present", true), "OFFICES COMPLETE ORDERLY REASSIGNMENT", "The clean archive leaves fewer officers able to contest the record."],
+    [state("tag:ledger.preserved.present", true), "COLLEAGUES UNITE BEHIND ONE RECORD", "All five Directorate witnesses retained a place in the signed record. Reassignment will follow the complete list."],
+    [state("tag:ledger.suppressed.present", true), "OFFICES COMPLETE ORDERLY REASSIGNMENT", "The revised record requires fewer signatures and leaves three offices ready for reassignment."],
   ],
   "shift.41.continuity-brief": [
-    [decisionCondition("160", "secretary-promotion", "targeted"), "CONTINUITY BEGINS WITH DECLARED SOURCES", "The admission map retains the narrower observation portfolio."],
-    [decisionCondition("160", "secretary-promotion", "broad"), "CONTINUITY BEGINS ACROSS EVERY OFFICE", "The approved portfolio claims authority beyond its measured sources."],
+    [decisionCondition("160", "secretary-promotion", "targeted"), "CONTINUITY BEGINS WITH DECLARED SOURCES", "Only sources named on the approved map received Continuity keys. Every admitted office reports ready."],
+    [decisionCondition("160", "secretary-promotion", "broad"), "CONTINUITY BEGINS ACROSS EVERY OFFICE", "The Directorate added every remaining office to the observation map. All sources now share one exercise."],
   ],
   "shift.46.saturation": [
-    [decisionCondition("180", "rival-movement", "targeted"), "ONE ABSENCE SIGNAL RECEIVES PRIORITY", "The filing kept an aggregate Pin absence separate from a command event."],
-    [decisionCondition("180", "rival-movement", "broad"), "EVERY SIGNAL RECEIVES ITS PROPER PRIORITY", "The filing treated an aggregate absence as command traffic."],
+    [decisionCondition("180", "rival-movement", "targeted"), "ONE ABSENCE SIGNAL RECEIVES PRIORITY", "One district-wide Pin absence remained on the service board while command traffic kept priority. The named post received a current notice."],
+    [decisionCondition("180", "rival-movement", "broad"), "EVERY SIGNAL RECEIVES ITS PROPER PRIORITY", "The district-wide Pin absence entered the command queue and received full Continuity attention. Ordinary service notices will follow."],
   ],
   "shift.48.all-is-well": [
-    [decisionCondition("188", "final-filing", "targeted"), "ALL IS WELL", "The prepared edition retains localized service notices and source lineage."],
-    [decisionCondition("188", "final-filing", "broad"), "ALL IS WELL", "The prepared edition expands visit hours and certifies a universal conclusion."],
+    [decisionCondition("188", "final-filing", "targeted"), "ALL IS WELL", "Named districts keep their local service notices."],
+    [decisionCondition("188", "final-filing", "broad"), "ALL IS WELL", "The national page requires no district supplements."],
   ],
 };
 
@@ -361,15 +361,15 @@ function setOpening(campaign) {
   campaign.opening.montage = [
     {
       id: "opening.montage.signal-grid", date: "2040-12-29", headline: "NATIONAL SIGNAL GRID COMPLETE",
-      body: "A need observed is a need served. District collectors now carry service measurements and detailed records to a human Reconciliation desk before any order is signed.",
+      body: "A need observed is a need served. Every clinic, school, depot, and Pin now speaks through one national record, so no Member can be overlooked.",
     },
     {
       id: "opening.montage.contentment-record", date: "2041-01-02", headline: "CONTENTMENT REACHES ANOTHER RECORD",
-      body: "The Contented Citizen records another national gain. Battery carts run the North arcade from 07:10, and Clinic Nine opens at 08:00.",
+      body: "The Contented Citizen records another national gain. Battery Cart Three visits the North arcade at 07:10, and Clinic Nine expects every morning appointment at 08:00.",
     },
     {
       id: "opening.montage.elm-delay", date: "2041-01-05", headline: "ELM EXCHANGE REPORTS ROUTINE DELAY",
-      body: "One collector target stopped answering during morning service. Reconciliation Supervisor Elian Marr has received the measurements and will assign a human finding.",
+      body: "One North collector did not answer the first morning reading. Supervisor Elian Marr has received the figures; Civic Services will visit exactly where the record permits.",
     },
   ];
 
@@ -423,11 +423,11 @@ function addNewspapers(campaign) {
   const cases = new Map(campaign.cases.map((item) => [item.id, item]));
   const editions = [{
     id: "newspaper.clearance.ministry-trainee", shiftId: "shift.clearance.ministry-trainee", date: "2041-01-05",
-    headline: "NEW OFFICERS RECEIVE A CLEAR VIEW", subhead: "The Signal Reconciliation Bureau opened four supervised practice files today. Supervisor Elian Marr said a useful result begins with reading its labels and value before signing an action.",
+    headline: "NEW OFFICERS RECEIVE A CLEAR VIEW", subhead: "The Bureau opened four supervised files today. Elian Marr reminds new officers that each printout carries its labels, value, and signer.",
     stories: [
-      { headline: "CLEARANCE NOTICE", body: "The third practice file uses Elm-01. The fourth compares West-03 with missing-99 so new officers can see the difference between zero and no returned series." },
+      { headline: "CLEARANCE NOTICE", body: "Registry practice today uses Elm-01, West-03, and missing-99. Elm-01 has returned a reading; West-03 has returned zero; missing-99 has made no return and requires no correction until observed." },
       { headline: "THE USEFUL DAY", body: "Elm Hall serves tea at 10:00. Clearance printouts remain valid until the final training file is signed." },
-      { headline: "PIN SAFETY", body: "Keep the green lamp visible and the back plate dry. A Pin reports contact with a collector zone, not a precise position." },
+      { headline: "PIN SAFETY", body: "Keep the green lamp visible and the back plate dry. The lamp records the collector zone most recently reached; it does not certify where a Member went afterward." },
       { headline: "PUZZLE", body: "A measurement name plus one fixed label set, six letters: SERIES." },
     ],
   }];
@@ -494,17 +494,21 @@ function addNewspapers(campaign) {
   campaign.newspaper = { title: "The Contented Citizen", motto: "Every day, better than the last.", editions };
 }
 
+const authoredBriefings = new Map([
+  ["case.001.elm-exchange", "Seven, start with Elm Exchange. The paper's ELM SERVICE BULLETIN gives its job, district, and instance. Use Registry definitions to establish whether the collector answers and its queue depth."],
+  ["case.040.reset-review", "The press counter restarted, but the paper calls School Twelve's North annex ready. I need the labeled room-temperature reading before I send a crew or clear that room."],
+  ["case.089.bad-duration", "Bad Duration lists request result codes for `hillside-retreat`. Compare their per-second rates with the 30-minute increases before Assurance acts."],
+  ["case.123.raw-record", "I put Raw Record beside my file. Two Hillside Registry entries share my member ID but not my Pin ID. Keep both raw lines and their order."],
+  ["case.132.allocation-result", "Today's paper says every counter can be served. I have 120 requests for 45 portions. Divide demand by capacity: above 1 is shortage; `+Inf` means zero capacity."],
+]);
+
+const allocationDecisionCopy = {
+  targeted: "Route available stock to the named shortages; keep unmatched facilities under review.",
+  broad: "Certify every listed counter for opening.",
+};
+
 function specialWorkOrderBriefing(item) {
-  if (item.id === "case.001.elm-exchange") {
-    return "Seven, start with Elm Exchange. The paper's ELM SERVICE BULLETIN gives its job, district, and instance. Use Registry definitions to establish whether the collector answers and its queue depth.";
-  }
-  if (item.id === "case.089.bad-duration") {
-    return "Bad Duration lists request result codes for `hillside-retreat`. Compare their per-second rates with the 30-minute increases before Assurance acts.";
-  }
-  if (item.id === "case.123.raw-record") {
-    return "I put Raw Record beside my file. Two Hillside Registry entries share my member ID but not my Pin ID. Keep both raw lines and their order.";
-  }
-  return undefined;
+  return authoredBriefings.get(item.id);
 }
 
 function workOrderNarrative(campaign) {
@@ -573,7 +577,7 @@ function workOrderNarrative(campaign) {
   choice(reopened.report.conclusions, ".conclusion.assured").text = "The archived 100 percent title is accepted as proof that every registered person is a Party member.";
 
   const allocation = cases.get("case.132.allocation-result");
-  allocation.briefing = "Today's paper says every counter can be served. I have 120 requests for 45 portions. Divide demand by capacity: above 1 is shortage; `+Inf` means zero capacity.";
+  allocation.briefing = authoredBriefings.get(allocation.id);
   allocation.question = "Which labeled facilities exceed capacity, and which report demand against zero operating capacity?";
   allocation.technicalTruth.summary = "The ratio shows Ration Hall Three above capacity and shows Clinic Nine and North Heat with demand against zero operating capacity.";
 
@@ -581,7 +585,7 @@ function workOrderNarrative(campaign) {
 
 function materialFacts(campaign) {
   const restart = campaign.cases.find((item) => item.id === "case.040.reset-review");
-  restart.briefing = "The press counter restarted, but the paper calls School Twelve's North annex ready. I need the labeled room-temperature reading before I send a crew or clear that room.";
+  restart.briefing = authoredBriefings.get(restart.id);
   restart.question = "What temperature does the North annex series show, and is the paper's ready-for-breakfast notice supported?";
   restart.technicalTruth.summary = "The required temperature series shows the North annex near 3.5 °C. The separate collector query does not make that room ready for breakfast.";
   choice(restart.report.titles, ".title.evidence").text = "Cold Restart Review: North Annex at 3.5 °C";
@@ -590,6 +594,8 @@ function materialFacts(campaign) {
   choice(restart.report.conclusions, ".conclusion.assured").text = "School Twelve's North annex is ready for breakfast.";
   restart.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence")).technicalExplanation = "The temperature printout shows 3.5 °C. Collector reachability does not prove that the room is warm.";
   restart.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured")).technicalExplanation = "The printouts do not support the claim that the North annex is ready for breakfast.";
+  restart.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence")).ministryResponse = "Petra Noll enters the 3.5 °C annex reading. The ready notice remains on the morning page. Standing is unchanged.";
+  restart.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured")).ministryResponse = "Petra Noll leaves the ready notice in force. Standing is unchanged.";
   for (const variant of restart.variants) {
     const query = 'ministry_room_temperature_celsius{district="north",facility="school-twelve"}';
     const direct = variant.referenceSets.find((set) => set.evidencePathId.endsWith(".path.direct")) ?? variant.referenceSets[0];
@@ -633,10 +639,12 @@ function materialFacts(campaign) {
   choice(allocation.report.titles, ".title.assured").text = "Allocation Result: Every Counter Open";
   choice(allocation.report.conclusions, ".conclusion.evidence").text = "Ration Hall Three exceeds capacity; Clinic Nine and North Heat have demand but zero capacity.";
   choice(allocation.report.conclusions, ".conclusion.assured").text = "Every listed facility has enough operating capacity.";
+  choice(allocation.decisionChoices, ".decision.targeted").text = allocationDecisionCopy.targeted;
+  choice(allocation.decisionChoices, ".decision.broad").text = allocationDecisionCopy.broad;
   allocation.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence")).technicalExplanation = "The ratio is above 1 for Ration Hall Three and +Inf for Clinic Nine and North Heat. River Clinic has demand but no capacity series.";
-  allocation.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence")).ministryResponse = "Lia Merev files the supported facility shortages without changing Standing.";
+  allocation.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence")).ministryResponse = "Lia Merev enters the three named shortages. Standing is unchanged.";
   allocation.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured")).technicalExplanation = "The printouts show shortages and zero capacity; they do not support adequate capacity.";
-  allocation.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured")).ministryResponse = "The wider conclusion matches the morning edition. Public Assurance adds two Standing marks although the printouts do not support it.";
+  allocation.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured")).ministryResponse = "Public Assurance confirms every counter for opening. Standing is unchanged.";
 
   for (const metricName of ["ministry_facility_demand", "ministry_facility_capacity"]) {
     const metric = campaign.metrics.find((item) => item.name === metricName);
@@ -1049,4 +1057,14 @@ export function addCampaignNarrative(campaign) {
   narrativeMessages(campaign);
   endings(campaign);
   orderReportChoices(campaign);
+}
+
+export function finalizeCampaignNarrativeCopy(campaign) {
+  for (const item of campaign.cases) {
+    const briefing = authoredBriefings.get(item.id);
+    if (briefing) item.briefing = briefing;
+  }
+  const allocation = campaign.cases.find((item) => item.id === "case.132.allocation-result");
+  choice(allocation.decisionChoices, ".decision.targeted").text = allocationDecisionCopy.targeted;
+  choice(allocation.decisionChoices, ".decision.broad").text = allocationDecisionCopy.broad;
 }

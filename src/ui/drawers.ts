@@ -55,7 +55,7 @@ function registryBody({ index, engine, registryKind, registrySearch, caseId }: D
       return `<article class="registry-card">
         <header><code>${escapeHtml(metric.name)}</code><span>${escapeHtml(metric.type)}</span></header>
         <p>${escapeHtml(metric.description)}</p>
-        <dl><div><dt>Measures</dt><dd>${escapeHtml(metric.source)}</dd></div><div><dt>Unit</dt><dd>${escapeHtml(metric.unit ?? "unitless")}</dd></div><div><dt>Labels</dt><dd>${metric.labels.length ? metric.labels.map((label) => `<code>${escapeHtml(label)}</code>`).join(" ") : "none"}</dd></div></dl>
+        <dl><div><dt>Source</dt><dd>${escapeHtml(metric.source)}</dd></div><div><dt>Unit</dt><dd>${escapeHtml(metric.unit ?? "unitless")}</dd></div><div><dt>Labels</dt><dd>${metric.labels.length ? metric.labels.map((label) => `<code>${escapeHtml(label)}</code>`).join(" ") : "none"}</dd></div></dl>
         ${known.length ? `<details><summary>Known label values here</summary>${known.map(([label, values]) => `<p><b>${escapeHtml(label)}</b>: ${values.map(escapeHtml).join(", ")}</p>`).join("")}</details>` : ""}
         <p class="registry-example"><span>Try</span> <code>${escapeHtml(`${metric.name}${first ? `{${first[0]}="${first[1][0]}"}` : ""}`)}</code></p>
         ${sample === undefined ? "" : `<p class="registry-sample">Latest example value: <b>${escapeHtml(formatValue(sample))}</b></p>`}

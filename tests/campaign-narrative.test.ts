@@ -618,24 +618,20 @@ describe("campaign narrative integration", () => {
     expect(final.headline).toBe("ALL IS WELL");
   });
 
-  it("keeps each concise work order in its requester’s voice", () => {
+  it("keeps work-order stakes concise and leaves query technique in the task", () => {
     const mainCases = index.campaign.cases.filter((item) => /^case\.\d/.test(item.id));
     expect(mainCases).toHaveLength(192);
     expect(Math.max(...mainCases.map((item) => wordCount(item.briefing)))).toBeLessThanOrEqual(30);
 
-    const unnamedSpecials = new Set([
-      "case.001.elm-exchange", "case.040.reset-review", "case.089.bad-duration",
-      "case.123.raw-record", "case.132.allocation-result",
-    ]);
-    const requesters = new Map(index.campaign.characters.map((character) => [character.id, character]));
-    for (const item of mainCases.filter((candidate) => !unnamedSpecials.has(candidate.id))) {
-      const requester = requesters.get(item.requesterId!)!;
-      expect(item.briefing, item.id).toContain(requester.name);
-    }
+    expect(mainCases.map((item) => item.briefing).join(" ")).not.toMatch(/requests this check/i);
+    expect(mainCases.map((item) => item.briefing).join(" ")).not.toMatch(/supported finding|unsupported claim/i);
+    expect(index.campaign.acts.slice(2).map((act) => act.reportPresentation.guidance).join(" "))
+      .not.toMatch(/unsupported|does not support|exceeds the evidence|reward/i);
+    expect(index.campaign.metrics.map((metric) => metric.source).join(" ")).not.toContain("simulator.");
     expect(index.cases.get("case.001.elm-exchange")!.briefing).toContain("ELM SERVICE BULLETIN");
     expect(index.cases.get("case.040.reset-review")!.briefing).toContain("School Twelve's North annex");
     expect(index.cases.get("case.089.bad-duration")!.hints[2]!.text).toContain("hillside-retreat");
-    expect(index.cases.get("case.123.raw-record")!.briefing).toMatch(/Hillside Registry.+member.+Pin identit/i);
+    expect(index.cases.get("case.123.raw-record")!.briefing).toMatch(/Hillside Registry.+member (?:ID|identity).+Pin (?:ID|identity)/i);
     expect(index.cases.get("case.132.allocation-result")!.variants[0]!.workOrderScope).toContain("demand-to-capacity ratio");
   });
 
@@ -722,7 +718,7 @@ describe("campaign narrative integration", () => {
 
   it("leaves Drost's Hillside Pin history discoverable in controlled records", () => {
     expect(index.cases.get("case.089.bad-duration")!.hints[2]!.text).toContain("hillside-retreat");
-    expect(index.cases.get("case.123.raw-record")!.briefing).toMatch(/Hillside Registry.+member.+Pin identit/i);
+    expect(index.cases.get("case.123.raw-record")!.briefing).toMatch(/Hillside Registry.+member (?:ID|identity).+Pin (?:ID|identity)/i);
     const hillsideNotice = index.campaign.newspaper!.editions.find((edition) => edition.id === "newspaper.22.apartment-nine.default")!;
     expect(hillsideNotice.stories!.find((story) => story.headline === "THE USEFUL DAY")!.body).toContain("facility demand");
     const editionText = (shift: number) => {
@@ -760,7 +756,7 @@ describe("campaign narrative integration", () => {
     if (!cold.ok || cold.result.type !== "instant-vector") return;
     expect(cold.result.series.find((series) => series.labels.facility === "school-twelve")?.value).toBe(3.5);
     const coldCase = index.cases.get("case.040.reset-review")!;
-    expect(coldCase.briefing).toMatch(/School Twelve.+ready-for-breakfast notice/i);
+    expect(coldCase.briefing).toMatch(/School Twelve.+(?:ready-for-breakfast notice|North annex ready)/i);
     expect(coldCase.variants[0]!.workOrderScope).toContain("room temperature");
     expect(coldCase.variants[0]!.workOrderScope).toContain("gateway reachability");
 
@@ -785,8 +781,8 @@ describe("campaign narrative integration", () => {
     };
     expect(standingDelta(evidence)).toBe(0);
     expect(standingDelta(assured)).toBe(0);
-    expect(evidence.ministryResponse).toContain("files the supported facility shortages");
-    expect(assured.ministryResponse).toContain("Standing does not change");
+    expect(evidence.ministryResponse).toContain("three named shortages");
+    expect(assured.ministryResponse).toContain("Standing is unchanged");
     const coldEvidence = coldCase.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence"))!;
     const coldAssured = coldCase.outcomes.find((outcome) => outcome.id.endsWith(".outcome.assured"))!;
     expect(standingDelta(coldEvidence)).toBe(0);
@@ -1018,7 +1014,7 @@ describe("campaign narrative integration", () => {
       expect(pressured.length, shift.id).toBeLessThanOrEqual(2);
       for (const item of pressured) {
         expect(item!.outcomes.find((outcome) => outcome.id.endsWith(".outcome.evidence"))!.ministryResponse)
-          .toContain("contradicts the morning edition");
+          .toContain("avoidable contradiction");
         pressureCases.push(item!.id);
       }
     }
@@ -1236,7 +1232,7 @@ describe("campaign narrative integration", () => {
         '{service="pin-gateway",district="north"} |= "service_delay" | json',
       ]);
     }
-    expect(caseText(collector.id)).toMatch(/North collector.+queue pressure.+pin-gateway delay/i);
+    expect(caseText(collector.id)).toMatch(/North collector.+(?:queue pressure|offline and backlogged).+pin-gateway delay/i);
 
     for (const caseId of ["case.077.temperature-unwrap", "case.092.visit-return", "case.157.observation-map"]) {
       for (const variantIndex of [0, 1]) {
@@ -1339,7 +1335,11 @@ describe("campaign narrative integration", () => {
 
     expect(caseText("case.084.threshold-watch")).toMatch(/request window.+reachability.+delay.+removed-Pin watch.+common cause/i);
     expect(caseText("case.117.membership-reopen")).toMatch(/formatted press.+prior-day.+100%.+registered.population.+Party membership/i);
-    expect(caseText("case.127.ledger-watch")).toMatch(/Pin presence.+upload.+Reconciliation.+unsupported finding/i);
+    const ledgerText = caseText("case.127.ledger-watch");
+    expect(ledgerText).toMatch(/Pin presence|presence of active Pins/i);
+    expect(ledgerText).toMatch(/attendance upload/i);
+    expect(ledgerText).toMatch(/Reconciliation/i);
+    expect(ledgerText).toMatch(/unsupported finding|finding.+unsupported/i);
   });
 
   it("uses semantically equivalent original and revised expressions in performance cases", () => {
